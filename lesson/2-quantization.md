@@ -49,3 +49,9 @@ output = llm.generate(["퀀타이제이션의 장점은?"], SamplingParams(tempe
 print(f"결과: {output[0].outputs[0].text}")
 
 ```
+
+
+## 참고자료 ##
+
+* [Optimizing LLMs for Performance and Accuracy with Post-Training Quantization](https://developer.nvidia.com/blog/optimizing-llms-for-performance-and-accuracy-with-post-training-quantization/)
+
