@@ -2,8 +2,8 @@
 
 ### TensorRT-LLM ###
 * 주피터 노트북 설치하기..
-[1. 설치하기](https://github.com/gnosia93/inference-on-eks/blob/main/lesson/1-install.md)
-* fastapi 붙여서 웨서버 구한기 
+* [1. 설치하기](https://github.com/gnosia93/inference-on-eks/blob/main/lesson/1-install.md)
+* fastapi 붙여서 웹서버 구현하기 
 
 
 ### Tenriton 서버 ###
