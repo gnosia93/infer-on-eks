@@ -91,12 +91,55 @@ model.quantize(examples=examples)
 model.save_quantized("./Llama-3-8B-FP8-Local")
 ```
 
+
+
 ### 캘리브레이션 데이터 ###
 * 일반적인 대화: HuggingFace의 databricks/databricks-dolly-15k 같은 데이터셋 활용.
 * 특정 도메인(금융, 의료): 실제 업무에서 사용되는 문서 샘플 200개 정도 추출.
 * 데이터가 너무 적으면 특정 단어에만 최적화(Overfitting)되어 모델이 바보가 될 수 있다.
 
+```
+from datasets import load_dataset
+from transformers import AutoTokenizer
+from autofp8 import AutoFP8ForCausalLM, BaseQuantizeConfig
 
+model_id = "meta-llama/Meta-Llama-3-8B"
+
+# 1. 캘리브레이션용 데이터셋 로드 (예: WikiText)
+# split="train[:512]"를 통해 앞부분 512개 샘플만 가져옵니다. (너무 많으면 오래 걸림)
+ds = load_dataset("nvidia/wikitext-103", split="train[:512]")
+
+# 2. 모델 및 토크나이저 준비
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+quantize_config = BaseQuantizeConfig(quant_method="fp8", activation_scheme="static")
+model = AutoFP8ForCausalLM.from_pretrained(model_id, quantize_config)
+
+# 3. 데이터셋을 모델이 이해할 수 있는 'examples' 형태로 가공
+examples = []
+for text in ds["text"]:
+    # 빈 줄이나 너무 짧은 문장은 제외
+    if len(text.strip()) < 10:
+        continue
+        
+    # 토큰화 (Llama-3의 최대 길이에 맞춰 자르기)
+    encoded = tokenizer(
+        text, 
+        truncation=True, 
+        max_length=512, 
+        return_tensors="pt"
+    ).to("cuda") # 연산을 위해 GPU로 보냄
+    
+    examples.append(encoded)
+
+# 4. 퀀타이제이션 실행 (여기서 우리가 공부한 '스케일 팩터'가 계산됨)
+# 512개의 실제 문장을 통과시키며 각 레이어의 활성화 값(Activation) 분포를 측정합니다.
+print("🚀 캘리브레이션 시작 (이 과정에서 레이어별 최적 스케일을 찾습니다)...")
+model.quantize(examples=examples)
+
+# 5. 최종 FP8 모델 저장
+model.save_quantized("./Llama-3-8B-FP8-WikiText")
+print("✅ FP8 모델 저장 완료!")
+```
 
 ## 참고자료 ##
 
