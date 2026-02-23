@@ -48,6 +48,9 @@ output = llm.generate(["퀀타이제이션의 장점은?"], SamplingParams(tempe
 
 print(f"결과: {output[0].outputs[0].text}")
 ```
+* activation_scheme="static": 우리가 공부한 정적 캘리브레이션 방식입니다. 파일에 스케일 팩터를 박아넣습니다.
+* AutoFP8: 내부적으로 NVIDIA Transformer Engine을 활용하여 H100 등에서 최적의 성능을 낼 수 있도록 변환해 줍니다.
+* 저장된 파일: 저장 폴더를 열어보면 가중치 파일은 줄어들어 있고, quantize_config.json 등에 스케일 정보가 기록된 것을 확인하실 수 있습니다.
 
 
 
