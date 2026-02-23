@@ -45,10 +45,10 @@ from vllm import LLM, SamplingParams
 
 llm = LLM(model=save_path) # 저장된 FP8 모델 로드
 output = llm.generate(["퀀타이제이션의 장점은?"], SamplingParams(temperature=0.7))
-```
-print(f"결과: {output[0].outputs[0].text}")
 
+print(f"결과: {output[0].outputs[0].text}")
 ```
+
 
 
 ## 참고자료 ##
