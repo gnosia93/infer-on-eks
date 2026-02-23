@@ -7,7 +7,7 @@
 
 
 ### Triton 인퍼런스 서버 ###
-
+* https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/introduction/index.html
 * https://github.com/triton-inference-server/server
 * https://github.com/triton-inference-server/server/blob/main/deploy/aws/README.md
 
