@@ -1,3 +1,4 @@
+![](https://github.com/gnosia93/post-training/blob/main/lesson/images/nvidia-dynamo-1.png)
 
 ### NVIDIA Dynamo (차세대 분산 추론 프레임워크) ###
 Triton Inference Server의 후속 기술로, 대규모 분산 환경에서 생성형 AI 및 추론 모델을 효율적으로 배포하는 하이레벨 프레임워크.
