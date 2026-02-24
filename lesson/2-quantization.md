@@ -20,6 +20,12 @@ except Exception as e:
     print(f"❌ FP8 타입 생성 실패: {e}")
 ```
 
+### PTQ with TensorRT Model Optimizer ###
+
+
+
+
+
 ### 허깅페이스 ###
 ```
 from autofp8 import AutoFP8ForCausalLM, BaseQuantizeConfig
