@@ -194,7 +194,7 @@ sudo systemctl restart code-server@ec2-user
 _DATA
 
   tags = {
-    Name = "x86-code-server"
+    Name = "inf-code-server"
   }
 }
 
