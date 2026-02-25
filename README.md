@@ -14,6 +14,13 @@
 
 
 ```
+Step 1: 단일 컨테이너 방식 (Python FastAPI + Model) → "아, 트래픽 몰리니 GPU가 노네?"
+Step 2: NVIDIA Dynamo/Triton 그래프 방식 도입 → "와, 전처리랑 추론을 찢으니까 GPU 가동률이 100% 찍히네!"
+Step 3: Karpenter를 이용한 GPU 노드 오토스케일링 → "돈 아끼기 성공!"
+```
+
+
+```
 # 1. 저장소 클론
 git clone https://github.com/coder/code-server
 cd code-server
