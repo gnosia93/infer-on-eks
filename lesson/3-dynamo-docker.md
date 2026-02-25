@@ -39,4 +39,3 @@ curl -N localhost:8000/v1/chat/completions \
   }'
 ```
 
-### EKS 에서 실행하기 ###
