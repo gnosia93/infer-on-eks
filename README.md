@@ -14,12 +14,16 @@
 
 
 ```
-레포지토리 추가: helm repo add coder https://helm.coder.com
-설치:
-bash
-helm install my-vscode coder/code-server \
+# 1. 저장소 클론
+git clone https://github.com/coder/code-server
+cd code-server
+
+# 2. LoadBalancer + 비밀번호 설정
+helm upgrade --install code-server ci/helm-chart \
   --set service.type=LoadBalancer \
-  --set auth.password=yourpassword
+  --set extraArgs="{--auth,password}" \
+  --set-string extraEnvVars[0].name=PASSWORD \
+  --set-string extraEnvVars[0].value="yourpassword"
 ```
 
 
