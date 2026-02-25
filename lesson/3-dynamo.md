@@ -22,8 +22,13 @@ NVIDIA Dynamo는 Triton Inference Server의 후속 기술로 대규모 데이터
 
 
 ### KV Router ###
+
 ![](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/images/nvidia-dynamo-2.png)
 여기서 말하는 분산 처리는 "워크로드(Workload)의 분산"이지, "연산 데이터의 파편화"가 아니다. KV Router는 "가장 데이터가 많이 준비된 노드에게 요청을 통째로 넘겨서, 통신 없이 해당 노드 안에서만 연산을 끝내게 만드는" 아주 고전적이고 효율적인 L7 로드밸런서의 역할을 수행하는 것이다.
+
+* 실시간 통신(NVLink) 없음: 데이터 이동 비용이 너무 비싸기 때문.
+* 노드 내 완결성: 한 노드가 필요한 KV 캐시를 다 갖거나, 없으면 직접 새로 만듬.
+* 지능적 배치: 라우터는 그저 "누가 어떤 캐시를 들고 있는가"만 보고 요청을 분산.
 
 
 
