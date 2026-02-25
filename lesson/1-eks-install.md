@@ -7,3 +7,11 @@ cd ~/infer-on-eks/iac/tf
 terraform init
 terraform apply --auto-approve
 ```
+
+[결과]
+```
+...
+Outputs:
+
+vscode_url = "http://ec2-3-38-209-255.ap-northeast-2.compute.amazonaws.com:8080"
+```
