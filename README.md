@@ -3,15 +3,13 @@
 
 * [2. GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-gpu-nodepool.md)
 
-* [2. TensorRT-LLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-tensorrt-llm.md)
+* [3. TensorRT-LLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-tensorrt-llm.md)
    
-* [3. NVIDIA Dyanmo](https://github.com/gnosia93/post-training/blob/main/lesson/3-dynamo.md)
-  - [로컬 Docker 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/3-dynamo-docker.md) 
-  - [EKS 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/3-dynamo-eks.md) 
+* [4. NVIDIA Dyanmo](https://github.com/gnosia93/post-training/blob/main/lesson/4-dynamo.md)
+  - [로컬 Docker 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/4-dynamo-docker.md) 
+  - [EKS 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/4-dynamo-eks.md) 
 
-* [4. 엔드포인트 성능 테스트하기]
-
-* [5. Quantization](https://github.com/gnosia93/post-training/blob/main/lesson/2-quantization.md)
+* [5. Quantization](https://github.com/gnosia93/post-training/blob/main/lesson/5-quantization.md)
   - 모델 성능 테스트하기 
   - 인퍼런스 성능 테스트
 
