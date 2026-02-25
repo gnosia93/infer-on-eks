@@ -11,6 +11,43 @@ NVIDIA Dynamo는 대규모 데이터 센터 환경에서 생성형 AI 모델의 
 * 추론 효율의 극대화: 결과적으로 데이터 전송 중에도 GPU가 연산에만 100% 집중할 수 있게 하여, 특히 LLM의 KV Cache 전송이나 분산 추론 시 기존 대비 약 30~50% 이상의 성능 향상.
 
 
+### docker 로 실행하기 ###
+```bash
+docker run --gpus all --network host --rm -it nvcr.io/nvidia/ai-dynamo/tensorrtllm-runtime:0.8.1
+
+python3 -m dynamo.frontend --http-port 8000 --discovery-backend file & 
+
+python3 -m dynamo.trtllm --model-path Qwen/Qwen3-0.6B --discovery-backend file
+```
+
+```bash
+curl localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen3-0.6B",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, how are you?"
+      }
+    ],
+    "stream": false,
+    "max_tokens": 300
+  }' | jq
+```
+```bash
+# -N 옵션은 curl이 데이터를 버퍼링하지 않고 즉시 출력하게 합니다.
+curl -N localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen3-0.6B",
+    "messages": [{"role": "user", "content": "긴 이야기를 하나 해줘"}],
+    "stream": true
+  }'
+```
+
+### EKS 에서 실행하기 ###
+
 ## 레퍼런스 ##
 
 * [Microservices Communication with NATS](https://www.geeksforgeeks.org/advance-java/microservices-communication-with-nats/)
