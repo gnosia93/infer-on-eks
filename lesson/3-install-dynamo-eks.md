@@ -21,7 +21,7 @@ NVIDIA Dynamo는 Triton Inference Server의 후속 기술로 대규모 데이터
 |관계|	요청 관리자 (Backend로 TRT 사용)|	실제 연산 최적화기|
 
 
-### docker 로 실행하기 ###
+### Docker 로 실행하기 ###
 
 프롬프트 템플릿 적용, 토큰화(Tokenization), 그리고 라우팅 기능을 갖춘 OpenAI 호환 HTTP 서버를 시작한다.
 --discovery-backend file 옵션을 사용하면 etcd(분산 설정 저장소) 설치 없이도 구동이 가능하다. 단, 이 경우 워커와 프론트엔드가 반드시 동일한 디스크 공간을 공유해야 한다.
