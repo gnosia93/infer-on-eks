@@ -101,12 +101,12 @@ echo ${VPC_ID}
 클러스터의 데이터 플레인(워커노드 들)은 아래의 프라이빗 서브넷에 위치하게 된다. 
 ```
 aws ec2 describe-subnets \
-    --filters "Name=tag:Name,Values=TOE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
+    --filters "Name=tag:Name,Values=INF-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
     --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone, Name:Tags[?Key=='Name']|[0].Value}" \
     --output table
 
 SUBNET_IDS=$(aws ec2 describe-subnets \
-    --filters "Name=tag:Name,Values=TOE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
+    --filters "Name=tag:Name,Values=INF-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
     --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone}" \
     --output text)
 
