@@ -5,7 +5,7 @@
 
 * [3. NVIDIA Dyanmo](https://github.com/gnosia93/post-training/blob/main/lesson/3-dynamo.md)
   - [로컬 Docker 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/3-dynamo-docker.md) 
-  - EKS 배포하기 
+  - [EKS 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/3-dynamo-eks.md) 
 
 * [4. 엔드포인트 성능 테스트하기]
 
