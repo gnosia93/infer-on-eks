@@ -10,8 +10,8 @@
 * [4. 엔드포인트 성능 테스트하기]
 
 * [5. Quantization](https://github.com/gnosia93/post-training/blob/main/lesson/2-quantization.md)
-  - 모델 Quntization 성능 테스트하기] 
-
+  - 모델 성능 테스트하기 
+  - 인프런스 성능 테스트
 
 
 ```
