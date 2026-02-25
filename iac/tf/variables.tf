@@ -18,7 +18,7 @@ variable "vpc_cidr_block" {
 variable "x86_type" {
   description = "EC2 Instance Type (x86)"
   type        = string
-  default     = "c6i.2xlarge"
+  default     = "c7i.2xlarge"
 }
 
 variable "key_name" {
