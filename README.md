@@ -1,5 +1,5 @@
 
-* [1. EKS 클러스터 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-eks-install.md)
+* [1. EKS 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-eks.md)
 
 * [2. TensorRT-LLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-tensorrt-llm.md)
    
