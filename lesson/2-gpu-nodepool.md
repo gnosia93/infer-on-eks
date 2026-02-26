@@ -76,7 +76,6 @@ kind: EC2NodeClass
 metadata:
   name: gpu
 spec:
-  clusterCIDR: "10.0.0.0/16"
   role: "eksctl-KarpenterNodeRole-${CLUSTER_NAME}"
   amiSelectorTerms:
     # Required; when coupled with a pod that requests NVIDIA GPUs or AWS Neuron
