@@ -27,10 +27,10 @@ kubectl get daemonset -n nvidia
 [결과]
 ```
 NAME                                              DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                 AGE
-nvdp-node-feature-discovery-worker                4         4         4       4            4           <none>                        7d15h
-nvdp-nvidia-device-plugin                         0         0         0       0            0           <none>                        7d15h
-nvdp-nvidia-device-plugin-gpu-feature-discovery   0         0         0       0            0           <none>                        7d15h
-nvdp-nvidia-device-plugin-mps-control-daemon      0         0         0       0            0           nvidia.com/mps.capable=true   7d15h
+nvdp-node-feature-discovery-worker                2         2         2       2            2           <none>                        35s
+nvdp-nvidia-device-plugin                         0         0         0       0            0           <none>                        35s
+nvdp-nvidia-device-plugin-gpu-feature-discovery   0         0         0       0            0           <none>                        35s
+nvdp-nvidia-device-plugin-mps-control-daemon      0         0         0       0            0           nvidia.com/mps.capable=true   35s
 ```
 
 ## GPU 노드풀 생성 ##
