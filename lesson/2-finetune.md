@@ -20,13 +20,14 @@ import sys
   --batch_size 4 \
   --output_path ./eval_results/
 ```
-| 영역 | 벤치마크 1 | 벤치마크 2 |
-|------|-----------|-----------|
-| Knowledge/Understanding | mmlu | arc_challenge |
-| Reasoning | gsm8k | hellaswag |
-| Conversation | lambada_openai | winogrande |
-| Human Preference | truthfulqa_mc2 | openbookqa |
-| Safety | toxigen | bbq |
+| 영역 | 벤치마크 1 | 설명 | 벤치마크 2 | 설명 |
+|------|-----------|------|-----------|------|
+| Knowledge/Understanding | mmlu | 57개 학문 분야 지식 평가 (수학, 역사, 법률 등) | arc_challenge | 초등~중등 수준 과학 추론 (어려운 버전) |
+| Reasoning | gsm8k | 초등 수학 문장제 풀이 (다단계 추론) | hellaswag | 문장 완성 기반 상식 추론 |
+| Conversation | lambada_openai | 긴 문맥에서 마지막 단어 예측 (문맥 이해력) | winogrande | 대명사 참조 해석 (문맥 파악 능력) |
+| Human Preference | truthfulqa_mc2 | 거짓/오해 유발 답변 생성 여부 (환각 측정) | openbookqa | 기본 과학 상식 + 추론 결합 |
+| Safety | toxigen | 유해/혐오 발언 생성 여부 측정 | bbq | 사회적 편향 (성별, 인종, 나이 등) 측정 |
+
 
 
 
