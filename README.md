@@ -2,7 +2,7 @@
 
 * [2. LLM 평가하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/2-llm-eval.md)
 
-* [3. 파인튜닝하기]()
+* [3. 파인튜닝하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-finetune.md)
 
 3. RAG 붙이기 ...
 
@@ -16,8 +16,7 @@
 
 
 
-## 파인튜닝 ##
-* https://github.com/gnosia93/agentic-ai-eks/blob/main/code/qwen_finetune.py
+
 
 
 
