@@ -9,6 +9,20 @@ Qwen3.5 (2026년 2월):
   - 201개 언어
 ```
 
+## LLM Benchmark ##
+```
+pip install lm-eval
+
+import sys
+!{sys.executable} -m lm_eval --model hf \
+  --model_args pretrained=Qwen/Qwen3.5-27B,dtype=bfloat16 \
+  --tasks mmlu,arc_challenge,gsm8k,hellaswag,lambada_openai,winogrande,truthfulqa_mc2,openbookqa,toxigen,bbq \
+  --batch_size 4 \
+  --output_path ./eval_results/
+```
+
+
+
 ## PPL ##
 파인튜닝 이전에 "DevOps/머신러닝" 도메인에 대한 모델의 이해도를 측정한다. 
 PPL(Perplexity)은 모델이 주어진 텍스트를 얼마나 "당연하게" 예측하는지를 측정하는 지표로, 수학적으로는 모델이 다음 토큰을 예측할 때의 평균 불확실성이다.
