@@ -28,6 +28,9 @@ variable "key_name" {
   default     = "aws-kp-2" 
 }
 
+variable "vscode_password" {
+  default     = "code!@#c"
+}
 
 # 공인 IP 확인
 data "http" "my_ip" {
