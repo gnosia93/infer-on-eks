@@ -19,7 +19,7 @@ PPL = exp(-1/N × Σ log P(token_i | token_1, ..., token_i-1))
 * PPL = 10: 매 토큰마다 평균 10개 후보 중 고민
 * PPL = 100: 매 토큰마다 100개 후보 중 고민 (잘 모르는 도메인)
 PPL 값이 낮을수록 좋다.
-
+#### #### 
 * https://github.com/gnosia93/agentic-ai-eks/blob/main/code/qwen_ppl.py
 
 
