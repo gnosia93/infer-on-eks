@@ -67,6 +67,14 @@ for score, doc in ranked[:3]:
 
 ![](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/images/rag-embedding.png)
 
+#### 2단계: 선정 기준 ####
+* 언어: 한국어 포함이면 다국어 모델 필수 (bge-m3, Cohere Embed v3)
+* 비용: API(Cohere, OpenAI) vs 오픈소스(self-hosted)
+* 속도: 실시간 서비스면 작은 모델, 배치 처리면 큰 모델 가능
+* 차원 수: 높을수록 정확하지만 벡터DB 저장 비용 증가
+* 도메인: 기술 문서 위주면 영어 모델로 충분
+
+
 
 
 ### 3. 리랭커 모델 선정 ###
