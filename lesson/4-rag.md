@@ -109,7 +109,8 @@ for name, model in models.items():
     
     print(f"{name}: Hit Rate@5={hit/len(eval_data):.2f}, MRR@5={mrr/len(eval_data):.2f}")
 ```
-
+* Hit Rate@5: 상위 5개 안에 정답이 포함된 비율
+* MRR@5: 정답이 몇 번째에 있는지 (1위면 1.0, 2위면 0.5, 3위면 0.33)
 
 ### 3. 리랭커 모델 선정 ###
 
