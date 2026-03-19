@@ -4,9 +4,7 @@
 
 * [3. 파인튜닝하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-finetune.md)
 
-3. RAG 붙이기 ...
-
-4. 배포 파이브라인 구성하기
+* [4. RAG 파이프라인 설계](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/4-rag.md)
 
 5. EKS 크러스터 구성
 
