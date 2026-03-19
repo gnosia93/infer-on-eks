@@ -25,7 +25,7 @@
    - 응답 시간, 토큰 사용량, 검색 품질 메트릭
    - LLM-as-Judge 비동기 평가
 
-* [8. 평가 파이프라인 구성하기]
+* [8. 평가 파이프라인 구성하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/8.eval-framework.md)
    - RAGAS 프레임워크
    - 도메인 평가 데이터셋 구축
    - CI/CD에 평가 통합
