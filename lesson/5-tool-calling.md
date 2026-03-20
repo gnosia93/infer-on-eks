@@ -282,3 +282,41 @@ import asyncio
 asyncio.run(build_graph())
 ```
 
+> [!TIP]
+> 여러 MCP 서버 + @tool 혼합
+```
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_core.tools import tool
+
+# 로컬 도구
+@tool
+def calculator(expression: str) -> str:
+    """수학 계산을 수행합니다."""
+    return str(eval(expression))
+
+async def build_graph():
+    async with MultiServerMCPClient({
+        "it-ops": {
+            "command": "python",
+            "args": ["mcp_server.py"],
+            "transport": "stdio",
+        },
+        "github": {
+            "url": "http://localhost:3002/sse",
+            "transport": "sse",
+        }
+    }) as client:
+        # MCP 도구들 가져오기
+        mcp_tools = client.get_tools()
+
+        # 로컬 도구 + MCP 도구 합치기
+        all_tools = [calculator] + mcp_tools
+
+        llm = ChatOpenAI(model="gpt-4o")
+        llm_with_tools = llm.bind_tools(all_tools)
+
+        # 그래프 구성...
+        tool_node = ToolNode(all_tools)
+        # 이하 동일
+```
+
