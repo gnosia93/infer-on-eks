@@ -1,5 +1,7 @@
 ; 각각의 모듀에 대해서 도커를 만들어서 ecr 에 푸시한다.
 
+; gitlab 과 연동하여 코드 repo 를 만들고 ci/cd 
+
 # EKS Agentic AI  
 
 * [L1. 노트북 환경 설정](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/1.start.md)
