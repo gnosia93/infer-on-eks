@@ -175,3 +175,46 @@ result = agent.invoke({
 })
 print(result["messages"][-1].content)
 ```
+
+
+## MCP ##
+
+* 패키지 설치
+```shell
+pip install langchain-mcp-adapters langgraph langchain-openai
+```
+
+* MCP 서버 준비
+```python
+# mcp_server.py
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("IT운영서버")
+
+@mcp.tool()
+def check_server_status(hostname: str) -> str:
+    """서버의 CPU, 메모리, 디스크 상태를 조회합니다."""
+    data = {
+        "api-server-01": "CPU: 72%, MEM: 85%, DISK: 45%, 상태: running",
+        "db-master":     "CPU: 91%, MEM: 93%, DISK: 78%, 상태: warning",
+    }
+    return data.get(hostname, f"'{hostname}' 서버를 찾을 수 없습니다.")
+
+@mcp.tool()
+def check_pod_status(namespace: str) -> str:
+    """Kubernetes Pod 상태를 조회합니다."""
+    if namespace == "production":
+        return "gateway-5f4e3: ❌ CrashLoopBackOff (재시작 15회)\nauth-api-7d8f9: ✅ Running"
+    return f"'{namespace}' 네임스페이스를 찾을 수 없습니다."
+
+@mcp.tool()
+def rollback_deployment(service: str, version: str) -> str:
+    """서비스를 특정 버전으로 롤백합니다."""
+    return f"✅ {service}를 v{version}으로 롤백 완료."
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+```
+
+
+
