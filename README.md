@@ -21,9 +21,7 @@
 
 * [7. RAG 평가 파이프라인 구성하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/7.eval-framework.md)
 
-* [9. 로컬 Docker 배포하기]
-    - Docker Compose (FastAPI + vLLM + VectorDB + Monitoring)
-    - 통합 테스트
+
 
 * [10. EKS 배포하기]
     - Helm Chart 구성
