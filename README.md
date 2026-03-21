@@ -37,6 +37,8 @@
 
 ### _Appendix_ ###
 
+; 아래 내용은 테라폼에서 자동으로 ..적용 ???  
+
 * [1. EKS 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-eks.md)
 
 * [2. GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-gpu-nodepool.md)
