@@ -46,7 +46,9 @@
 * appendix 내용을 어떻게 워크샵에 잘 녹여낼지 고민이 필요
 * agentic ai 에 대한 어플리케이션 개발 부터 open source 기반의 LLM serving infra 까지 어떻게 잘 녹여낼지 고민이 필요하다..
 * 다루는 내용이 너무 많은 관계로, 어떻게 하면 깔끔하게 핵심만 다룰 수 있을지????      
-
+   * eks 클러스터 생성 및 gpu 노드풀과 같은 인프라적인 부분은 terraform 으로 사전 빌드.
+   * dynamo inference 엔진의 경우 상당히 복잡하므로 어떻게 워크샵에 녹여내야 할지 ??? prefill-decode 구조는 생략? 아니면 dynamo 는 다루지 말고 vLLM 만 도커라이징 ??? 
+     
 ## 레퍼런스 ##
 
 * https://github.com/NVIDIA/Model-Optimizer/tree/main 
