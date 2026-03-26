@@ -60,6 +60,7 @@ throughput이 학습 효율의 최종 지표이고, 이게 떨어지면 sm, pclk
 Step 100: loss=2.34, time=0.085s  → 131072/0.085 = 1.5M tokens/sec
 Step 200: loss=2.12, time=0.150s  → 131072/0.150 = 0.87M tokens/sec ← 느려짐
 ```
-
+>[!TIP]
+>Prometheus 메트릭은 메모리에 값만 저장해두고, Prometheus가 15초마다 한 번 HTTP로 가져가는 구조라서 부하가 거의 없다.
 
 
