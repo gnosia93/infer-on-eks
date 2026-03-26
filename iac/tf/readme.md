@@ -1,11 +1,3 @@
-### VPC 아키텍처 ###
-* VPC
-* Subnets (Public / Private)
-* g7e.4xlarge EC2 for Code-Server
-* Security Groups
-* S3 bucket 
-* EKS
- 
 ### [테라폼 설치](https://developer.hashicorp.com/terraform/install) ###
 mac 의 경우 아래의 명령어로 설치할 수 있다. 
 ```
