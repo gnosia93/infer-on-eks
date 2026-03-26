@@ -4,13 +4,13 @@ set -e                                     # 에러 나면, 즉시 중단
 exec > /var/log/userdata.log 2>&1          # 프로세스 교체 없이, 현재 셸의 출력만 변경
 echo "=== UserData Start ==="
 
-apt-get update -y || true
-
 # ============================================================
 # 1. VS Code Server (code-server)
 # ============================================================
 sudo -u ubuntu -i <<'EC2_USER_SCRIPT'
+echo "=== UserData Start 2 ==="
 curl -fsSL https://code-server.dev/install.sh | sh && sudo systemctl enable --now code-server@ubuntu
+echo "=== UserData Start 3 ==="
 sleep 5
 sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: code!@#c/g' /home/ubuntu/.config/code-server/config.yaml
 EC2_USER_SCRIPT
