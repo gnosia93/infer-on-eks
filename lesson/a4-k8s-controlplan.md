@@ -15,10 +15,10 @@ CloudWatch 로그 그룹
 ```
 
 kube-prometheus-stack 설치하면 API Server 메트릭 Prometheus로 수집할 수 있다.
-* apiserver_request_total              # API 요청 수
-* apiserver_request_duration_seconds   # API 응답 시간
-* etcd_request_duration_seconds        # etcd 응답 시간
-* scheduler_scheduling_duration_seconds # 스케줄링 소요 시간
+* apiserver_request_total              API 요청 수
+* apiserver_request_duration_seconds   API 응답 시간
+* etcd_request_duration_seconds        etcd 응답 시간
+* scheduler_scheduling_duration_seconds 스케줄링 소요 시간
 ```
 
 
