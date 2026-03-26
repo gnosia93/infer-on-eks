@@ -30,25 +30,15 @@
 
 ### _Appendix_ ###
 
-* [1. EKS 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-eks.md)
-
-* [2. GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-gpu-nodepool.md)
-
-* [3. TensorRT-LLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-tensorrt-llm.md)
+* [a1. TensorRT-LLM 의 이해](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-tensorrt-llm.md)
    
-* [4. NVIDIA Dyanmo](https://github.com/gnosia93/post-training/blob/main/lesson/4-dynamo.md)
-  - [로컬 Docker 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/4-dynamo-docker.md) 
-  - [EKS 배포하기](https://github.com/gnosia93/interence-on-eks/blob/main/lesson/4-dynamo-eks.md) 
+
 
 ### todo ###
 * 각각의 모듈에 대해서 도커를 만들어서 ecr 에 푸시한다.
 * gitlab 과 연동하여 코드 repo 를 만들고 ci/cd 
 * appendix 내용을 어떻게 워크샵에 잘 녹여낼지 고민이 필요
-* agentic ai 에 대한 어플리케이션 개발 부터 open source 기반의 LLM serving infra 까지 어떻게 잘 녹여낼지 고민이 필요하다..
-* 다루는 내용이 너무 많은 관계로, 어떻게 하면 깔끔하게 핵심만 다룰 수 있을지????      
-   * eks 클러스터 생성 및 gpu 노드풀과 같은 인프라적인 부분은 terraform 으로 사전 빌드.
-   * dynamo inference 엔진의 경우 상당히 복잡하므로 어떻게 워크샵에 녹여내야 할지 ??? prefill-decode 구조는 생략? 아니면 dynamo 는 다루지 말고 vLLM 만 도커라이징 ???
-   * dynamo 를 이용한 분산 인퍼런싱을 채택할 만한 고객이 얼마나 있을까???? --> 너무 오버스팩일 듯 하기도 하고.. ㅜㅜ  
+* agentic ai 에 대한 어플리케이션 개발 부터 open source 기반의 LLM serving infra 까지 어떻게 잘 녹여내야 한다.
      
 ## 레퍼런스 ##
 
