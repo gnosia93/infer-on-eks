@@ -55,7 +55,7 @@ sm 60% + throughput 0.8M → 데이터 로딩 병목
 ```
 throughput이 학습 효율의 최종 지표이고, 이게 떨어지면 sm, pclk, 데이터 로딩을 순서대로 확인한다.
 
-잡 로그에 step 시간이 찍히는 경우 커스텀 메트릭없이 훈련 효율을 측정할 수 있으나 대규모 AI 클러터를 운영하는 운영자 입장에서는 이를 구축하는게 클러스터 관리면에서 좋다.
+잡 로그에 step 시간이 찍히는 경우 커스텀 메트릭없이 훈련 효율을 측정할 수 있으나 대규모 AI 클러스터를 운영하는 운영자 입장에서는 이를 구축하는게 클러스터 관리면에서 좋다.
 ```
 Step 100: loss=2.34, time=0.085s  → 131072/0.085 = 1.5M tokens/sec
 Step 200: loss=2.12, time=0.150s  → 131072/0.150 = 0.87M tokens/sec ← 느려짐
@@ -74,6 +74,8 @@ Loki는 Grafana Labs가 만든 로그 수집/검색 시스템으로, "Prometheus
 * Store        → S3/GCS 같은 오브젝트 스토리지에 영구 저장 / 라벨 → 인덱스, 본문 → 압축 청크
 
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/loki-arch.png)
+* 로그 수집 파이프라인 : Alloy -> Loki -> Grafana
+
 
 ### LogQL 예시 ###
 그라파나 대시보드에서 LogQL을 이용하여 로그를 조회한다.
