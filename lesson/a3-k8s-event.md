@@ -84,4 +84,11 @@ helm install event-exporter bitnami/kubernetes-event-exporter \
   --namespace monitoring \
   --create-namespace \
   -f values.yaml
+
+
+# 1. 파드가 잘 떴는지 확인
+kubectl get pods -n monitoring -l app.kubernetes.io/name=kubernetes-event-exporter
+
+# 2. stdout으로 이벤트가 잘 들어오는지 로그 확인 (json 형태로 막 올라오면 성공!)
+kubectl logs -f -n monitoring -l app.kubernetes.io/name=kubernetes-event-exporter
 ```
