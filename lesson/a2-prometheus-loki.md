@@ -1,4 +1,4 @@
-### Prometheus 커스텀 메트릭 구축 ###
+## Prometheus 커스텀 메트릭 구축 ##
 
 어플리케이션 코드에서 커스텀 메트릭을 만들어서 Prometheus에 저장할 수 있다.
 ```
@@ -35,6 +35,22 @@ curl localhost:8000/metrics
 # training_step_total 5000
 # training_throughput_tokens_per_sec 1520
 ```
+
+### tokens/sec 의미 ###
+"GPU를 얼마나 효율적으로 쓰고 있는가" 를 나타낸다. 예를 들어
+```
+정상: 1.5M tokens/sec (일정하게 유지)
+문제: 1.5M → 0.8M 으로 떨어짐
+  → 데이터 로딩 병목? 네트워크 병목? 스로틀링? 등이 그 원인일 수 있다.
+```
+AI 클러스터에서 GPU 사용률(sm)만으로는 학습이 정상적으로 이뤄지는지 판단하기에는 어려운 점이 있다. 
+```
+sm 98% + throughput 1.5M → 정상
+sm 98% + throughput 0.8M → 스로틀링 (pclk 떨어진 상태로 열심히 돌고 있음)
+sm 60% + throughput 0.8M → 데이터 로딩 병목
+```
+throughput이 학습 효율의 최종 지표이고, 이게 떨어지면 sm, pclk, 데이터 로딩을 순서대로 확인한다.
+
 
 #### 메트릭 타입 ####
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/prometheus-custom-metrics.png)
