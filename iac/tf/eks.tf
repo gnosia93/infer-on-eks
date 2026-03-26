@@ -75,6 +75,10 @@ resource "aws_eks_node_group" "system" {
     min_size     = 2
   }
 
+  tags = {
+    Name = "${var.cluster_name}-system-node"
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_node_worker,
     aws_iam_role_policy_attachment.eks_node_cni,
