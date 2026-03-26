@@ -113,3 +113,10 @@ kubectl logs -f -n monitoring -l app.kubernetes.io/name=kubernetes-event-exporte
 # Warning 이벤트 건수 (시간별)
 count_over_time({app="kubernetes-event-exporter", cluster_name="ai-gpu-cluster"} |= "Warning" [1h])
 ```
+
+
+## 참고 - etcd ##
+
+![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/etcd-arch.png)
+
+![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/etcd-update.png)
