@@ -93,7 +93,7 @@ resource "aws_route_table_association" "private" {
 # ------------------------------------------------
 
 resource "aws_iam_role" "eks_creator_role" {
-  name = "INF_EC2_Role-${data.aws_region.current.region}"
+  name = "EAI_EC2_Role-${data.aws_region.current.region}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
