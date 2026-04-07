@@ -48,14 +48,14 @@ spec:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 120
-            periodSeconds: 10
+            initialDelaySeconds: 120              # 파드 시작 후 120초 기다린 뒤 체크 시작
+            periodSeconds: 10                     # 10초마다 /health 호출, readiness 체크가 성공해야 트래픽 받기 시작 (예들들어 120초 이상 넘어가서 150초 부터 트래픽을 받을 수 있음)
           livenessProbe:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 180
-            periodSeconds: 30
+            initialDelaySeconds: 180              # 파드 시작 후 180초 기다린 뒤 체크 시작
+            periodSeconds: 30                     # 30초마다 /health 호출, 실패하면 Kubernetes가 파드를 죽이고 재시작
       volumes:
         - name: shm
           emptyDir:
