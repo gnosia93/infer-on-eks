@@ -18,7 +18,7 @@ spec:
     name: vllm-qwen
   minReplicaCount: 2
   maxReplicaCount: 8
-  cooldownPeriod: 300
+  cooldownPeriod: 300          # 축소 전 5분 대기
   triggers:
     - type: prometheus
       metadata:
