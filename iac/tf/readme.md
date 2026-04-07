@@ -18,8 +18,8 @@ terraform apply -auto-approve
 
 gpu-vscode 웹 콘솔로 로그인하여 아래 명령어를 실행한다.
 ```
-# kubeconfig 설정
-aws eks update-kubeconfig --name ${var.cluster_name}
+export CLUSTER_NAME=my-cluster
+aws eks update-kubeconfig --name ${CLUSTER_NAME}
 
 # Karpenter 설치
 helm install karpenter oci://public.ecr.aws/karpenter/karpenter \
