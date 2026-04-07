@@ -1,4 +1,4 @@
-## KEDA ##
+## [KEDA](https://keda.sh/) ##
 
 아래 명령어로 KEDA 를 설치한다.
 ```
