@@ -1,5 +1,5 @@
 output "vscode" {
-  value = "http://${aws_instance.gpu_box.public_ip}:8080"
+  value = "http://${aws_instance.gpu_box.public_ip}:9090"
 }
 
 output "eks_cluster_name" {
