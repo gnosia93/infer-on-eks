@@ -41,16 +41,16 @@ spec:
 ### 메트릭 ###
 #### 1. 추론 서버 메트릭 (vLLM/Triton) ####
 ```
-vllm:num_requests_waiting          대기 중인 요청 수 ← 가장 추천
+vllm:num_requests_waiting          대기 중인 요청 수          // 설정 우선 순위 - 1
 vllm:num_requests_running          처리 중인 요청 수
-vllm:gpu_cache_usage_perc          KV Cache 사용률
+vllm:gpu_cache_usage_perc          KV Cache 사용률          // 설정 우선 순위 - 2
 vllm:avg_prompt_throughput         초당 프롬프트 처리 토큰
 vllm:avg_generation_throughput     초당 생성 토큰
 vllm:e2e_request_latency_seconds   요청 전체 지연시간
 ```
 #### 2. GPU 하드웨어 메트릭 (DCGM Exporter) ####
 ```
-DCGM_FI_DEV_GPU_UTIL               GPU 연산 사용률 (%)
+DCGM_FI_DEV_GPU_UTIL               GPU 연산 사용률 (%)       // 설정 우선 순위 - 3
 DCGM_FI_DEV_MEM_COPY_UTIL          GPU 메모리 대역폭 사용률
 DCGM_FI_DEV_FB_USED                GPU 메모리 사용량 (MB)
 DCGM_FI_DEV_GPU_TEMP               GPU 온도
