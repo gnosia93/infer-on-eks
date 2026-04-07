@@ -26,9 +26,7 @@
    - [KEDA 기반 오토 스케일링](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/9-keda-autoscaling.md)
   
 * [L10. Post Training](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10.post-training.md)
-   - DPO
-   - Quantization
-   - Pruning 
+
 
 ### _Appendix_ ###
 
