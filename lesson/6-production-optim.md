@@ -37,12 +37,8 @@ def route_to_model(query: str):
 * LLM이 잘못된 형식의 응답 반환 (JSON 파싱 에러)
 * 에이전트가 무한 루프에 빠짐
 
-#### LangGraph에서 다루는 방식 ####
-```python
-from langgraph.graph import StateGraph
-import time
-
-# 1. 재시도 (Retry with backoff)
+#### 1. 재시도 (Retry with backoff) ####
+```
 def call_llm_with_retry(state, max_retries=3):
     for attempt in range(max_retries):
         try:
@@ -51,15 +47,19 @@ def call_llm_with_retry(state, max_retries=3):
             if attempt == max_retries - 1:
                 raise
             time.sleep(2 ** attempt)  # 1초, 2초, 4초
+```
 
-# 2. 폴백 (Fallback) - 큰 모델 실패 시 작은 모델로 대체
+#### 2. 폴백 (Fallback) - 큰 모델 실패 시 작은 모델로 대체 ####
+```python
 def llm_with_fallback(state):
     try:
         return primary_llm.invoke(state["messages"])
     except Exception:
         return fallback_llm.invoke(state["messages"])
+```
 
-# 3. 타임아웃 - 에이전트 전체 실행 시간 제한
+#### 3. 타임아웃 - 에이전트 전체 실행 시간 제한 ####
+```python
 graph = workflow.compile()
 try:
     result = graph.invoke(
@@ -68,8 +68,10 @@ try:
     )
 except Exception:
     result = "처리 시간이 초과되었습니다."
+```
 
-# 4. 조건부 라우팅 - 실패 시 다른 경로로
+#### 4. 조건부 라우팅 - 실패 시 다른 경로로 ####
+```python
 def route_on_error(state):
     if state.get("error"):
         return "error_handler"  # 에러 처리 노드로
