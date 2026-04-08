@@ -55,7 +55,7 @@ result = graph.invoke(input, config, callbacks=[handler])
 * 스텝별 지연 시간
 
 
-----
+## 비용 최적화 ##
 ### 캐싱전략 ###
 같은 질문이 반복될 때 LLM을 다시 호출하지 않고 캐시된 응답을 반환한다.
 ```python
