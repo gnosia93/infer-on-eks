@@ -1,4 +1,4 @@
-## vLLM ##
+## vLLM 인퍼런스 ##
 
 ### vLLM 배포하기 ###
 Qwen2.5-27B 모델을 g6e.12xlarge (L40S 48GB * 4EA, TP=4) 설정으로 2개의 파드로 구성한다.
