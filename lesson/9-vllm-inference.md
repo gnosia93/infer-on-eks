@@ -20,6 +20,8 @@ vLLM은 시작 시 먼저 모델 가중치를 GPU 메모리에 로드하고, gpu
    - CUDA 커널 실행 오버헤드, Activation 임시 버퍼, Tensor 연산 중간 결과물, NCCL 통신 버퍼 (TP 사용시)
 
 ### vLLM 추론 최적화 ###
+vLLM은 아래 세 가지 최적화를 기본 내장하고 있어 별도 설정 없이 자동 적용된다.
+
 #### KV Cache 최적화 (PagedAttention) ####
 Transformer는 토큰을 생성할 때마다 이전 토큰들의 Key/Value 텐서를 참조해야 한다. 이를 KV Cache라 하며, 시퀀스가 길어질수록 GPU 메모리를 많이 차지한다.
 기존 방식은 요청마다 max-model-len 크기의 연속 메모리를 미리 할당했다. 실제로 10토큰만 생성해도 4096토큰분의 메모리를 점유하므로 낭비가 심하다.
