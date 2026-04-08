@@ -1,3 +1,5 @@
+![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/muti-agent-1.png)
+
 ```python
 from langgraph.graph import StateGraph, MessagesState
 from langchain_core.messages import AIMessage, HumanMessage
