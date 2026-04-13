@@ -16,5 +16,4 @@
 ## 실무에서 쓰이는 도구들 ##
 * vLLM: PagedAttention + 텐서/파이프라인 병렬리즘 지원
 * TensorRT-LLM: NVIDIA 최적화, 멀티노드 지원
-* DeepSpeed-Inference: 다양한 병렬화 조합 지원
-* Ray Serve: 멀티노드 오케스트레이션
+
