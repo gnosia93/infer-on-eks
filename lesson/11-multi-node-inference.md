@@ -23,6 +23,17 @@ VLLM_PP_LAYER_PARTITION=20,10,2 vllm serve meta-llama/Llama-70B \
 ```
 * 마이크로배치 수: PP 버블을 줄이려면 마이크로배치 수를 PP 스테이지 수의 4배 이상으로 잡는 것이 경험적으로 효과적이다. 다만 인퍼런스에서는 배치 크기가 제한적이라 트레이닝만큼 효과를 보기 어려울 수 있다.
 
+#### [tensorrt auto_parallel](https://nvidia.github.io/TensorRT-LLM/examples/llm_auto_parallel.html) ####
+```
+from tensorrt_llm._tensorrt_engine import LLM
+
+llm = LLM(
+    model="meta-llama/Llama-70B",
+    auto_parallel=True,           # ← 이거
+    auto_parallel_world_size=16   # 총 GPU 수
+)
+```
+
 ### 노드 간 통신 최적화 ###
 * NCCL 튜닝: NCCL_ALGO, NCCL_PROTO 환경변수로 통신 알고리즘/프로토콜 선택 가능. InfiniBand 환경에서는 NCCL_IB_HCA로 HCA 디바이스를 명시적으로 지정하면 성능이 개선된다.
 * PP 에서의 비동기 전송: 스테이지 간 activation 전달을 비동기로 처리하면 computation과 communication을 오버랩할 수 있다.
