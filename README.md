@@ -30,6 +30,7 @@
   
 * [L11. Post Training](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10.post-training.md)
 
+* L12. 멀티 노드 추론 최적화
 
 ### _Appendix_ ###
 
