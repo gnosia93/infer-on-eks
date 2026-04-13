@@ -54,7 +54,7 @@ MoE 모델에서 EP를 적용할 때의 핵심 트레이드오프:
 
 ### 실무 배포 시 자주 놓치는 부분들 ###
 * Health check와 failover:  
-멀티노드 서빙에서 한 노드가 죽으면 전체 파이프라인이 멈추게 된다. Kubernetes 환경에서 pod 단위 재시작보다는 전체 replica 단위 관리가 필요하다. Kubernetes 기본 기능만으로는 이런 "그룹 단위 lifecycle 관리"가 안 되기 때문에, LeaderWorkerSet 같은 커스텀 리소스나 별도의 오케스트레이션 로직이 필요하다.
+멀티노드 서빙에서 한 노드가 죽으면 전체 파이프라인이 멈추게 된다. Kubernetes 환경에서 pod 단위 재시작보다는 전체 replica 단위 관리가 필요하다. Kubernetes 기본 기능만으로는 이런 "그룹 단위 lifecycle 관리"가 안 되기 때문에, [LeaderWorkerSet](https://lws.sigs.k8s.io/docs/overview/) 같은 커스텀 리소스나 별도의 오케스트레이션 로직이 필요하다.
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/multi-node-inf-3.png)
 
 * 웜업:   
