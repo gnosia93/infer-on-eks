@@ -63,7 +63,7 @@ MoE 모델에서 EP를 적용할 때의 핵심 트레이드오프:
 클라우드 환경에서 노드 간 대역폭이 균일하지 않을 수 있기 때문에 placement group(AWS)이나 compact placement policy(GCP)로 노드를 물리적으로 가까이 배치해야 한다.
 
 
-## LWS ##
+## [LWS](https://lws.sigs.k8s.io/docs/overview/) ##
 LeaderWorkerSet는 Kubernetes SIG에서 관리하는 커스텀 리소스로, pod 그룹을 하나의 복제 단위로 관리하기 위해 만들어 졌다.
 
 ### 구조 ###
