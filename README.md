@@ -16,7 +16,8 @@
    - [LangFuse 사용하기](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/6-langfuse.md)
    - [멀티 에이전트 오케스트레이션](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/6-multi-agent.md)
    - [프로덕션 최적화 및 고려사항](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/6-production-optim.md)
-     
+   - * 스트리밍 응답: 실시간 토큰 스트리밍, SSE/WebSocket 기반 응답 처리.
+   - * 사용자 피드백 루프: 응답에 대한 thumbs up/down 수집하고 개선에 반영하는 구조.  
 * [L7. 가드레일 구성하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/7.guard-rail.md)
 
 * [L8. RAG 평가 파이프라인 구성하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/8.eval-framework.md)
