@@ -26,10 +26,12 @@
   #### [vLLM PP Layer Partition](https://discuss.vllm.ai/t/is-it-possible-to-configure-the-order-of-the-pipeline-in-multi-node-deployments/1744) ####
   ```
   # 32개 레이어를 3개 PP 스테이지에 불균등 분배
-  VLLM_PP_LAYER_PARTITION=15,10,8 vllm serve meta-llama/Llama-70B \
+  VLLM_PP_LAYER_PARTITION=30,30,20 vllm serve meta-llama/Llama-70B \
     --pipeline-parallel-size 3 \
     --tensor-parallel-size 8
-  ```  
+  ```
+  LLM 헤드의 경우 vocab 사이즈로 인해서 FFN 의 크기가 커지므로, 이 예제에서는 GPU 메모리 밸런싱을 위해서 stage 3 에 20개로 할당하였다.
+   
   #### [tensorrt auto_parallel](https://nvidia.github.io/TensorRT-LLM/examples/llm_auto_parallel.html) ####
   ```
   from tensorrt_llm._tensorrt_engine import LLM
