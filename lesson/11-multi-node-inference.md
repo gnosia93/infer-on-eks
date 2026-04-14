@@ -40,7 +40,8 @@ MoE 모델에서 EP를 적용할 때의 핵심 트레이드오프:
 
 * All-to-All 통신: 각 토큰이 라우팅된 expert가 있는 노드로 이동해야 하므로 all-to-all 통신이 발생한다. expert 수가 많을수록(DeepSeek-V3는 256개) 통신 패턴이 복잡해진다.
 * Expert 로드 밸런싱: 특정 expert에 토큰이 몰리면 해당 노드가 병목이 된다. 트레이닝 시 auxiliary loss로 밸런싱을 유도하지만, 인퍼런스에서는 입력 분포에 따라 불균형이 발생할 수 있다.
-* EP + TP + PP 3중 병렬화: 초대형 MoE 모델에서는 세 가지를 모두 조합해야 한다. 예를 들어 노드 내 8 GPU 중 4개씩 2그룹으로 TP를 걸고, expert를 노드 간 EP로 분산하고, attention 레이어는 PP로 나누는 식이다.
+* EP + TP + PP 3중 병렬화: 초대형 MoE 모델에서는 세 가지를 모두 조합해야 한다. 예를 들어 TP=4로 노드 내 GPU를 묶고(8 GPU 노드에서 2개의 TP 그룹), expert를 노드 간 EP로 분산하며, 필요시 PP를 추가로 적용하는 식이다.
+
 
 ## 배포시 고려사항 ##
 ### Health check와 failover ###  
