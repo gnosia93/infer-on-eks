@@ -30,7 +30,7 @@
     --pipeline-parallel-size 3 \
     --tensor-parallel-size 8
   ```
-  LLM 헤드의 경우 vocab 사이즈로 인해서 FFN 의 크기가 커지므로, 이 예제에서는 GPU 메모리 밸런싱을 위해서 stage 3 에 20개로 할당하였다.
+  LM head는 softmax 직전 출력 레이어로 vocab 사이즈(예: 128,000)만큼의 출력 차원을 가진 Linear 레이어로 메모리 사용량이 크므로, 이 예제에서는 GPU 메모리 밸런싱을 위해 마지막 스테이지의 레이어 수를 20개로 줄여 할당하였다.
    
   #### [tensorrt auto_parallel](https://nvidia.github.io/TensorRT-LLM/examples/llm_auto_parallel.html) ####
   ```
