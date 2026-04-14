@@ -24,7 +24,7 @@
 
 * [L7. 에이전트 가드레일 및 보안 강화](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/7.guard-rail.md)
    - NeMo Guardrails를 이용한 입력값 필터링
-   - 에이전트 도구 호출 보안: SSRF 방지를 위한 네트워크 격리 (Egress 관리)
+   - [에이전트 도구 호출 보안: SSRF 방지를 위한 네트워크 격리 (Egress 관리)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/7-security-ssrf.md)
    - 실전 대응: Prompt Injection 탐지 모델 적용 (Llama Guard 3)
    - 권한 제어: LangGraph를 이용한 Human-in-the-loop(승인 절차) 구현
 
