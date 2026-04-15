@@ -39,12 +39,12 @@ spec:
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 30
-        env:
-        - name: HF_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: hf-secret
-              key: token
+#        env:
+#        - name: HF_TOKEN
+#          valueFrom:
+#            secretKeyRef:
+#              name: hf-secret
+#              key: token
 ---
 apiVersion: v1
 kind: Service
