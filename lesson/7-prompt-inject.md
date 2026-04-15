@@ -151,3 +151,6 @@ kill %1
 ```
 
 ## Llama Guard 3 모델 배포하기 ##
+```
+curl -o llama-guard.yaml https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/guardrail/llama-guard/llama-guard.yaml
+```
