@@ -33,7 +33,7 @@
 * L9. CI/CD 파이프라인
    - [프롬프트 버전 관리](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/9-cicd-prompt-version.md)
    - [에이전트 로직 테스트 자동화](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/9-cicd-agent-test.md)
-   - [LLMOps]()
+   - [LLMOps](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/9-cicd-llmops.md)
 
 * L10. EKS 배포하기
    - [vLLM 인퍼런스](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-vllm-inference.md)  
