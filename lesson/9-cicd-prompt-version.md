@@ -1,6 +1,20 @@
 ## 프롬프트 버전 관리 ##
 가장 실용적인 방법은 프롬프트를 코드처럼 Git으로 관리하는 것이다.
 
+### 프로젝트 구조 ###
+```
+repo/
+├── prompts/
+│   ├── system_prompt.txt          # 시스템 프롬프트
+│   ├── rag_prompt.txt             # RAG용 프롬프트
+│   └── summarize_prompt.txt       # 요약용 프롬프트
+├── tests/
+│   └── promptfooconfig.yaml       # 프롬프트 평가 설정
+├── CHANGELOG.md                   # 프롬프트 변경 이력
+└── app/
+    └── agent.py                   # 프롬프트를 파일에서 로드
+```
+
 ### 워크 플로우 ###
 ```
 1. 프롬프트 수정
