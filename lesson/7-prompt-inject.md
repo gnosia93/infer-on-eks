@@ -97,9 +97,13 @@ EKS 클러스터:
 ```
 Llama Guard 3는 8B 모델이라 A10G(24GB) 하나면 충분하므로, 메인 LLM과 별도 GPU에 띄워서 서로 영향을 안 주게 하는 게 좋다.
 
-## 가드레일 모델 배포하기 ##
-..
-..
-..
-<< 만들어야 한다. >>
 
+## 가드레일 모델 배포하기 ##
+
+### 1. Prompt Guard ###
+```
+kubectl create secret generic hf-secret --from-literal=token=hf_xxxxx
+```
+```
+
+```
