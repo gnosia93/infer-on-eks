@@ -175,7 +175,7 @@ spec:
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
-        volumeSize: 300Gi
+        volumeSize: 1000Gi
         volumeType: gp3
 EOF
 ```
