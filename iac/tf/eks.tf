@@ -37,6 +37,30 @@ resource "aws_eks_cluster" "main" {
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 }
 
+### 추가 시작 ###
+resource "aws_eks_access_entry" "ec2_bastion" {
+  cluster_name  = aws_eks_cluster.main.name
+  principal_arn = aws_iam_role.ec2_role.arn  # EC2에 붙인 IAM Role 참조
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "ec2_bastion_admin" {
+  cluster_name  = aws_eks_cluster.main.name
+  principal_arn = aws_iam_role.ec2_role.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.ec2_bastion]
+}
+
+### 추가 끝 ###
+
+
+
+
 # ============================================
 # Managed Node Group (c7i.2xlarge × 2)
 # ============================================
