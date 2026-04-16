@@ -25,7 +25,7 @@ spec:
           args:
             - |
               set -e
-              pip install -U "huggingface_hub<1.0" awscli
+              pip install -U "huggingface_hub<1.0" awscli transformers torch accelerate
               
               echo "=== Downloading model ==="
               huggingface-cli download Qwen/Qwen2.5-72B-Instruct --local-dir /workspace/qwen-hf
