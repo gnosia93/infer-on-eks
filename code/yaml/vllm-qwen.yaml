@@ -44,6 +44,12 @@ spec:
               mountPath: /dev/shm
             - name: model-cache
               mountPath: /root/.cache/huggingface
+          startupProbe:                           # startupProbe가 성공하기 전까지 liveness/readiness probe가 아예 동작하지 않는다.
+            httpGet:                              # 30분이 지나면 파드를 죽이고 재시작한다.
+            path: /health
+            port: 8000
+            periodSeconds: 30                     # 30초 마다 /health 호출    
+            failureThreshold: 60                  # 최대 30분 대기 (30sec * 60 = 1800sec) 
           readinessProbe:
             httpGet:
               path: /health
@@ -55,7 +61,8 @@ spec:
               path: /health
               port: 8000
             initialDelaySeconds: 180              # 파드 시작 후 180초 기다린 뒤 체크 시작
-            periodSeconds: 30                     # 30초마다 /health 호출, 실패하면 Kubernetes가 파드를 죽이고 재시작
+            periodSeconds: 30                     # 30초마다 /health 호출
+            failureThreshold: 5                   # 30초 간격으로 5번 연속 실패시 파드 재시작
       volumes:
         - name: shm
           emptyDir:
