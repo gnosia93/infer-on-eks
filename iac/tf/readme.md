@@ -59,6 +59,30 @@ kubectl get crd | grep karpenter
 kubectl logs -n karpenter -l app.kubernetes.io/name=karpenter --tail=50
 ```
 
+### 관리용 소프트웨어 설치 ###
+```
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+sh get_helm.sh
+helm version
+
+ARCH="arm64"
+if [ "$(uname -m)" != 'aarch64' ]; then
+  ARCH="amd64"
+fi
+echo ${ARCH}" architecture detected .."
+curl --silent --location "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_${ARCH}.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/k9s /usr/local/bin/
+k9s version
+
+sudo dnf update -y
+sudo dnf install golang -y
+go version
+go install github.com/awslabs/eks-node-viewer/cmd/eks-node-viewer@latest
+
+echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ### GPU 오퍼레이터 설치 ###
 EKS GPU AMI에는 이미 NVIDIA 드라이버와 NVIDIA 컨테이너 툴킷이 설치되어 있어서, GPU Operator에서 이 부분을 비활성화해야 한다.
 
