@@ -20,7 +20,7 @@ spec:
       serviceAccountName: s3-access-sa    # IRSA로 S3 권한 부여
       containers:
         - name: builder
-          image: nvcr.io/nvidia/tritonserver:24.12-trtllm-python-py3
+          image: nvcr.io/nvidia/tritonserver:24.12-trtllm-python-py3     # triton 은 서빙프로엠워크이다. HTTP/gRPC 엔드포인트, 요청 배칭, 스케줄링 등 처리
           command: ["/bin/bash", "-c"]
           args:
             - |
