@@ -16,10 +16,61 @@ kubectl get pods
 ```
 [결과]
 ```
-vllm-qwen-788d98bbfd-qsp9c   0/1     Pending   0          43s
-vllm-qwen-788d98bbfd-r2tjg   0/1     Pending   0          43s
+vllm-qwen-788d98bbfd-r2tjg   0/1     ContainerCreating   0               21m
+vllm-qwen-849cb97c7c-fcfnh   0/1     Running             0               7m54s
 ```
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/qwen-72B-node-viewer.png)
+```bash
+kubectl logs -f vllm-qwen-849cb97c7c-fcfnh
+```
+[결과]
+```
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299] 
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299]        █     █     █▄   ▄█
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.19.0
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299]   █▄█▀ █     █     █     █  model   Qwen/Qwen2.5-72B-Instruct
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:299] 
+(APIServer pid=1) INFO 04-16 11:02:11 [utils.py:233] non-default args: {'model': 'Qwen/Qwen2.5-72B-Instruct', 'max_model_len': 8192, 'served_model_name': ['qwen'], 'tensor_parallel_size': 4}
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_PORT_80_TCP_PORT
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_SERVICE_HOST
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_SERVICE_PORT
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_PORT_80_TCP_PROTO
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_PORT_80_TCP
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_PORT_80_TCP_ADDR
+(APIServer pid=1) WARNING 04-16 11:02:11 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_QWEN_SVC_PORT
+(APIServer pid=1) INFO 04-16 11:02:24 [model.py:549] Resolved architecture: Qwen2ForCausalLM
+(APIServer pid=1) INFO 04-16 11:02:24 [model.py:1678] Using max model len 8192
+(APIServer pid=1) INFO 04-16 11:02:24 [vllm.py:790] Asynchronous scheduling is enabled.
+(EngineCore pid=272) INFO 04-16 11:02:32 [core.py:105] Initializing a V1 LLM engine (v0.19.0) with config: model='Qwen/Qwen2.5-72B-Instruct', speculative_config=None, tokenizer='Qwen/Qwen2.5-72B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=8192, download_dir=None, load_format=auto, tensor_parallel_size=4, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=qwen, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::kda_attention', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_images_per_batch': 0, 'compile_sizes': [], 'compile_ranges_endpoints': [2048], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': True, 'static_all_moe_layers': []}
+(EngineCore pid=272) WARNING 04-16 11:02:32 [multiproc_executor.py:1014] Reducing Torch parallelism from 24 threads to 1 to avoid unnecessary CPU contention. Set OMP_NUM_THREADS in the external environment to tune this value as needed.
+(EngineCore pid=272) INFO 04-16 11:02:32 [multiproc_executor.py:134] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.0.10.64 (local), world_size=4, local_world_size=4
+(Worker pid=375) INFO 04-16 11:02:40 [parallel_state.py:1400] world_size=4 rank=0 local_rank=0 distributed_init_method=tcp://127.0.0.1:58269 backend=nccl
+(Worker pid=377) INFO 04-16 11:02:41 [parallel_state.py:1400] world_size=4 rank=2 local_rank=2 distributed_init_method=tcp://127.0.0.1:58269 backend=nccl
+(Worker pid=378) INFO 04-16 11:02:41 [parallel_state.py:1400] world_size=4 rank=3 local_rank=3 distributed_init_method=tcp://127.0.0.1:58269 backend=nccl
+(Worker pid=376) INFO 04-16 11:02:41 [parallel_state.py:1400] world_size=4 rank=1 local_rank=1 distributed_init_method=tcp://127.0.0.1:58269 backend=nccl
+(Worker pid=378) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=378) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=377) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=376) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=375) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=377) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=376) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=375) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=375) INFO 04-16 11:02:41 [pynccl.py:111] vLLM is using nccl==2.27.5
+(Worker pid=375) WARNING 04-16 11:02:42 [symm_mem.py:66] SymmMemCommunicator: Device capability 8.9 not supported, communicator is not available.
+(Worker pid=376) WARNING 04-16 11:02:42 [symm_mem.py:66] SymmMemCommunicator: Device capability 8.9 not supported, communicator is not available.
+(Worker pid=378) WARNING 04-16 11:02:42 [symm_mem.py:66] SymmMemCommunicator: Device capability 8.9 not supported, communicator is not available.
+(Worker pid=377) WARNING 04-16 11:02:42 [symm_mem.py:66] SymmMemCommunicator: Device capability 8.9 not supported, communicator is not available.
+(Worker pid=378) WARNING 04-16 11:02:42 [custom_all_reduce.py:154] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.
+(Worker pid=376) WARNING 04-16 11:02:42 [custom_all_reduce.py:154] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.
+(Worker pid=377) WARNING 04-16 11:02:42 [custom_all_reduce.py:154] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.
+(Worker pid=375) WARNING 04-16 11:02:42 [custom_all_reduce.py:154] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.
+(Worker pid=375) INFO 04-16 11:02:42 [parallel_state.py:1716] rank 0 in world size 4 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+(Worker_TP0 pid=375) INFO 04-16 11:02:43 [gpu_model_runner.py:4735] Starting to load model Qwen/Qwen2.5-72B-Instruct...
+(Worker_TP0 pid=375) INFO 04-16 11:02:43 [cuda.py:334] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(Worker_TP0 pid=375) INFO 04-16 11:02:43 [flash_attn.py:596] Using FlashAttention version 2
+```
 
 ### vLLM 파라미터 ###
 * --model                     사용모델
