@@ -1,11 +1,12 @@
 ## vLLM 인퍼런스 ##
 
 ### vLLM 배포하기 ###
-[Qwen2.5-72B](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) 모델을 [g6e.12xlarge](https://aws.amazon.com/ko/ec2/instance-types/g6e/) (L40S 48GB * 4EA, TP=4) 설정으로 2개의 파드로 구성한다.  
-[vllm-qwen.yaml](https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/yaml/vllm-qwen.yaml) 파일을 다운로드 받은 후 디플로이먼트를 생성한다.
+[Qwen2.5-72B](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) 모델을 [g6e.12xlarge](https://aws.amazon.com/ko/ec2/instance-types/g6e/) (L40S 48GB * 4EA, TP=4) 설정으로 2개의 파드로 구성한다.  [vllm-qwen.yaml](https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/yaml/vllm-qwen.yaml) 파일을 다운로드 받은 후 디플로이먼트를 생성한다.
+
 ```bash
 mkdir vllm && cd vllm
 curl -o vllm-qwen.yaml https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/yaml/vllm-qwen.yaml
+
 kubectl -f vllm-qwen.yaml
 ```
 vLLM은 시작 시 먼저 모델 가중치를 GPU 메모리에 로드하고, gpu-memory-utilization 설정값에 따라 사용 가능한 전체 메모리 범위를 결정한다. 그런 다음 모델 가중치와 내부 버퍼를 제외한 나머지 메모리를 KV Cache로 자동 할당하며, 이 KV Cache 크기와 max-model-len을 기반으로 동시에 처리할 수 있는 최대 요청 수를 자동으로 결정한다.
