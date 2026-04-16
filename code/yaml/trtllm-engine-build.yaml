@@ -44,7 +44,7 @@ spec:
 
               echo "=== Uploading to S3 ==="
               aws s3 cp /workspace/engines/qwen/ s3://${ENGINE_BUCKET}/trtllm-engines/qwen/ --recursive
-              aws s3 cp /workspace/qwen-hf/ s3://my-bucket/trtllm-models/qwen-hf/ --recursive
+              aws s3 cp /workspace/qwen-hf/ s3://${ENGINE_BUCKET}/trtllm-models/qwen-hf/ --recursive
 
               echo "=== Done ==="
           resources:
