@@ -40,8 +40,36 @@ _This workshopo is under construction, Not fully implemented yet_
    - [인퍼런스용 GPU 선정하기](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-model-fit-gpu.md)
    - [vLLM 인퍼런스 (Qwen2.5-72B)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-vllm-inference.md)  
    - [TensorRT-LLM 인퍼런스 (Qwen2.5-72B)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-tensorrt-inference.md)
+   - [LLM 인퍼런스 성능 벤치마크]()
    - [KEDA 기반 오토 스케일링](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-keda-autoscaling.md)
-   
+
+```
+## 추론 성능 비교 (versus vLLM) ##
+```
+pip install genai-perf
+
+genai-perf profile \
+    --model qwen \
+    --endpoint-type chat \
+    --url http://<서비스주소>:8000 \
+    --num-prompts 100 \
+    --concurrency 10
+```
+#### 측정 항목: ####
+* TTFT (Time To First Token): 첫 토큰까지 걸리는 시간
+* ITL (Inter-Token Latency): 토큰 간 지연
+* Throughput: 초당 생성 토큰 수
+* Request Latency: 요청당 전체 응답 시간
+
+### 측정 결과 ###
+* vLLM
+  
+* TensorRT-LLM
+
+
+## 보강 ##
+* 전체 소요 시간 (다운로드, 변환, 빌드 각각) / 필요 디스크 용량.
+```   
    
 * [L11. 멀티노드 인퍼런스 구성 및 최적화](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/11-multi-node-inference.md)
    - LWS
