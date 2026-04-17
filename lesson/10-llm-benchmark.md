@@ -65,6 +65,16 @@ Progress: 100%|█████████████████████�
 [2026-04-17 09:57:38] INFO     Generating artifacts/Qwen_Qwen2.5-72B-Instruct-openai-chat-concurrency10/profile_export_genai_perf.csv     csv_exporter.py:75
 ```
 
+## 테스트 하기 ##
+concurrency 와 num-prompts 값을 동시에 증가시키면서 테스트 한다.
+```
+concurrency 1 → num-prompts 10
+concurrency 10 → num-prompts 30
+concurrency 50 → num-prompts 100
+concurrency 100 → num-prompts 200
+```
+
+
 실행을 완료하면 port-foward 프로세스를 죽인다.
 ```
 kill %1
