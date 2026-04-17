@@ -24,7 +24,7 @@ spec:
           effect: NoSchedule
       initContainers:
         - name: download-from-s3
-          image: alpine/aws-cli:latest
+          image: amazon/aws-cli:latest
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -34,6 +34,7 @@ spec:
               echo "=== Downloading tokenizer from S3 ==="
               aws s3 cp s3://${ENGINE_BUCKET}/trtllm-models/qwen-hf/ /models/qwen-hf/ --recursive
               echo "=== Download complete ==="
+              exit 0
           volumeMounts:
             - name: engine-store
               mountPath: /engines
