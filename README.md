@@ -1,5 +1,5 @@
 # EKS Agentic AI  
-_This work is under construction, Not fully tested yet_
+_This workshopo is under construction, Not fully tested yet_
 
 본 워크샵은 EKS(Amazon Elastic Kubernetes Service) 환경에서 고성능 GPU 리소스를 효율적으로 관리하며, 단순한 RAG를 넘어 스스로 판단하고 실행하는 Agentic AI를 프로덕션 수준으로 구현하는 것을 목표로 합니다. 오픈 소스 LLM 모델 선정 및 파인튜닝과 더불어, 기업용 서비스의 필수 요건인 보안 가드레일(Guardrails), 정량적 평가(Evaluation), 그리고 지속적 통합/배포(CI/CD) 파이프라인을 포함하고 있으며, 인프라 구축부터 서비스 안정화 및 모니터링까지 LLM 서비스의 전체 생애주기(End-to-End) 에 대한 정보를 제공합니다.
 
