@@ -3,6 +3,7 @@
 포트 포워딩 설정한 후, tritonserver 도커 이미지를 설치한다.
 ```
 kubectl port-forward svc/trtllm-qwen-svc 8000:80 & 
+curl http://localhost:8000/health
 
 docker run -it --rm --net=host \
   nvcr.io/nvidia/tritonserver:26.02-py3-sdk \
