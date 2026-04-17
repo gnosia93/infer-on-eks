@@ -8,6 +8,33 @@ docker run -it --rm --net=host \
   nvcr.io/nvidia/tritonserver:26.02-py3-sdk \
   bash
 ```
+[결과]
+```
+...
+8b091788f25a: Pull complete 
+1185ca7269e2: Pull complete 
+Digest: sha256:43b50a162ed5c8be4c0c6ba948869d9b4a2ce12bec73710c12f0dd0e55ec0fde
+Status: Downloaded newer image for nvcr.io/nvidia/tritonserver:26.02-py3-sdk
+=================================
+== Triton Inference Server SDK ==
+=================================
+
+NVIDIA Release 26.02 (build 267903555)
+
+Copyright (c) 2018-2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+GOVERNING TERMS: The software and materials are governed by the NVIDIA Software License Agreement
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-software-license-agreement/)
+and the Product-Specific Terms for NVIDIA AI Products
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/product-specific-terms-for-ai-products/).
+
+WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be available.
+   Use the NVIDIA Container Toolkit to start this container with GPU support; see
+   https://docs.nvidia.com/datacenter/cloud-native/ .
+```
+
 테스트를 실행한다.
 ```
 genai-perf profile \
