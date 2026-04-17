@@ -371,7 +371,7 @@ W0417 00:46:37.981000 195 torch/utils/cpp_extension.py:2422] If this is not desi
 >   --gpt_attention_plugin auto
 >
 
-### 모델 배포하기 ###
+### 모델 서빙하기 ###
 [trtllm-qwen.yaml](https://github.com/gnosia93/eks-agentic-ai/blob/main/code/yaml/trtllm-qwen.yaml) 로 TensorRT-LLM 서버를 배포한다.
 ```
 curl -o trtllm-qwen.yaml \
