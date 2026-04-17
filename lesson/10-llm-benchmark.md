@@ -2,6 +2,8 @@
 
 테스트 한다.
 ```
+kubectl port-forward svc/trtllm-qwen-svc 8000:80 & 
+
 genai-perf profile \
   --model Qwen/Qwen2.5-72B-Instruct \
   --endpoint-type chat \
@@ -9,8 +11,12 @@ genai-perf profile \
   --num-prompts 100 \
   --concurrency 10 \
   --tokenizer Qwen/Qwen2.5-72B-Instruct
-
 ```
+실행을 완료하면 port-foward 프로세스를 죽인다.
+```
+kill %1
+```
+
 #### 측정 항목: ####
 * TTFT (Time To First Token): 첫 토큰까지 걸리는 시간
 * ITL (Inter-Token Latency): 토큰 간 지연
