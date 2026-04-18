@@ -1,5 +1,5 @@
-### s3 버킷생성 ###
-milvus 용 데이터 저장 버킷을 생성한다.
+### s3 버킷확인 ###
+테라폼에서 milvus 용으로 생성한 버킷 확인한다. 
 ```
 export CLUSTER_NAME=eks-agentic-ai
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -12,12 +12,11 @@ echo "ACCOUNT_ID: $ACCOUNT_ID"
 echo "AWS_REGION: $AWS_REGION"
 echo "VECTORDB_BUCKET_NAME: ${VECTORDB_BUCKET_NAME}"
 
-aws s3 rb s3://${VECTORDB_BUCKET_NAME} --region ${AWS_REGION} --force || true
-aws s3 mb s3://${VECTORDB_BUCKET_NAME} --region ${AWS_REGION}
 aws s3 ls | grep ${VECTORDB_BUCKET_NAME}
 ```
 
 ### CSI 드라이버 확인 ###
+테라폼에서 설치한 CSI 드라라이버 및 스토리지 클래스를 확인한다. 
 
 #### 1. 스토리지 클래스 조회 ####
 ```
