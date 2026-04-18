@@ -6,6 +6,7 @@ export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 export AWS_REGION=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
 export VECTORDB_BUCKET_NAME=${CLUSTER_NAME}-vectordb-milvus-${ACCOUNT_ID}
+export MILVUS_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/${CLUSTER_NAME}-milvus
 
 echo "CLUSTER_NAME: $CLUSTER_NAME"
 echo "ACCOUNT_ID: $ACCOUNT_ID"
@@ -56,7 +57,11 @@ eks 클러스터에 milvus 를 설치한다.
 helm repo add milvus https://zilliztech.github.io/milvus-helm/
 helm repo update
 
+# ============================================
+# Milvus 설치 (Standalone + S3 + RocksMQ)
+# ============================================
 helm upgrade --install milvus milvus/milvus \
+  --namespace milvus --create-namespace \
   --set cluster.enabled=false \
   --set pulsarv3.enabled=false \
   --set pulsar.enabled=false \
@@ -65,13 +70,16 @@ helm upgrade --install milvus milvus/milvus \
   --set etcd.replicaCount=1 \
   --set standalone.messageQueue=rocksmq \
   --set externalS3.enabled=true \
-  --set externalS3.host=s3.amazonaws.com \
+  --set externalS3.host=s3.${AWS_REGION}.amazonaws.com \
   --set externalS3.port=443 \
   --set externalS3.bucketName=${VECTORDB_BUCKET_NAME} \
+  --set externalS3.rootPath=files \
   --set externalS3.useIAM=true \
   --set externalS3.cloudProvider=aws \
   --set externalS3.useSSL=true \
-  -n milvus --create-namespace
+  --set serviceAccount.create=true \
+  --set serviceAccount.name=milvus-sa \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${MILVUS_ROLE_ARN}
 ```
 
 > [!TIP]
