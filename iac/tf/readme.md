@@ -36,7 +36,7 @@ echo "CLUSTER_NAME: $CLUSTER_NAME"
 echo "ACCOUNT_ID: $ACCOUNT_ID"
 echo "AWS_REGION: $AWS_REGION"
 
-aws eks update-kubeconfig --name ${CLUSTER_NAME}
+aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
 ```
 
 ### 관리용 소프트웨어 설치 ###
