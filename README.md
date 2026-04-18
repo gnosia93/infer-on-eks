@@ -13,7 +13,8 @@ _This workshopo is under construction, Not fully implemented yet_
 
 * [L5. RAG 파이프라인 설계 및 구현](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/5-rag.md)
    - [벡터DB(Milvus) 설치](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-milvus-install.md)
-
+   - PDF 문서 저장하기
+   - LLM 통합하기
      
 * L6. Agentic AI
    - [LangGraph로 RAG 구현](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/6-langgraph-rag.md)
