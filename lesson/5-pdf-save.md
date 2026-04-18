@@ -2,6 +2,8 @@
 
 
 ```
+pip install pymilvus langchain langchain-community pymupdf sentence-transformers
+
 curl -o PDFVectorStore.py
 https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/rag/PDFVectorStore.py
 ```
