@@ -108,9 +108,12 @@ sh download_pdfs.sh
 MILVUS_DB 에 pdf를 저장한다.
 ```
 kubectl port-forward -n milvus svc/milvus 19530:19530 &
-export MILVUS_DB_IP=localhost
+PF_PID=$!
+sleep 3   # 포트 포워딩 준비 대기
 
+export MILVUS_DB_IP=localhost
 python main.py --host ${MILVUS_DB_IP} --reset pdfs/*.pdf
-kill %1
+
+kill $PF_PID
 ```
 
