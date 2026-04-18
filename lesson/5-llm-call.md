@@ -1,6 +1,6 @@
 << 작성중 >> 
 
-플로우
+전체 과정은 다음과 같다.
 ```
 Query → Milvus 검색 (top 20) → Cohere Rerank (top 5) → Bedrock LLM
 ```
