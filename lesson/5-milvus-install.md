@@ -83,6 +83,9 @@ Milvus는 gRPC(19530)와 HTTP(9091) 두 가지 포트를 노출한다.
 ```bash
 kubectl port-forward svc/milvus -n milvus 19530:19530 &
 
+mkdir milvus && cd milvus
+pip install "pymilvus>=2.5.0"
+
 curl -o milvus-test.py \
 https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/rag/milvus-test.py
 
