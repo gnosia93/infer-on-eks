@@ -86,12 +86,46 @@ kubectl get crd | grep karpenter
 kubectl logs -n karpenter -l app.kubernetes.io/name=karpenter --tail=5
 ```
 
+### CSI 드라이버 설치 확인 ###
+테라폼에서 설치한 CSI 드라라이버 및 스토리지 클래스를 확인한다. 
+
+#### 1. 스토리지 클래스 조회 ####
+```
+kubectl get sc
+```
+[결과]
+```
+NAME            PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2             kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  22m
+gp3 (default)   ebs.csi.aws.com         Delete          WaitForFirstConsumer   true                   17m
+```
+#### 2. EBS CSI 드라이버 확인 ###
+```
+kubectl get pods -n kube-system | grep ebs-csi
+```
+[결과]
+```
+ebs-csi-controller-85fd97c85b-glnbc   6/6     Running   0          19m
+ebs-csi-controller-85fd97c85b-v7h86   6/6     Running   0          19m
+ebs-csi-node-48h59                    3/3     Running   0          19m
+ebs-csi-node-c6fmt                    3/3     Running   0          19m
+ebs-csi-node-f46xd                    3/3     Running   0          3m26s
+```
+
+#### 3. addon 확인 ###
+```
+aws eks list-addons --cluster-name ${CLUSTER_NAME} --region ${AWS_REGION} --output text
+```
+[결과]
+```
+ADDONS  aws-ebs-csi-driver
+```
+
 ### 메트릭 서버 설치 ###
 파드의 CPU 및 메모리 사용량 정보를 추적하기 위해서 메트릭 서버를 설치한다.
 ```
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 ```
-
 
 ### GPU 오퍼레이터 설치 ###
 EKS GPU AMI에는 이미 NVIDIA 드라이버와 NVIDIA 컨테이너 툴킷이 설치되어 있어서, GPU Operator에서 이 부분을 비활성화해야 한다.
