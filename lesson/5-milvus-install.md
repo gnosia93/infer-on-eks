@@ -87,44 +87,7 @@ kubectl port-forward svc/milvus -n milvus 19530:19530
 
 ### 코드실행 ###
 
-```
-from pymilvus import connections, Collection, FieldSchema, CollectionSchema, DataType
 
-connections.connect(host="localhost", port="19530")
-
-fields = [
-    FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
-    FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=128)
-]
-schema = CollectionSchema(fields)
-collection = Collection("test_collection", schema)
-```
-
-#### 1. 더미 백터(128차원) 생성 및 DB 입력 ####
-```
-import random
-vectors = [[random.random() for _ in range(128)] for _ in range(10)]
-collection.insert([vectors])
-```
-
-#### 2. 인덱스 생성 & 로드 ####
-Milvus는 검색 성능을 위해 메모리에 올라와 있는 인덱스만 검색한다. 아래 load() 함수는 해당 collection을 메모리로 올리는 함수이다.
-
-```
-collection.create_index("embedding", {"index_type": "HNSW", "metric_type": "L2", "params": {"M": 8, "efConstruction": 64}})
-collection.load()
-```
-
-#### 3. 백터 검색 ####
-```
-results = collection.search(
-    data=[vectors[0]],
-    anns_field="embedding",
-    param={"metric_type": "L2", "params": {"ef": 10}},
-    limit=5
-)
-print(results)
-```
 
 
 
