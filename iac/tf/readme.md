@@ -38,6 +38,10 @@ echo "AWS_REGION: $AWS_REGION"
 
 aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
 ```
+[결과]
+```
+Added new context arn:aws:eks:ap-northeast-2:499514681453:cluster/eks-agentic-ai to /home/ubuntu/.kube/config
+```
 
 ### 관리용 소프트웨어 설치 ###
 ```
