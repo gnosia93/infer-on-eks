@@ -3,7 +3,7 @@
 export CLUSTER_NAME=eks-agentic-ai
 export BUCKET_NAME=${CLUSTER_NAME}-vectordb-milvus
 
-aws s3 mb ${BUCKET_NAME} -region ap-northeast-2
+aws s3 mb s3://${BUCKET_NAME} --region ap-northeast-2
 ```
 
 ### milvus 설치 ###
