@@ -88,18 +88,40 @@ if __name__ == "__main__":
 ```
 
 ### 5. 실행 ###
-AWS 콘솔에서 사용하고자 하는 Bedrock 모델에 대해 액세스를  활성화한다.
+#### 5.1 Bedrock 모델 액세스 활성화 ####
+AWS 콘솔에서 사용할 모델의 액세스를 먼저 열어줘야 한다.
 ```
-AWS 콘솔 → Bedrock → Model access → Claude 3.5 Sonnet 등 사용할 모델 "Request access"
+AWS 콘솔 → Bedrock → Model access → 사용할 모델 "Request access"
 ```
+리전마다 지원 모델이 다르다. Claude 계열은 us-west-2(Oregon)와 us-east-1(Virginia)에서 지원 폭이 가장 넓다.
 
+#### 5.2 질의 실행 ####
+Milvus가 EKS 내부(ClusterIP)에 있으므로 앞 단계와 동일하게 kubectl port-forward로 터널을 연 뒤 질의를 실행한다.
 ```
 kubectl port-forward -n milvus svc/milvus 19530:19530 &
 PF_PID=$!
 sleep 3   # 포트 포워딩 준비 대기
 
 export MILVUS_DB_IP=localhost
-python query.py --host ${MILVUS_DB_IP}
+
+python query.py --host ${MILVUS_DB_IP} \
+  "LoRA에서 low-rank adaptation이 왜 효과적인가?"
 
 kill $PF_PID
 ```
+실행이 끝나면 답변과 함께 근거로 사용된 문서/페이지가 함께 출력된다.
+```
+============================================================
+Q: LoRA에서 low-rank adaptation이 왜 효과적인가?
+============================================================
+LoRA는 사전학습 모델의 가중치 업데이트(ΔW)가 실제로는 낮은 내재 차원을
+가진다는 관찰에 기반합니다. ΔW = BA 형태로 저차원 행렬 두 개로 분해해
+학습 파라미터를 크게 줄이면서도 풀 파인튜닝에 준하는 성능을 낸다.
+...
+참조: 02_LoRA_Low-Rank_Adaptation p.2, p.4
+------------------------------------------------------------
+참조한 컨텍스트:
+  1. [02_LoRA_Low-Rank_Adaptation p.1] sim=0.812 rerank=0.934
+  ...
+```
+
