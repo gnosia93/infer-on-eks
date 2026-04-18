@@ -61,3 +61,6 @@ docker build -t rag-mcp:latest .
 docker tag rag-mcp:latest <ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com/rag-mcp:latest
 docker push <ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com/rag-mcp:latest
 ```
+* 이미지 사이즈가 꽤 크다(모델 2개가 약 4GB). 프로덕션이면 모델을 초기화 때 다운로드하거나 PVC로 분리하는 것도 방법.
+
+
