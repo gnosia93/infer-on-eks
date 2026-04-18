@@ -55,8 +55,6 @@ _This workshopo is under construction, Not fully implemented yet_
 ### _Appendix_ ###
 
 * [Prometheus/Loki Stack](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a2-prometheus-loki.md)   
-* [LOKI에 K8S 이벤트 저장하기](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a3-k8s-event.md)
-* [K8S 컨트롤 플레인](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a4-k8s-controlplan.md)
 * [Harness Engineering](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a5.harness-eng.md)
 * [promptfoo 로 모델 평가하기](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a7.promptfoo.md)
 * [TensorRT-LLM Speculative 디코딩](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/a8-speculative-decoding.md)
