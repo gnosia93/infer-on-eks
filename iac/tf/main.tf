@@ -178,7 +178,7 @@ resource "aws_security_group" "instance_sg" {
   }
 }
 
-resource "aws_instance" "gpu_box" {
+resource "aws_instance" "vscode" {
   ami                         = data.aws_ami.gpu_ubuntu.id
   instance_type               = var.gpu_type
   subnet_id                   = aws_subnet.public[0].id
