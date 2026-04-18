@@ -47,6 +47,12 @@ helm install milvus milvus/milvus \
 > milvus  https://zilliztech.github.io/milvus-helm/
 > ```
 
+### milvus 설치 확인 ###
+```
+kubectl get all -n milvus
+```
+
+
 
 ### IRSA ##
 ```
