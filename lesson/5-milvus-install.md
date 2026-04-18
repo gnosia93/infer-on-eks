@@ -100,26 +100,9 @@ helm upgrade --install milvus milvus/milvus \
 > helm uninstall milvus -n milvus
 > ```
 
-
 ### milvus 설치 확인 ###
 ```
 kubectl get all -n milvus
-```
-
-
-
-### IRSA ##
-```
-EKS에서 useIAM=true 쓰려면
-IRSA 설정이 되어 있어야 합니다:
-
-OIDC Provider가 EKS 클러스터에 연결되어 있어야 하고
-S3 접근 권한이 있는 IAM Role을 만들고
-해당 Role을 Milvus ServiceAccount에 annotate
-
-kubectl annotate serviceaccount milvus \
-  -n milvus \
-  eks.amazonaws.com/role-arn=arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
 ```
 
 ## 테스트 ##
