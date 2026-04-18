@@ -17,3 +17,5 @@
 6. Parent-Child Chunking     — 작게 검색, 크게 답변
 7. Agentic Chunking          — LLM이 직접 나눔
 ```
+
+### 3. 임베딩 모델 선정 ###
