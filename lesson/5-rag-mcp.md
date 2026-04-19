@@ -82,6 +82,7 @@ docker build -t rag-mcp:latest .
 docker tag rag-mcp:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/rag-mcp:latest
 docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/rag-mcp:latest
 ```
+도커 이미지 빌드에 10분 그리고 PUSH 에 2분 정도의 시간이 소요된다.
 
 ### 4. EKS 배포 ###
 
