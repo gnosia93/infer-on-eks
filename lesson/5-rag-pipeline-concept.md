@@ -72,5 +72,55 @@ BGE-M3, E5 등은 무료
 * 메타데이터 필터링 - 검색 시 벡터 유사도 + 메타데이터 조건을 함께 걸 수 있는지.
 
 
+### 5. 리랭커 모델 선정 ###
+임베딩 모델 선정 후, 벡터 검색으로 가져온 후보 문서들에 대해서 리랭커 적용 전후를 비교하여 리랭커가 실제로 검색 품질을 올려주는지도 확인해야 한다. 리랭커는 추론 비용과 지연 시간을 동반하므로, 사용하지 않을때와 비슷한 Hit Rate/MRR 보여주면 굳이 쓸 필요가 없다.
+```
+from sentence_transformers import CrossEncoder
+import numpy as np
 
+# 후보 리랭커
+rerankers = {
+    "bge-reranker-base": CrossEncoder("BAAI/bge-reranker-base"),
+    "bge-reranker-large": CrossEncoder("BAAI/bge-reranker-large"),
+    "ms-marco-mini": CrossEncoder("cross-encoder/ms-marco-MiniLM-L-12-v2"),
+}
+
+# 문서 데이터
+documents = [
+    "GPU OOM 해결: 배치 크기 줄이기, Gradient Accumulation, Mixed Precision, Activation Checkpointing 적용",
+    "Kubernetes Pod CrashLoopBackOff: kubectl logs, kubectl describe pod로 이벤트 확인",
+    "Prometheus는 pull 방식으로 메트릭 수집, PromQL로 시계열 데이터 쿼리",
+    "Slurm 멀티노드 학습: sbatch에서 --nodes, --ntasks-per-node, --gpus-per-node 설정",
+    "NCCL 통신 최적화: NCCL_DEBUG=INFO로 로그 확인, EFA 사용 시 FI_PROVIDER=efa 설정",
+]
+
+# 평가 데이터: 벡터 검색으로 후보 10개를 가져온 상태를 시뮬레이션
+eval_data = [
+    {"query": "GPU 메모리 부족할 때 어떻게 해?", "candidates": documents, "relevant_doc_id": 0},
+    {"query": "Pod가 계속 재시작돼", "candidates": documents, "relevant_doc_id": 1},
+    {"query": "Slurm에서 멀티노드 학습 설정은?", "candidates": documents, "relevant_doc_id": 3},
+    {"query": "NCCL 성능 튜닝 방법은?", "candidates": documents, "relevant_doc_id": 4},
+]
+
+for name, reranker in rerankers.items():
+    hit = 0
+    mrr = 0
+    for item in eval_data:
+        pairs = [[item["query"], doc] for doc in item["candidates"]]
+        scores = reranker.predict(pairs)
+        top_k = np.argsort(scores)[::-1][:5]
+
+        if item["relevant_doc_id"] in top_k:
+            hit += 1
+            rank = list(top_k).index(item["relevant_doc_id"]) + 1
+            mrr += 1 / rank
+
+    print(f"{name}: Hit Rate@5={hit/len(eval_data):.2f}, MRR@5={mrr/len(eval_data):.2f}")
+```
+> [!Tip]
+>
+> 리랭커는 벡터 검색이 가져온 후보 문서들을 질문과 함께 다시 읽고, 관련성 순서를 재정렬하는 모델이다. 벡터 검색(Bi-Encoder)은 질문과 문서를 각각 따로 임베딩해서 유사도를 비교하기 때문에 빠르지만, 질문과 문서 사이의 세밀한 의미 관계를 놓칠 수 있다. 리랭커(Cross-Encoder)는 인코더 트랜스포머(BERT 계열)로, 질문과 후보 문서를 하나의 시퀀스로 결합한 뒤 Self-Attention을 통해 질문의 모든 토큰과 후보 문서의 모든 토큰 간 상호 관계를 계산하여 관련성 점수를 산출한다.
+> 
+> 1단계: 벡터 검색 → 수만 건에서 후보 10~20개를 빠르게 추림 (Bi-Encoder, 빠름)
+> 2단계: 리랭커 → 후보 10~20개를 정밀하게 재정렬 (Cross-Encoder, 정확)
 
