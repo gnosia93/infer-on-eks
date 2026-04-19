@@ -9,7 +9,7 @@ _This workshopo is under construction, Not fully implemented yet_
 
 * [L3. LLM 평가하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-llm-eval.md)
 
-* [L4. 파인튜닝하기(인스트럭션 튜닝)](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/4-finetune.md)
+* [L4. 파인튜닝하기 (인스트럭션 튜닝)](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/4-finetune.md)
 
 * [L5. RAG 파이프라인 설계 및 구현](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/5-rag.md)
    - [RAG 파이프 라인 개념](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-rag-pipeline-concept.md)
