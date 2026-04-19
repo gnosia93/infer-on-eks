@@ -318,11 +318,14 @@ Thu Apr 16 09:19:26 2026
 |  No running processes found                                                             |
 +-----------------------------------------------------------------------------------------+
 ```
-#### eks node viewer ####
+
+## 참고 ##
+
+### 1. eks node viewer ###
 시스템 노드그룹의 경우 그라비톤 c7g.xlarge 2대로 구성되어 있으며, 카펜터에 의해 GPU 노드가 프로비저닝 된 것을 확인할 수 있다. 
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/eks-node-viewer.png)
 
-* 노드 리스트 출력
+### 2. 노드 리스트 ###
 ```
 kubectl get nodes -L kubernetes.io/arch
 ```
@@ -334,7 +337,7 @@ ip-10-0-10-64.ap-northeast-2.compute.internal    Ready    <none>   7m8s   v1.34.
 ip-10-0-11-210.ap-northeast-2.compute.internal   Ready    <none>   48m    v1.34.6-eks-bbe087e   arm64
 ```
 
-* kube-system 네임스페이스 조회 
+### 3. kube-system 네임스페이스 ###
 ```
 kubectl get pods -n kube-system
 ```
@@ -357,7 +360,7 @@ kube-proxy-zr924                      1/1     Running   0          48m
 metrics-server-7cfb66fcc-rtqtr        1/1     Running   0          11m
 ```
 
-* gpu-operator 출력
+### 4. gpu-operator 정보 ###
 ```
 kubectl get pod -n gpu-operator
 ```
