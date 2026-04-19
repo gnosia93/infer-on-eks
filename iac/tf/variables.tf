@@ -35,7 +35,7 @@ variable "system_node_ami_type" {
 
   validation {
     condition = contains([
-      "AL2023_x86_64_STANDARD",
+      "AL2023_x86_64_STANDARD",            # 시스템 기본값, 하지만 이 워크샵에서는 default 에 ARM 으로 지정
       "AL2023_ARM_64_STANDARD",
       "AL2023_x86_64_NVIDIA",
       "AL2_x86_64",
