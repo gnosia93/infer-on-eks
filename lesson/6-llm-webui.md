@@ -57,7 +57,7 @@ EOF
 
 helm 차트를 이용하여 배포한다. 
 ```
-helm install open-webui open-webui/open-webui \
+helm upgrade --install open-webui open-webui/open-webui \
   -n webui --create-namespace \
   -f open-webui-values.yaml
 ```
