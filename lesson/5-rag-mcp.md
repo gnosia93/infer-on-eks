@@ -116,7 +116,8 @@ eksctl create iamserviceaccount \
 kubectl get sa rag-mcp-sa -n rag
 ```
 > [!NOTE]
-> 서비스 어카운트 삭제 
+> 서비스 어카운트 삭제
+> 
 > eksctl delete iamserviceaccount --cluster=${CLUSTER_NAME} \
 >  --namespace=rag --name=rag-mcp-sa
 >
