@@ -241,6 +241,10 @@ LoRA can reduce the number of trainable p...
 ```
 kill $PF_PID
 ```
+[결과]
+```
+[1]+  Terminated              kubectl port-forward -n milvus svc/milvus 19530:19530
+```
 
 ## 참고 - [BAAI/bge-m3](https://arxiv.org/pdf/2402.03216) ##
 BAAI(베이징 지능연구원)가 2024년 공개한 오픈소스 다국어 임베딩 모델. 이름의 "M3"는 세 가지 M을 뜻한다.
