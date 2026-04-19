@@ -14,9 +14,9 @@ _This workshopo is under construction, Not fully implemented yet_
 * [L5. RAG 파이프라인 설계 및 구현](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/5-rag.md)
    - [RAG 파이프 라인 개념](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-rag-pipeline-concept.md)
    - [벡터DB(Milvus) 설치](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-milvus-install.md)
-   - [PDF 문서 저장하기 (레이아웃 파싱/청킹/임베딩)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-pdf-save.md)
-   - [RAGSearch 구현하기 (검색/리랭킹/LLM 답변)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-llm-call.md)
-   - [RAGSearch MCP 서버 배포 (EKS)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-rag-mcp.md)
+   - [PDF 문서 저장하기 (레이아웃 파싱/청킹/임베딩)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-pdf-save.md) <-- test 필요
+   - [RAGSearch 구현하기 (검색/리랭킹/LLM 답변)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-llm-call.md) <-- test 필요
+   - [RAGSearch MCP 서버 배포 (EKS)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/5-rag-mcp.md) <-- test 필요
          
 * L6. Agentic AI
    - [LangGraph로 RAG 구현](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/6-langgraph-rag.md)
