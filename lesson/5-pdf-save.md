@@ -164,6 +164,32 @@ https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/r
 
 python check_milvus.py
 ```
+[결과]
+```
+Handling connection for 19530
+✅ Collection: papers
+   총 청크 수: 1612
+
+스키마:
+   - id (INT64)
+   - embedding (FLOAT_VECTOR)
+   - text (VARCHAR)
+   - doc_name (VARCHAR)
+   - source (VARCHAR)
+   - page (INT64)
+
+문서별 청크 분포:
+   01_Attention_Is_All_You_Need: 49 chunks
+   02_LoRA_Low-Rank_Adaptation: 104 chunks
+   03_RAG: 88 chunks
+   04_Chain_of_Thought: 173 chunks
+   05_ReAct: 140 chunks
+   06_FlashAttention: 139 chunks
+   07_Llama3_Technical_Report: 451 chunks
+   08_BGE_M3: 87 chunks
+   09_DeepSeek_R1: 297 chunks
+   10_Megatron_LM: 84 chunks
+```
 
 ```bash
 curl -o test_search.py \
