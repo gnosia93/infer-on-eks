@@ -25,6 +25,16 @@ https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/r
 ```
 
 `MILVUS_HOST` 기본값은 `milvus.milvus.svc.cluster.local`로, 같은 클러스터 내부에서 Milvus에 바로 접근한다.
+```
+kubectl get svc -n milvus
+```
+[결과]
+```
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)              AGE
+milvus                 ClusterIP   172.20.101.0    <none>        19530/TCP,9091/TCP   9h
+milvus-etcd            ClusterIP   172.20.213.13   <none>        2379/TCP,2380/TCP    9h
+milvus-etcd-headless   ClusterIP   None            <none>        2379/TCP,2380/TCP    9h
+```
 
 > [!NOTE]
 > 쿠버네티스(Kubernetes) 내부 DNS 형식  
