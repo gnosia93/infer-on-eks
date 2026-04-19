@@ -62,37 +62,29 @@ helm upgrade --install open-webui open-webui/open-webui \
   -f open-webui-values.yaml
 ```
 
-webui 네임스페이스에서 k8s 객체들을 확인한다. 
+파드를 확인한다. 
 ```
-kubectl get all -n webui
+kubectl get pods -n webui
 ```
 [결과]
 ```
 NAME                                        READY   STATUS    RESTARTS   AGE
-pod/open-webui-0                            1/1     Running   0          100s
-pod/open-webui-pipelines-69bc6c5b55-t9gnh   1/1     Running   0          100s
-pod/open-webui-redis-9f9f74bd4-knkzz        1/1     Running   0          100s
-
-NAME                           TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-service/open-webui             LoadBalancer   172.20.58.54     <pending>     80:32300/TCP   100s
-service/open-webui-pipelines   ClusterIP      172.20.14.185    <none>        9099/TCP       100s
-service/open-webui-redis       ClusterIP      172.20.137.186   <none>        6379/TCP       100s
-
-NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/open-webui-pipelines   1/1     1            1           100s
-deployment.apps/open-webui-redis       1/1     1            1           100s
-
-NAME                                              DESIRED   CURRENT   READY   AGE
-replicaset.apps/open-webui-pipelines-69bc6c5b55   1         1         1       100s
-replicaset.apps/open-webui-redis-9f9f74bd4        1         1         1       100s
-
-NAME                          READY   AGE
-statefulset.apps/open-webui   1/1     100s
+pod/open-webui-0                            1/1     Running   0          6m17s
+pod/open-webui-pipelines-69bc6c5b55-t9gnh   1/1     Running   0          6m17s
+pod/open-webui-redis-9f9f74bd4-knkzz        1/1     Running   0          6m17s
 ```
 
-
-
-
+서비스를 조회한다.
+```
+kubectl get svc -n webui
+```
+[결과]
+```
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP                                                                    PORT(S)        AGE
+open-webui             LoadBalancer   172.20.58.54     aa4d05703f46e4cb8bbd4db68b1adb14-1250901711.ap-northeast-2.elb.amazonaws.com   80:32300/TCP   7m27s
+open-webui-pipelines   ClusterIP      172.20.14.185    <none>                                                                         9099/TCP       7m27s
+open-webui-redis       ClusterIP      172.20.137.186   <none>                                                                         6379/TCP       7m27s
+```
 
 
 ----
