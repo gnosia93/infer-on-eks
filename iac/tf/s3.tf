@@ -33,6 +33,7 @@ locals {
 
 resource "aws_s3_bucket" "milvus" {
   bucket = local.vectordb_bucket_name
+  force_destroy = true             # terraform destroy 시 버켓에 데이터가 있어도 삭제처리
 
   tags = {
     Purpose = "Milvus vector storage"
