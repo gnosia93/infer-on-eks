@@ -1,3 +1,5 @@
+빠른 스케일을 위해서는 최소한 lustre 파일 시스템에 모델을 올려놔야 한다. 
+
 ## KEDA ##
 
 [KEDA(Kubernetes Event-Driven Autoscaling)](https://keda.sh/) 는 Prometheus, CloudWatch, SQS 등 다양한 외부 메트릭 소스를 기반으로 Kubernetes 워크로드를 자동 스케일링하는 오픈소스 프레임워크이다. 기존 HPA가 CPU/메모리 같은 기본 메트릭만 지원하는 것과 달리, KEDA는 ScaledObject라는 커스텀 리소스를 통해 Prometheus 쿼리를 직접 스케일링 조건으로 사용할 수 있어, Prometheus Adapter 없이도 커스텀 메트릭 기반 오토스케일링을 간단하게 구성할 수 있다.
