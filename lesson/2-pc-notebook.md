@@ -8,38 +8,34 @@ export TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-
 export AWS_REGION=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
 export VPC_ID=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" \
   http://169.254.169.254/latest/meta-data/network/interfaces/macs/${MAC}/vpc-id)
+export KEY_NAME="aws-kp-2"
 
 echo "CLUSTER_NAME: $CLUSTER_NAME"
 echo "ACCOUNT_ID: $ACCOUNT_ID"
 echo "AWS_REGION: $AWS_REGION"
 echo "VPC_ID: $VPC_ID"
-```
 
-```
-AMI_ID=$(aws ssm get-parameter \
+export AMI_ID=$(aws ssm get-parameter \
   --name /aws/service/deeplearning/ami/x86_64/base-oss-nvidia-driver-gpu-ubuntu-22.04/latest/ami-id \
   --region ${AWS_REGION} --query 'Parameter.Value' --output text)
 
-SG_ID=$(aws ec2 describe-security-groups --filters \
+export SG_ID=$(aws ec2 describe-security-groups --filters \
   "Name=group-name,Values=eks-host-sg" "Name=vpc-id,Values=${VPC_ID}" \
   --query 'SecurityGroups[0].GroupId' --output text)
 
+export SUBNET_ID=$()
+```
 
-
-
-
-
-
-
+```
 aws ec2 run-instances \
-  --image-id ami-xxxxxxxxxxxxxxxxx \
+  --image-id ${AMI_ID} \
   --instance-type g7e.4xlarge \
-  --key-name my-keypair \
-  --subnet-id subnet-xxxxxxxxxxxxxxxxx \
-  --security-group-ids sg-xxxxxxxxxxxxxxxxx \
+  --key-name ${KEY_NAME} \
+  --subnet-id ${SUBNET_ID} \
+  --security-group-ids ${SG_ID} \
   --associate-public-ip-address \
   --count 1 \
-  --region us-east-1 \
+  --region ${AWS_REGION} \
   --block-device-mappings '[
     {
       "DeviceName": "/dev/sda1",
