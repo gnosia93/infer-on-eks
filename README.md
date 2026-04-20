@@ -23,7 +23,7 @@ _This workshop is under construction, Not fully implemented yet_
 * [L3. LLM 선택하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-llm-eval.md)
     - [일반 및 언어 모델링 능력 평가 (lm-eval-harness)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/3-llm-eval-harness.md) →  `이 모델이 기본은 되나?`
     - [도메인 적합성 (커스텀 벤치마크)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/3-llm-domain-capability.md) →  `우리 업무에 맞나?`
-    - 응답 품질 (LLM-as-a-Judge) →  `실제 응답이 쓸만한가?`
+    - [응답 품질 (LLM-as-a-Judge)](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/3-judge-as-a-llm.md) →  `실제 응답이 쓸만한가?`
 
 * [L4. 파인튜닝하기 (인스트럭션 튜닝)](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/4-finetune.md)
 
