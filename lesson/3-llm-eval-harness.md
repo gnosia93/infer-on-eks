@@ -1,5 +1,7 @@
+lm-evaluation-harness는 EleutherAI가 개발·공개한 대표적인 오픈소스 LLM 평가 프레임워크이다. MMLU, ARC, HellaSwag, TruthfulQA, GSM8K 등 수백 개의 벤치마크를 동일한 프롬프트 형식과 채점 규칙으로 돌려, 여러 모델의 성능을 공정하게 비교할 수 있다. HuggingFace 모델, vLLM 서버, OpenAI 호환 API 등 다양한 백엔드를 지원해 로컬 모델부터 상용 API까지 일관된 기준으로 평가할 수 있다는 점이 특징이다.
 
-### 테스트 대상 모델 ###
+
+### 평가 대상 모델 ###
 ```
 [대상 모델]
  ├─ 오픈소스 모델 (GPU Pod)
