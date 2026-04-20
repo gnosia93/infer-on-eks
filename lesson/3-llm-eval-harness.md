@@ -88,6 +88,7 @@ https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/e
 ```
 #!/bin/bash
 # eval-all.sh
+set -euo pipefail
 
 MODELS=(
   "Qwen/Qwen2.5-7B-Instruct"
@@ -95,44 +96,52 @@ MODELS=(
   "google/gemma-2-9b-it"
 )
 
-for MODEL in "${MODELS[@]}"; do
-  NAME=$(echo $MODEL | tr '/' '-' | tr '[:upper:]' '[:lower:]')
-  echo "=== $MODEL ==="
+run_eval() {
+  local model="$1"
+  local name="$2"
+  local manifest="vllm-eval-${name}.yaml"
 
-  # 1. vLLM 기동
-  envsubst < vllm-eval.yaml > vllm-eval-${MODEL}.yaml
-  kubectl apply -f vllm-eval-${MODEL}.yaml
+  echo "=== [$(date +%T)] $model ==="
 
-  # 2. Ready 될 때까지 대기
-  kubectl -n llm-eval rollout status deploy/vllm-current --timeout=600s
+  # 1. vLLM 매니페스트 생성 및 배포
+  export MODEL="$model"
+  envsubst < vllm-eval.yaml > "$manifest"
+  kubectl apply -f "$manifest"
 
-  # 3. 평가 실행 (CPU Pod에서)
-  lm_eval --model local-chat-completions \
-    --model_args model=$MODEL,base_url=http://vllm-current:8000/v1/chat/completions \
+  # 2. Ready 대기 (실패 시 로그 남기고 정리)
+  if ! kubectl -n llm-eval rollout status deploy/vllm-eval --timeout=600s; then
+    echo "!! rollout failed for $model"
+    kubectl -n llm-eval logs deploy/vllm-eval --tail=100 || true
+    kubectl delete -f "$manifest" --ignore-not-found
+    return 1
+  fi
+
+  # 3. lm-eval-harness 실행
+  lm_eval \
+    --model local-chat-completions \
+    --model_args "model=${model},base_url=http://vllm-eval.llm-eval:8000/v1/chat/completions" \
     --tasks mmlu,arc_challenge,hellaswag \
-    --output_path /results/$NAME
+    --output_path "results/${name}"
 
-  # 4. 다른 평가들도 실행
-  python /scripts/domain_eval.py --model $NAME
+  # 4. 도메인 평가
+  python scripts/domain_eval.py --model "$name"
 
-  # 5. vLLM 내림
-  kubectl delete -f vllm-eval-${MODEL}.yaml
+  # 5. vLLM 정리
+  kubectl delete -f "$manifest" --ignore-not-found
+}
+
+for MODEL in "${MODELS[@]}"; do
+  NAME=$(echo "${MODEL##*/}" | tr '[:upper:]' '[:lower:]')
+  if ! run_eval "$MODEL" "$NAME"; then
+    echo "!! skipping $MODEL, continuing with next"
+    continue
+  fi
 done
+
+echo "=== all evaluations complete ==="
 ```
 
-```
-# 변수 설정
-export MODEL="Qwen/Qwen2.5-7B-Instruct"
 
-# 적용 (템플릿 치환)
-envsubst < vllm-l40s.yaml | kubectl apply -f -
-
-# 로딩 로그 보기
-kubectl -n llm-eval logs -f deploy/vllm-current
-
-# Ready 확인
-kubectl -n llm-eval rollout status deploy/vllm-current --timeout=900s
-```
 
 ```
 # Port-forward
