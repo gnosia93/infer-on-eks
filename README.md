@@ -15,11 +15,11 @@ _This workshop is under construction, Not fully implemented yet_
 ...
 * ec2 (vscode) - vpc, public 
 * eks (vpc, private)
-  * vectordb
-  * rag mcp
-  * langgraph agent
-  * open source llm (gpu pod)
-  * lite llm routing between bedrock and open source llm
+  * langgraph agent pod -> rag mcp pod -> vectordb pod
+  * langgraph agent pod -> lite llm pod
+  * langgraph agent pod -> bedrock
+  * lite llm pod -> bedrock
+  * lite llm pod -> open source llm (gpu pod)
 * bedrock (outside of vpc)
 * s3 (outside of vpc)
   - model registry
