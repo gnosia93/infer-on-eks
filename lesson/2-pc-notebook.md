@@ -1,4 +1,5 @@
-## [g7e.4xlarge](https://aws.amazon.com/ko/ec2/instance-types/g7e/) 인스턴스 생성 ##
+## GPU 할당 및 주피터 노트북 설정 ##
+### [g7e.4xlarge](https://aws.amazon.com/ko/ec2/instance-types/g7e/) 인스턴스 생성 ###
 
 환경 변수를 설정한다. 
 ```
@@ -54,7 +55,7 @@ aws ec2 run-instances --image-id ${AMI_ID} \
   ]' 
 ```
 
-### 1. PC 의 VS-CODE 로 접속하기 ###
+#### 1. PC 의 VS-CODE 로 접속하기 ####
 이 방식은 로컬 PC 의 vs-code IDE 에서 리모트 서버로 ssh 로 접속하여 주피터 노트북을 실행하는 방법이다.
 
 `~/.ssh/config 파일에 추가`:
@@ -81,7 +82,7 @@ Host gpu-dev
 
 ![](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/images/vscode-jupyter-2.png)
 
-### 2. 주피터 노트북 설치하여 접속하기 ###
+#### 2. 주피터 노트북 설치하여 접속하기 ####
 ssh 로 로그인 한 후 아래 명령어를 실행하고, 웹 브라우저를 이용하여 해당 서버의 8080 포트로 접속한다. 
 ```
 jupyter lab --ip=0.0.0.0 --port=8080 --no-browser --NotebookApp.token='' --NotebookApp.password=''
