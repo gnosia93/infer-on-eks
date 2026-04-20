@@ -75,14 +75,13 @@ Host gpu-dev
 
 1. `Ctrl+Shift+P → "Remote-SSH: Connect to Host" → gpu-dev 선택`
 
-2. `VS Code에서 Jupyter 확장 설치`
+2. `VS Code에서 Jupyter 확장 설치`: 
    Extensions 탭 → "Jupyter" 검색 → Install in SSH
 
-3. `노트북 파일 생성`
+3. `노트북 파일 생성`: 
    Ctrl+Shift+P → "Create: New Jupyter Notebook"
-   또는 파일 탐색기에서 test.ipynb 생성
-
-4. `커널 선택`
+ 
+4. `커널 선택`: 
    우측 상단 "Select Kernel" 클릭
    → "Python Environments" → gpu-dev (~/gpu-dev/bin/python)
 
