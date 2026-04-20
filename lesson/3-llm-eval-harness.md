@@ -94,6 +94,8 @@ MODELS=(
   "Qwen/Qwen2.5-7B-Instruct"
   "meta-llama/Llama-3.1-8B-Instruct"
   "google/gemma-2-9b-it"
+  "mistralai/Mistral-7B-Instruct-v0.3"
+  "CohereLabs/c4ai-command-r7b-12-2024"
 )
 
 run_eval() {
