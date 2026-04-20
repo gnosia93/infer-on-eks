@@ -12,8 +12,8 @@ _This workshop is under construction, Not fully implemented yet_
 대상 독자: EKS 운영 경험이 있고 LLM 서비스를 실전에 도입하려는 엔지니어
 
 ### _Architecture_ ### 
-...
-* ec2 (vscode) - vpc, public 
+![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/worshop-architecture.png)
+* ec2 (vscode, public)  
 * eks (vpc, private)
   * langgraph agent pod -> rag mcp pod -> vectordb pod
   * langgraph agent pod -> lite llm pod
