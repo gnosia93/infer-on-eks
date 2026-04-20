@@ -6,11 +6,11 @@ _This workshopo is under construction, Not fully implemented yet_
 * [L1. EKS 설치하기](https://github.com/gnosia93/eks-agentic-ai/tree/main/iac/tf)
 
 * [L2. GPU 할당 및 주피터 노트북 설정](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/2-pc-notebook.md)
+     
+* [L3. LLM 평가하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-llm-eval.md)
    - lm-eval-harness 벤치마크 기반 정량 평가
    - perlexity
    - 
-     
-* [L3. LLM 평가하기](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/3-llm-eval.md)
 
 * [L4. 파인튜닝하기 (인스트럭션 튜닝)](https://github.com/gnosia93/agentic-ai-eks/blob/main/lesson/4-finetune.md)
 
