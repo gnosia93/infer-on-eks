@@ -1,7 +1,9 @@
 ## lm-eval-harness ##
 
 lm-evaluation-harness는 EleutherAI가 개발·공개한 대표적인 오픈소스 LLM 평가 프레임워크이다. MMLU, ARC, HellaSwag, TruthfulQA, GSM8K 등 수백 개의 벤치마크를 동일한 프롬프트 형식과 채점 규칙으로 돌려, 여러 모델의 성능을 공정하게 비교할 수 있다. HuggingFace 모델, vLLM 서버, OpenAI 호환 API 등 다양한 백엔드를 지원해 로컬 모델부터 상용 API까지 일관된 기준으로 평가할 수 있다는 점이 특징이다. 모델이 다음 토큰을 고를 때 평균 몇 개 후보 사이에서 헤매는가? 를 측정하는 언어 모델링 능력 (Perplexity) 측정 역시 가능하다. 
-
+  - 일반 능력 
+  - 언어 모델링 능력 (Perplexity)
+    
 ### 주요 벤치마크 ###
 #### MMLU (Massive Multitask Language Understanding) ####
 수학, 역사, 법학, 의학, 컴퓨터과학 등 57개 분야에 걸친 약 14,000개의 객관식 문제로 구성된 벤치마크로 중·고등학생 수준부터 전문가 수준까지 난이도가 다양해, 모델이 얼마나 폭넓은 지식과 전문 분야의 추론 능력을 갖췄는지 측정한다. LLM 성능을 논할 때 가장 먼저 언급되는 대표적인 지표이다.
