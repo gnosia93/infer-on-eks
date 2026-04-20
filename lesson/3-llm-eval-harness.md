@@ -23,7 +23,14 @@ kubectl create secret generic hf-token \
   --from-literal=token=$HF_TOKEN
 ```
 
-### 2. 모델 테스트 ###
+### 2. Deployment 다운로드 ###
+```
+curl -o \
+
+```
+
+
+### 3. 모델 테스트 ###
 ```
 #!/bin/bash
 # eval-all.sh
