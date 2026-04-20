@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-current
+  namespace: llm-eval
+  labels:
+    app: vllm-current
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-current
+  template:
+    metadata:
+      labels:
+        app: vllm-current
+    spec:
+      serviceAccountName: llm-eval-sa
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--model=${MODEL}"
+            - "--served-model-name=${MODEL}"
+            - "--max-model-len=8192"
+            - "--gpu-memory-utilization=0.9"
+            - "--port=8000"
+            - "--host=0.0.0.0"
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+            - name: HF_HOME
+              value: /cache/hf
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+              memory: "32Gi"
+            requests:
+              nvidia.com/gpu: 1
+              memory: "16Gi"
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /cache/hf
+            - name: shm
+              mountPath: /dev/shm
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 300
+            periodSeconds: 30
+      volumes:
+        - name: hf-cache
+          persistentVolumeClaim:
+            claimName: hf-cache-pvc
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-current
+  namespace: llm-eval
+spec:
+  selector:
+    app: vllm-current
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
