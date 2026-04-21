@@ -77,7 +77,20 @@ sleep 10
 echo "INSTANCE_DNS: $(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $AWS_REGION \
   --query 'Reservations[0].Instances[0].PublicDnsName' --output text)"
 ```
-생성된 EC2 인스턴스의 AMI 는 `Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04)` 에 해당하는 것으로 `source /opt/pytorch/bin/activate` 를 이용하여 pytorch 가상환경을 활성화 할 수 있다. 
+생성된 EC2 인스턴스의 AMI 는 `Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04)` 에 해당하는 것으로 `source /opt/pytorch/bin/activate` 를 이용하여 pytorch 가상환경을 활성화 할 수 있다. 활성화 이후 아래 파일을 이용하여 Nvidia CUDA 라이브러리가 제대로 로딩되는 지 확인한다. 최초 실행지 libtorch_cuda.so, libcudnn*.so, libnccl.so 와 같은 라이브러리들의 심볼릭 링크를 생성하므로 첫 실행의 경우 2분 이상의 시간이 소요될 수 있다.  
+```
+cat > /tmp/check.py <<'EOF'
+import torch
+print('torch:', torch.__version__)
+print('cuda available:', torch.cuda.is_available())
+print('cuda version:', torch.version.cuda)
+print('device count:', torch.cuda.device_count())
+print('device name:', torch.cuda.get_device_name(0))
+EOF
+
+python /tmp/check.py
+```
+
 
 > [!TIP]
 > 인스턴스 삭제
