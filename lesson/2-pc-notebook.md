@@ -117,10 +117,11 @@ Host gpu-dev
   IdentityFile <KeyFile Path>
 ```
 
-1. ssh 로 EC2 인스턴스에 로그인하여 아래 명령어를 실행한다.
+1. ssh 로 EC2 인스턴스에 로그인하여 아래 명령어를 실행한다. (~/.bashrc 파일에 activate 및 ipykernel 명령어 추가한다)
 ```
 echo 'source /opt/pytorch/bin/activate' >> ~/.bashrc
 echo 'python -m ipykernel install --user --name pytorch --display-name "Python (pytorch)"' >> ~/.bashrc
+
 #source /opt/pytorch/bin/activate
 #pip install ipykernel
 #jupyter kernelspec list
