@@ -69,7 +69,7 @@ _Drawn using Nano Banana 2.0 with a rough prompt, Not perfect but it's amazing !
    - [LLM 추론 성능(inference performance) 비교](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-llm-benchmark.md)
    - [KEDA 기반 오토 스케일링](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/10-keda-autoscaling.md)
    
-* [L11. 멀티노드 인퍼런스 구성 및 최적화](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/11-multi-node-inference.md)
+* [L11. 멀티노드 인퍼런스 구성](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/11-multi-node-inference.md)
    - [LeaderWorkerSet](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/11-LeaderWorkerSet.md)
    - KubeRay
      
