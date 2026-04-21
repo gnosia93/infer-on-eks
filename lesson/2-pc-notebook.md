@@ -6,6 +6,7 @@ export CLUSTER_NAME=eks-agentic-ai
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 export AWS_REGION=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+export MAC=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/mac)
 export VPC_ID=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" \
   http://169.254.169.254/latest/meta-data/network/interfaces/macs/${MAC}/vpc-id)
 export KEY_NAME="aws-kp-2"
