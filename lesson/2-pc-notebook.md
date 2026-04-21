@@ -95,15 +95,7 @@ python /tmp/check.py
 > [!TIP]
 > 인스턴스 삭제
 > ```
-> aws ec2 terminate-instances \
->  --region ${AWS_REGION} \
->  --instance-ids $(aws ec2 describe-instances \
->    --filters \
->      "Name=tag:Name,Values=gpu-dev" \
->      "Name=instance-state-name,Values=pending,running,stopped,stopping" \
->    --query 'Reservations[].Instances[].InstanceId' \
->    --output text \
->    --region ${AWS_REGION})
+> aws ec2 terminate-instances --instance-ids $INSTANCE_ID --region $AWS_REGION
 > ```
 
 ### 2. PC 의 VS-CODE 로 접속하기 ###
