@@ -173,6 +173,11 @@ done
 echo "=== all evaluations complete ==="
 EOF
 ```
+평가를 실행한다.
+```
+bash eval-all.sh
+```
+
 
 ### 4. 결과 확인 ###
 `결과 테이블로 출력`:
