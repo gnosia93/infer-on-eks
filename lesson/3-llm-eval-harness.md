@@ -91,6 +91,7 @@ kubectl create secret generic hf-token -n llm-eval \
 mkdir eval && cd eval
 pip install lm-eval
 kubectl create ns llm-eval
+kubectl create serviceaccount llm-eval-sa -n llm-eval
 
 curl -o vllm-eval.yaml \
 https://raw.githubusercontent.com/gnosia93/eks-agentic-ai/refs/heads/main/code/eval/vllm-eval.yaml
