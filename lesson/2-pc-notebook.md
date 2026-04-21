@@ -21,6 +21,7 @@ export PUBLIC_SUBNET_ID=$(aws ec2 describe-subnets \
   --filters "Name=vpc-id,Values=${VPC_ID}" \
   --query 'Subnets[?MapPublicIpOnLaunch==`true`] | [0].SubnetId' --output text)
 
+echo ""
 echo "CLUSTER_NAME: $CLUSTER_NAME"
 echo "ACCOUNT_ID: $ACCOUNT_ID"
 echo "AWS_REGION: $AWS_REGION"
