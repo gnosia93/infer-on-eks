@@ -2,6 +2,8 @@
 
 ### 1. [g7e.4xlarge](https://aws.amazon.com/ko/ec2/instance-types/g7e/) 인스턴스 생성 ###
 ```
+export KEY_NAME="aws-kp-2"
+export INSTANCE_TYPE="g7e.4xlarge"
 export CLUSTER_NAME=eks-agentic-ai
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
@@ -9,14 +11,6 @@ export INSTANCE_ID=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.
 export VPC_ID=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID \
   --query 'Reservations[0].Instances[0].VpcId' --output text)
 export AWS_REGION=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
-export KEY_NAME="aws-kp-2"
-export INSTANCE_TYPE="g7e.4xlarge"
-
-echo "CLUSTER_NAME: $CLUSTER_NAME"
-echo "ACCOUNT_ID: $ACCOUNT_ID"
-echo "AWS_REGION: $AWS_REGION"
-echo "VPC_ID: $VPC_ID"
-
 export AMI_ID=$(aws ssm get-parameter \
   --name /aws/service/deeplearning/ami/x86_64/base-oss-nvidia-driver-gpu-ubuntu-22.04/latest/ami-id \
   --region ${AWS_REGION} --query 'Parameter.Value' --output text)
@@ -27,6 +21,10 @@ export PUBLIC_SUBNET_ID=$(aws ec2 describe-subnets \
   --filters "Name=vpc-id,Values=${VPC_ID}" \
   --query 'Subnets[?MapPublicIpOnLaunch==`true`] | [0].SubnetId' --output text)
 
+echo "CLUSTER_NAME: $CLUSTER_NAME"
+echo "ACCOUNT_ID: $ACCOUNT_ID"
+echo "AWS_REGION: $AWS_REGION"
+echo "VPC_ID: $VPC_ID"
 echo "AMI_ID: $AMI_ID"
 echo "SG_ID: $SG_ID"
 echo "PUBLIC_SUBNET_ID: $PUBLIC_SUBNET_ID"
