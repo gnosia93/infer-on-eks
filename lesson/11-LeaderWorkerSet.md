@@ -1,7 +1,7 @@
 
 ## [LeaderWorkerSet](https://lws.sigs.k8s.io/docs/overview/) ##
 
-LLM 서빙이 본격적으로 프로덕션에 들어오면서, 기존 Kubernetes 워크로드 리소스만으로는 다루기 어려운 영역이 생겼다. 대표적인 것이 여러 노드에 걸쳐 모델을 쪼개서 서빙해야 하는 경우다. Llama 3.1 405B, DeepSeek V3 같은 초대형 모델은 단일 노드의 GPU 메모리로는 감당이 안 된다. H100 8장짜리 노드 두 대를 묶어서, 텐서 병렬과 파이프라인 병렬을 조합해야 겨우 돌아간다.
+LLM 서빙이 본격적으로 프로덕션에 들어오면서, 기존 Kubernetes 워크로드 리소스만으로는 다루기 어려운 영역이 생겼다. 대표적인 것이 여러 노드에 걸쳐 모델을 쪼개서 서빙해야 하는 경우다. Llama 3.1 405B, DeepSeek V3 같은 초대형 모델은 단일 노드의 GPU 메모리로는 감당이 안 된다. [H100](https://aws.amazon.com/ko/ec2/instance-types/p5/) 8장짜리 노드 두 대를 묶어서, 텐서 병렬과 파이프라인 병렬을 조합해야 겨우 돌아간다.
 
 Deployment와 StatefulSet 의 경우 파드에 문제가 발생하는 경우, 해당 파드만 재시작하게 되는데 이는 멀티 GPU 환경에서 서로 다른 파드가 NCCL 를 통신해서 하나의 모델을 서빙하는 구조에는 맞지 않은 구조이다. 즉 특정 파드에 장애가 발생하는 경우 TP+PP 로 구성된 모든 파드를 재시작해야 하는데, 기존의 Deployment와 StatefulSet 의 경우 이를 제대로 지원하지 못한다.
 그래서 멀티노드 GPU 설정 환경에서 Kubernetes SIG가 새롭게 내놓은 리소스가 바로 LeaderWorkerSet(이하 LWS)이다. 이 글에서는 LWS가 해결하려는 문제, 내부 구조, 실제 사용 방법을 알아본다.
