@@ -69,7 +69,7 @@ Reason:  "이제 답변하기에 충분하다"
 
 ## 세부 내용 ##
 
-### 1. Tool Calling ###
+### [1. @tool 콜링](https://github.com/gnosia93/langgraph-agentic-ai/blob/main/lesson/6-tool-calling.md) ###
   - @tool 데코레이터
   - ToolNode + 조건부 엣지
   - 실습: 간단한 계산/검색 도구 호출하는 에이전트
