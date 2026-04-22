@@ -66,19 +66,7 @@ Reason:  "이제 답변하기에 충분하다"
 * 관측성: 모든 전이가 추적 가능, Langfuse 연동 자연스러움  
 즉, LangGraph는 "Agentic 루프를 안전하게 운영하기 위한 인프라" 이면서 프레임 워크리다.
 
-
-
-
-
-
-
-
-
-6.1 왜 Agentic인가 (10분, 이론)
-  - RAG의 한계: 단일 턴, 정적 흐름
-  - Agentic = LLM이 스스로 판단하고 도구 쓰는 루프
-  - ReAct 패턴: Reason → Act → Observe
-  - LangGraph가 해결하는 것: 상태 그래프로 흐름 제어
+---
 
 6.2 첫 에이전트: Tool Calling (핸즈온)
   - @tool 데코레이터
