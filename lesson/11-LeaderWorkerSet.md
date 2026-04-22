@@ -92,45 +92,62 @@ metadata:
   namespace: llm-serving
 spec:
   replicas: 1
+
+  # 업데이트 전략: 한 번에 하나씩 교체, 추가 그룹 생성 안 함
+  rolloutStrategy:
+    type: RollingUpdate
+    rollingUpdateConfiguration:
+      maxUnavailable: 1
+      maxSurge: 0
+
   leaderWorkerTemplate:
-    size: 2                                   # Leader 1 + Worker 1
+    size: 2                                    # Leader 1 + Worker 1
     restartPolicy: RecreateGroupOnPodRestart
+
+    # 서브그룹 배치 정책: 같은 zone에 묶어서 배치
+    subGroupPolicy:
+      subGroupSize: 2
+      type: TopologyAwarePlacement
+      topology:
+        - topologyKey: topology.kubernetes.io/zone
+
     leaderTemplate:
       metadata:
         labels:
           role: leader
       spec:
         containers:
-        - name: vllm-leader
-          image: vllm/vllm-openai:latest
-          command: ["/bin/bash", "-c"]
-          args:
-          - |
-            bash /vllm-workspace/ray_init.sh leader \
-              --ray_cluster_size=$LWS_GROUP_SIZE;
-            python -m vllm.entrypoints.openai.api_server \
-              --model=meta-llama/Llama-3.1-405B-Instruct \
-              --tensor-parallel-size=8 \
-              --pipeline-parallel-size=2 \
-              --distributed-executor-backend=ray
-          resources:
-            limits:
-              nvidia.com/gpu: 8
-          ports:
-          - containerPort: 8000
+          - name: vllm-leader
+            image: vllm/vllm-openai:latest
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                bash /vllm-workspace/ray_init.sh leader \
+                  --ray_cluster_size=$LWS_GROUP_SIZE;
+                python -m vllm.entrypoints.openai.api_server \
+                  --model=meta-llama/Llama-3.1-405B-Instruct \
+                  --tensor-parallel-size=8 \
+                  --pipeline-parallel-size=2 \
+                  --distributed-executor-backend=ray
+            resources:
+              limits:
+                nvidia.com/gpu: 8
+            ports:
+              - containerPort: 8000
+
     workerTemplate:
       spec:
         containers:
-        - name: vllm-worker
-          image: vllm/vllm-openai:latest
-          command: ["/bin/bash", "-c"]
-          args:
-          - |
-            bash /vllm-workspace/ray_init.sh worker \
-              --ray_address=$LWS_LEADER_ADDRESS
-          resources:
-            limits:
-              nvidia.com/gpu: 8
+          - name: vllm-worker
+            image: vllm/vllm-openai:latest
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                bash /vllm-workspace/ray_init.sh worker \
+                  --ray_address=$LWS_LEADER_ADDRESS
+            resources:
+              limits:
+                nvidia.com/gpu: 8
 ```
 주목할 포인트는 Leader와 Worker의 command가 다르다는 점으로, Leader는 Ray 클러스터를 시작하고 vLLM 서버를 띄우고, Worker는 Leader가 띄운 Ray에 join만 한다. 이 비대칭 구조가 LWS가 필요한 이유 그 자체다.
 
