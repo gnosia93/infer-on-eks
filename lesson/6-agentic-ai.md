@@ -90,11 +90,7 @@ Reason:  "이제 답변하기에 충분하다"
   - 세션 ID 관리, 타임아웃
   - 실습: Redis/Postgres 체크포인터 붙이기
 
-### 5. 관측성 (Langfuse) ###
-  - 왜 필요한가: 에이전트는 블랙박스. 디버깅 지옥
-  - Trace, Span, Generation
-  - 토큰/비용/레이턴시 추적
-  - 실습: Langfuse 붙이고 실제 실행 분석
+### [5. 관측성 (Langfuse)](https://github.com/gnosia93/langgraph-agentic-ai/blob/main/lesson/6-langfuse.md) ###
 
 ### [6. Open WebUI 연동](https://github.com/gnosia93/langgraph-agentic-ai/blob/main/lesson/6-llm-webui.md) ###
  
