@@ -84,6 +84,12 @@ resource "aws_fsx_lustre_file_system" "llama_cache" {
   # iops = 1500 같은 값 필요 (1500, 3000, 6000, 12000, 24000, 48000, 96000, 192000)
   # 메타데이터 집약 워크로드에서 성능 튜닝 가능
 
+  # Throughput = 파일 내용 처리 속도 (대용량 순차)
+  # Metadata IOPS = 파일 정보 처리 속도 (많은 파일)
+  # 서로 독립적인 두 성능 축
+  # EFA 켜면 둘 다 명시적으로 설정해야 함
+  # 모델 캐시 용도면 AUTOMATIC으로 충분
+
   tags = {
     Name    = "eai-fsx"
     Cluster = "eks-agentic-ai"
