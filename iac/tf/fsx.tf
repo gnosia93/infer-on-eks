@@ -2,13 +2,9 @@
 # Security Group for FSx Lustre
 # ---------------------------------------------------
 resource "aws_security_group" "fsx_lustre" {
-  name        = "${var.fsx_name}-sg"
+  name        = "fsx-sg"
   description = "FSx Lustre access"
   vpc_id      = var.vpc_id
-
-  tags = merge(var.tags, {
-    Name = "${var.fsx_name}-sg"
-  })
 }
 
 # Lustre 포트 988 (self-referencing)
