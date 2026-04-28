@@ -3,7 +3,8 @@
 ### 1. [g7e.4xlarge](https://aws.amazon.com/ko/ec2/instance-types/g7e/) 인스턴스 생성 ###
 ```
 export KEY_NAME="aws-kp-2"
-export INSTANCE_TYPE="g7e.4xlarge"
+#export INSTANCE_TYPE="g7e.4xlarge"
+export INSTANCE_TYPE="g6e.xlarge"
 export CLUSTER_NAME=eks-agentic-ai
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
@@ -142,3 +143,8 @@ ssh 로 로그인 한 후 아래 명령어를 실행하고, 웹 브라우저를 
 jupyter lab --ip=0.0.0.0 --port=8080 --no-browser --NotebookApp.token='' --NotebookApp.password=''
 ```
 ![](https://github.com/gnosia93/eks-agentic-ai/blob/main/lesson/images/jupyter-notebook.png)
+
+
+## 페러런스 ##
+
+* https://aws.amazon.com/ko/ec2/pricing/on-demand/
