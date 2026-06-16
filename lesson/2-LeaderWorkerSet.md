@@ -1,14 +1,14 @@
 [Part 1] LeaderWorkerSet 개념 및 이론 (40분)
 
-*	 왜 LWS가 필요할까? (10분)
-*		기존 쿠버네티스 ReplicaSet/Deployment의 한계 (대형 LLM을 여러 GPU 노드에 쪼개 올릴 때 그룹 단위 제어가 어려움)
-*		대장(Leader)과 일꾼(Worker) 구조의 필요성
-*		LWS 핵심 아키텍처 이해 (20분)
-*		복제 그룹(Replicas) 단위로 묶이는 Pod 구조
-*		네트워크 아키텍처: Leader와 Worker 간의 초고속 상호 통신 및 헬스 체크 방식
-*		하나의 일꾼(Worker)이라도 죽으면 그룹 전체를 안전하게 재시작하는 메커니즘
-*		vLLM / Hugging Face와의 연계 원리 (10분)
-*		텐서 병렬화(Tensor Parallelism) 및 파이프라인 병렬화(Pipeline Parallelism)를 LWS에 매핑하는 방법
+*	왜 LWS가 필요할까? (10분)
+*	기존 쿠버네티스 ReplicaSet/Deployment의 한계 (대형 LLM을 여러 GPU 노드에 쪼개 올릴 때 그룹 단위 제어가 어려움)
+*	대장(Leader)과 일꾼(Worker) 구조의 필요성
+*	LWS 핵심 아키텍처 이해 (20분)
+*	복제 그룹(Replicas) 단위로 묶이는 Pod 구조
+*	네트워크 아키텍처: Leader와 Worker 간의 초고속 상호 통신 및 헬스 체크 방식
+*	하나의 일꾼(Worker)이라도 죽으면 그룹 전체를 안전하게 재시작하는 메커니즘
+*	vLLM / Hugging Face와의 연계 원리 (10분)
+*	텐서 병렬화(Tensor Parallelism) 및 파이프라인 병렬화(Pipeline Parallelism)를 LWS에 매핑하는 방법
 
 ---
 [Part 2] EKS LWS 환경 구축 실습 (40분)
