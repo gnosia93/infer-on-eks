@@ -1,3 +1,18 @@
+### vLLM ➕ Ray ###
+
+vLLM 자체 기술로 가능한 분산 추론은 **'한 대의 컴퓨터(Single Node) 안에서 여러 GPU를 쓰는 것'**까지입니다.
+*	한 컴퓨터 안에 장착된 GPU 1번, 2번, 3번, 4번 사이의 통신은 NVIDIA가 제공하는 내부 드라이버(NVLink 등)를 vLLM이 직접 호출(TensorParallel 등)해서 제어할 수 있습니다.
+*	즉, **"한 장소 안에서 손을 잡는 법"**은 vLLM도 알고 있습니다.
+
+하지만 70B, 405B 처럼 무지막지하게 큰 모델을 돌리기 위해 **"A 컴퓨터의 GPU 2대와 B 컴퓨터의 GPU 2대를 묶어라"**라고 하는 순간 vLLM은 아무것도 하지 못합니다. 왜냐하면 vLLM에게는 다음과 같은 기능이 없기 때문입니다.
+* 다른 컴퓨터의 IP주소를 알아내어 헬스 체크를 하는 기능
+* 다른 컴퓨터의 프로세스에게 "너 지금 내 일 좀 대신해 줘" 하고 원격 명령(RPC)을 내리는 기능
+* 네트워크 단절이나 노드 다운 시 복구(Failover)하는 기능
+
+이 한계를 극복하기 위해 vLLM은 분산 컴퓨팅의 최강자인 Ray를 등에 업는 방식을 선택했습니다.
+•	Ray의 역할 (하드웨어 가상화): 서로 다른 물리 노드(컴퓨터)들을 초고속 네트워크로 묶어, 마치 하나의 거대한 가상 컴퓨터처럼 만들어 줍니다. 리더가 워커에게 명령을 내릴 수 있는 통로(인프라)를 개척하는 것이죠.
+•	vLLM의 역할 (AI 추론 최적화): Ray가 그렇게 가상으로 묶어준 거대한 운동장 위에서, vLLM은 장기인 **PagedAttention(메모리 효율화)**과 Continuous Batching(추론 가속) 기술을 사용해 텐서 연산만 맹렬하게 수행합니다.
+
 
 ### Ray Architecture: 공유 메모리(Shared Memory)와 분산 객체 저장소(Distributed Object Store) ###
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/ray-arch.png)
