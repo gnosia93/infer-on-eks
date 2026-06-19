@@ -1,5 +1,7 @@
 
 ### Ray Architecture: 공유 메모리(Shared Memory)와 분산 객체 저장소(Distributed Object Store) ###
+![](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/ray-arch.png)
+
 Ray는 서로 다른 물리적 컴퓨터(노드)의 메모리를 진짜로 물리적으로 합치는 것은 아닙니다. 대신, **"분산 객체 저장소(Distributed Object Store)"**라는 영리한 가상화 레이어와 **"초고속 네트워크(RPC/NCCL)"**를 통해, 개발자가 느끼기에는 마치 하나의 거대한 메모리 공간(Single Shared Memory Space)을 쓰는 것처럼 착각하게 만드는 기술입니다.
 
 #### 1. 노드 안의 초고속 통신: 묵찌빠 없는 플라즈마(Plasma) 저장소 ####
