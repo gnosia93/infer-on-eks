@@ -15,6 +15,10 @@ kubectl -n llm create secret generic hf-token \
   --from-literal=token="<YOUR_HF_TOKEN>"
 ```
 
+### 2. LeaderWorkerSet 매니페스트 (현재: 1B / Graviton CPU) ###
+```
+
+```
 
 
 ## 레퍼런스 ##
