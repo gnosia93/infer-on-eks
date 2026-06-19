@@ -125,6 +125,16 @@ EOF
 ```
 LWS_LEADER_ADDRESS, LWS_GROUP_SIZE는 LWS 컨트롤러가 파드에 자동 주입하는 환경변수예요. 그래서 리더/워커가 서로를 자동으로 찾습니다.
 
+
+### 3. vLLM CPU(arm64) 이미지 ###
+vLLM은 CPU 휠을 PyPI에 안 올려서, ARM64는 직접 빌드가 가장 확실해요.
+```
+git clone https://github.com/vllm-project/vllm.git && cd vllm
+docker buildx build --platform linux/arm64 \
+  -f docker/Dockerfile.cpu \
+  -t <ACCOUNT>.dkr.ecr.ap-northeast-2.amazonaws.com/vllm-cpu-arm64:latest \
+  --push .
+```
 ## 레퍼런스 ##
 
 * https://aws.github.io/graviton/machinelearning/vllm.html 
