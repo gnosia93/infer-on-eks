@@ -1,3 +1,8 @@
+
+### Ray Architecture: 공유 메모리(Shared Memory)와 분산 객체 저장소(Distributed Object Store) ###
+
+
+
 ### LWS 설치 ###
 ```
 # 최신 릴리스 버전 확인 후 사용 (예: v0.7.0)
