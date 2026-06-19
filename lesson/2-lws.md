@@ -148,6 +148,29 @@ curl http://localhost:8080/v1/chat/completions \
        "messages":[{"role":"user","content":"안녕"}],"max_tokens":128}'
 ```
 
+### 5. GPU 10B/100B 전환 시 바꿀 것 (구조는 그대로) ###
+리더/워커 양쪽 컨테이너에 동일 적용:
+
+```
+# 1) 이미지: CPU 빌드 → 공식 GPU 이미지
+image: vllm/vllm-openai:latest
+
+# 2) 노드셀렉터: Graviton CPU → GPU 노드
+nodeSelector:
+  kubernetes.io/arch: amd64           # 또는 GPU 노드 라벨
+  # node.kubernetes.io/instance-type: p5.48xlarge 등
+
+# 3) 리소스: GPU 요청
+resources:
+  limits:
+    nvidia.com/gpu: "8"               # 파드(노드)당 GPU 수
+
+# 4) vLLM serve 인자 (--device cpu 제거)
+#    총 GPU = tensor_parallel_size × pipeline_parallel_size
+#    예) 100B를 2노드×8GPU로:
+--tensor-parallel-size 8              # 노드 내 GPU
+--pipeline-parallel-size 2            # 노드 수 = LWS size
+```
 
 
 ## 레퍼런스 ##
