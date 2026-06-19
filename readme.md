@@ -23,6 +23,6 @@
    * [AWS 인퍼런시아]
 
 * promptfoo
-  * [llm 성능 테스트]() 
+  * [llm 성능 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
   * llm 보안 취약점 스캔
   
