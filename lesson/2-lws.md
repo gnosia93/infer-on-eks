@@ -8,6 +8,12 @@ kubectl apply --server-side -f \
 kubectl -n lws-system rollout status deploy/lws-controller-manager
 ```
 
+### 1. HF 토큰 시크릿 (게이트 모델용) ###
+```
+kubectl create namespace llm
+kubectl -n llm create secret generic hf-token \
+  --from-literal=token="<YOUR_HF_TOKEN>"
+```
 
 
 
