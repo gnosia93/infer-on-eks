@@ -123,7 +123,7 @@ spec:
       targetPort: 8080
 EOF
 ```
-
+LWS_LEADER_ADDRESS, LWS_GROUP_SIZE는 LWS 컨트롤러가 파드에 자동 주입하는 환경변수예요. 그래서 리더/워커가 서로를 자동으로 찾습니다.
 
 ## 레퍼런스 ##
 
