@@ -135,6 +135,21 @@ docker buildx build --platform linux/arm64 \
   -t <ACCOUNT>.dkr.ecr.ap-northeast-2.amazonaws.com/vllm-cpu-arm64:latest \
   --push .
 ```
+
+### 4. 배포 & 테스트 ###
+```
+kubectl apply -f lws-vllm-cpu.yaml
+kubectl -n llm get pods -o wide          # 리더1 + 워커1
+kubectl -n llm port-forward svc/vllm-1b-svc 8080:80 &
+
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"meta-llama/Llama-3.2-1B-Instruct",
+       "messages":[{"role":"user","content":"안녕"}],"max_tokens":128}'
+```
+
+
+
 ## 레퍼런스 ##
 
 * https://aws.github.io/graviton/machinelearning/vllm.html 
