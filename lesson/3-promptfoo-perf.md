@@ -1,5 +1,6 @@
+## Bedrock ##
 
-### 2. Bedrock 지원 모델 확인 ###
+### 1. Bedrock 지원 모델 확인 ###
 
 Bedrock 의 경우 리전별로 제공되는 모델이 다르므로, 설정된 리전을 확인한 뒤 해당 리전에서 호출 가능한 모델 ID를 조회합니다.
 ```
@@ -35,16 +36,9 @@ aws bedrock list-foundation-models \
 ![](https://github.com/gnosia93/lg-agentic-ai/blob/main/lesson/images/bedrock_model_catalog.png)
 (참고)Anthropic의 Claude 모델은 최초 1회에 한해 사용 목적을 기재한 양식을 제출해야 하며, 제출 즉시 액세스할 수 있습니다.
 
-### 3. 추론 프로파일 및 크로스 리전 프리픽스 ###
+### 2. 추론 프로파일 및 크로스 리전 프리픽스 ###
 
 Bedrock의 추론 프로파일(inference profile) 은 모델 호출을 어느 리전으로 라우팅할지 정의하는 AWS 리소스입니다. 모델 ID 앞에 us. eu. apac. global. 과 같은 크로스 리전 프리픽스가 붙게 되고, 이를 통해 모델 호출의 부하를 AWS 전세계  리전으로 분산 시켜 처리량과 가용성을 높여 줍니다. 
-```
-프리픽스	라우팅 범위
-us.	미국 리전들 (us-east-1, us-west-2 등)
-eu.	유럽 리전들 (eu-west-1, eu-central-1 등)
-apac.	아시아 태평양 리전들
-global.	전 세계 상용 리전
-```
 예를 들어 서울 리전에서 호출 가능한 모델 리스트는 다음과 같은 AWS CLI 명령어를 이용해서 조회할 수 있습니다.
 ```
 % aws bedrock list-inference-profiles \
