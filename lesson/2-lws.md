@@ -171,6 +171,23 @@ resources:
 --tensor-parallel-size 8              # 노드 내 GPU
 --pipeline-parallel-size 2            # 노드 수 = LWS size
 ```
+즉 100B로 갈 땐 size(=파이프라인 단계 수)와 tensor-parallel-size(노드당 GPU)만 키우면 됩니다. LWS·Ray·Service 구조는 동일해요.
+
+
+### 짚어둘 점 (중요) ###
+```
+CPU 분산의 현실: 1B는 사실 한 파드에 충분히 들어갑니다. pipeline-parallel-size=2로 2파드에 굳이 걸치면 노드 간 통신 오버헤드로 오히려 느려질 수 있어요. vLLM의 CPU 멀티노드 분산은 GPU만큼 성숙하지 않습니다. 두 가지 선택지가 있어요.
+
+패턴 검증이 목적이다(지금 LWS 구조를 그대로 굳히고 싶다) → 위 매니페스트대로 size: 2 + PP=2 유지
+1B 단계는 성능 우선이다 → size: 1, replicas: 2로 두고(각 파드가 독립 서빙) GPU 전환 시 size: 2+병렬도로 변경
+목적이 "LWS 파이프라인을 미리 깔아두기"라면 1번이 맞고, 그 의도로 위 매니페스트를 짰어요.
+
+보안: Service를 ClusterIP로 막아놨어요. 외부 노출 시 추론 엔드포인트에 인증이 없으니 ALB+인증이나 게이트웨이를 반드시 앞단에 두세요.
+
+모델 라이선스: Llama 3.2는 Meta 라이선스 동의·HF 게이트 승인이 필요합니다. MODEL_ID만 바꾸면 다른 모델로 교체돼요.
+
+모델 로딩 시간: 100B급은 컨테이너+가중치가 수백 GB라 다운로드만 1시간 이상 걸릴 수 있어요. 그 단계에선 EFS/FSx PVC나 S3+Mountpoint로 가중치를 캐싱하는 걸 권합니다.
+```
 
 
 ## 레퍼런스 ##
