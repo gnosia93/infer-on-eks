@@ -1,3 +1,8 @@
+* 이론.
+   * ai infra 를 구성하는.. 지탱.. ppt..
+   * eks 인퍼런스 ./w lws + plugin + lustre.
+   * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
+
 * 실습 아케틱처..
    * ec2 베스천 호스트 겸 promptfoo 테스트용
    * eks 클러스터 /w graviton system node ..
