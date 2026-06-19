@@ -13,7 +13,7 @@
       * gpu
       * 인퍼런시아 
    * 플러그인 설치 실습.
-   * ec2 아키텍처의 이해 - efa / 등등..
+   * lustre and s3 
       
 * [ EKS LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
