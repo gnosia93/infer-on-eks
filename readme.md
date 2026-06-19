@@ -22,6 +22,7 @@
    * [gpu 인퍼런스]
    * [AWS 인퍼런시아]
 
-* promptfoo llm 성능 테스트 / 보안 취약점 스캔
-   * bedrock 모델
-   * 오픈 소스 모델.
+* promptfoo
+  * [llm 성능 테스트]() 
+  * llm 보안 취약점 스캔
+  
