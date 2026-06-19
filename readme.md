@@ -3,10 +3,9 @@
    * eks 인퍼런스 ./w lws + plugin + lustre.
    * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
 
-* 실습 아케틱처..
+* 실습 아키텍처
    * ec2 베스천 호스트 겸 promptfoo 테스트용
    * eks 클러스터 /w graviton system node ..
-   * 
 
 * eks 설치하기
    * 카펜터 노드풀 만들기
