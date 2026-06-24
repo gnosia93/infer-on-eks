@@ -35,7 +35,7 @@
 
 * [A1. 피지컬 AI - VLA/VLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-physical-ai.md)
 
-* [A2. Capcity Block]
+* [A2. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
 
 
   
