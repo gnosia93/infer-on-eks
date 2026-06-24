@@ -5,3 +5,13 @@
 
 * MPS / Time-slicing 실습: G5 또는 G6 인스턴스
 * Hardware MIG 분할 실습: P4d 또는 P5 인스턴스
+
+
+### NVIDIA GPU Operator (DRA Driver) 설치 ###
+Kubernetes 스케줄러가 디바이스 정보를 인식(ResourceSlices 생성)하도록 NVIDIA DRA Driver가 포함된 GPU Operator를 헬름(Helm) 등으로 배포합니다.
+```
+helm upgrade --install gpu-operator nvidia/gpu-operator \
+  -n gpu-operator --create-namespace \
+  --set driver.enabled=true \
+  --set dra.enabled=true   # 👈 DRA 컴포넌트 활성화 필수
+```
