@@ -1,9 +1,9 @@
 ## MIG ##
-
+vidia-smi 명령어로 큰 GPU(A100 등)를 물리적 슬라이스로 직접 쪼개보는 과정을 수행합니다.
 
 
 ## DRA (Dynamic Resource Allocation) ##
-
+방금 쪼개놓은 하드웨어 자원을 쿠버네티스 DRA 템플릿(ResourceClaimTemplate)이 어떻게 자동으로 감지하고, Pod에 착 달라붙게 서빙하는지 눈으로 확인합니다.
 기존의 단순 개수 기반(nvidia.com/gpu: 1) 모델과 달리, DRA는 EKS v1.33+ 버전부터 기본 기능 게이트로 활성화되어, Pod 단위로 GPU 메모리 분할(MPS, Time-slicing), 토폴로지 인식 스케줄링 등을 세밀하게 제어할 수 있습니다.
 
 * MPS / Time-slicing 실습: G5 또는 G6 인스턴스
