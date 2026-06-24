@@ -26,7 +26,7 @@
      *	툴: Locust, vLLM benchmark 등을 활용하여 동시 요청 수 대비 처리량(TTFT: Time to First Token, ITL: Inter-Token Latency, RPS)을 측정합니다.
      * 	목적: 인프라 스케일 아웃 임계값 설정을 위한 정량적 데이터 확보.
 
-* [C8. GPU Observability]
+* [C8. GPU Observability](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
 
 * [C9. DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
