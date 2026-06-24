@@ -24,8 +24,10 @@
    * llm 보안 취약점 스캔
    * [LLM 부하/서빙 성능 (Serving Performance)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-llm-serving-performance.md)
     
-* [C8. GPU Observability](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
-
+* C8. Observability
+   * [GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
+   * [EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8.efa-observability.md)
+     
 * [C9. DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
 
