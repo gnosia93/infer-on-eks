@@ -12,7 +12,7 @@
 
 * [C5. lustre 및 s3 설정]
       
-* [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-LeaderWorkerSet.md)
+* [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
    * [cpu 인퍼런스 - 그라비톤](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-lws.md)
    * [gpu 인퍼런스]
