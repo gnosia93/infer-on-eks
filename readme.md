@@ -28,7 +28,7 @@
 
 * [C8. GPU Observability]
 
-* [C9. DRA]
+* [C9. DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
 
 ## Appendix ##
