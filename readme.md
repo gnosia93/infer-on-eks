@@ -7,6 +7,8 @@
    * ec2 베스천 호스트 겸 promptfoo 테스트용
    * eks 클러스터 /w graviton system node ..
 
+* [C1. VPC 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-vpc.md)
+
 * eks 설치하기
    * 카펜터 노드풀 만들기
       * cpu
