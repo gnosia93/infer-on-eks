@@ -19,7 +19,6 @@
    * [AWS 인퍼런시아]
 
 * [C7. LLM 성능 평가 및 보안]
-  * llm-eval ..
   * promptfoo
     * [llm 성능 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
     * llm 보안 취약점 스캔
