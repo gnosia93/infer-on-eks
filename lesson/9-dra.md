@@ -15,3 +15,4 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \
   --set driver.enabled=true \
   --set dra.enabled=true   # 👈 DRA 컴포넌트 활성화 필수
 ```
+💡 배포 완료 후 kubectl get deviceclasses 명령을 내렸을 때 gpu.nvidia.com 또는 mig.nvidia.com 같은 디바이스 클래스가 정상 조회되어야 합니다.
