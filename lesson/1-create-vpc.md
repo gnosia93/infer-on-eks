@@ -55,5 +55,5 @@ echo ${OUTPUT}
 
 ## vpc 삭제하기 ##
 ```
-aws cloudformation delete-stack --stack-name get-started-eks
+aws cloudformation delete-stack --stack-name infer-on-eks
 ```
