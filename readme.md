@@ -23,6 +23,8 @@
   * promptfoo
     * [llm 성능 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
     * llm 보안 취약점 스캔
+
+* [C8. 피지컬 AI - VLA/VLM]
   
 ## 레퍼런스 ##
 
