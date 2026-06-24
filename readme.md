@@ -10,7 +10,7 @@
 
 * [C4. 플로그인 설치]
 
-* [C5. lustre 및 s3 설정]
+* [C5. lustre 파일 시스템]
       
 * [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
