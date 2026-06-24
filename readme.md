@@ -11,20 +11,22 @@
 
 * [C2. EKS 클러스터 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-create-eks.md)
 
-* 카펜터 노드풀 만들기
-      * cpu
-      * gpu
-      * 인퍼런시아 
-   * 플러그인 설치 실습.
-   * lustre and s3 
+* [C3. Karpenter 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-nodepool.md)
+  * cpu
+  * gpu
+  * 인퍼런시아 
+
+* [C4. 플로그인 설치]
+
+* [C5. lustre 및 s3 설정]
       
-* [ EKS LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-LeaderWorkerSet.md)
+* [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
    * [cpu 인퍼런스 - 그라비톤](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-lws.md)
    * [gpu 인퍼런스]
    * [AWS 인퍼런시아]
 
-* LLM 성능 평가 및 보안
+* [C7. LLM 성능 평가 및 보안]
   * llm-eval ..
   * promptfoo
     * [llm 성능 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
