@@ -11,7 +11,7 @@
 
 * [C4. 플로그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-cluster-plugin.md)
 
-* [C5. lustre 파일 시스템]
+* [C5. lustre 파일시스템 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
       
 * [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
