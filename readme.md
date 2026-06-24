@@ -9,8 +9,9 @@
 
 * [C1. VPC 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-vpc.md)
 
-* eks 설치하기
-   * 카펜터 노드풀 만들기
+* [C2. EKS 클러스터 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-create-eks.md)
+
+* 카펜터 노드풀 만들기
       * cpu
       * gpu
       * 인퍼런시아 
