@@ -81,29 +81,29 @@ go 컴파일 과정에서 다소 시간이 소요된다.
 ```
 export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-export CLUSTER_NAME="get-started-eks"
+export CLUSTER_NAME="infer-on-eks"
 export K8S_VERSION="1.34"
 export KARPENTER_VERSION="1.8.1"
 export VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values="${CLUSTER_NAME}" --query "Vpcs[].VpcId" --output text)
 
-echo $AWS_REGION
-echo $AWS_ACCOUNT_ID
-echo $CLUSTER_NAME
-echo $K8S_VERSION
-echo $KARPENTER_VERSION
-echo $VPC_ID
+echo "Cluster Name: $AWS_REGION"
+echo "AWS Account iD: $AWS_ACCOUNT_ID"
+echo "Cluster Name: $CLUSTER_NAME"
+echo "EKS Version: $K8S_VERSION"
+echo "Karpenter Version: $KARPENTER_VERSION"
+echo "VPC ID: $VPC_ID"
 ```
 
 ### 2. 서브넷 식별 ###
 클러스터의 데이터 플레인(워커노드 들)은 아래의 프라이빗 서브넷에 위치하게 된다. 
 ```
 aws ec2 describe-subnets \
-    --filters "Name=tag:Name,Values=GSE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
+    --filters "Name=tag:Name,Values=IOE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
     --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone, Name:Tags[?Key=='Name']|[0].Value}" \
     --output table
 
 SUBNET_IDS=$(aws ec2 describe-subnets \
-    --filters "Name=tag:Name,Values=GSE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
+    --filters "Name=tag:Name,Values=IOE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
     --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone}" \
     --output text)
 
@@ -230,10 +230,10 @@ aws ec2 describe-security-groups \
 +----------------------------------------+---------------------------------------------+
 |                   Key                  |                    Value                    |
 +----------------------------------------+---------------------------------------------+
-|  aws:eks:cluster-name                  |  get-started-eks                            |
+|  aws:eks:cluster-name                  |  infer-on-eks                            |
 |  kubernetes.io/cluster/get-started-eks |  owned                                      |
 |  Name                                  |  eks-cluster-sg-get-started-eks-1608279370  |
-|  karpenter.sh/discovery                |  get-started-eks                            |
+|  karpenter.sh/discovery                |  infer-on-eks                             |
 +----------------------------------------+---------------------------------------------+
 ```
 
@@ -241,7 +241,7 @@ aws ec2 describe-security-groups \
 클러스터 생성이 완료되면 추가 설정이 필요하다. 카펜터 버전 1.8.1(EKS 1.3.4) 에는 아래와 같은 정책 설정이 누락되어 있어 패치가 필요하다. 
 패치를 하지 않는 경우 카펜터가 프러비저닝한 노드가 클러스터에 조인되지 않는다. (노드 describe 시 Not Ready 상태)  
 
-* eksctl-training-on-eks-iamservice-role 에 정책 추가(OIDC 정책 누락)
+* eksctl-infer-on-eks-iamservice-role 에 정책 추가(OIDC 정책 누락)
 ```
 POLICY_JSON=$(cat <<EOF
 {
@@ -292,8 +292,6 @@ aws iam delete-role --role-name "$ROLE_NAME"
 eksctl delete cluster -f cluster.yaml
 ```
 
-## 레퍼런스 ##
-* https://docs.aws.amazon.com/ko_kr/ec2/latest/instancetypes/ec2-instance-regions.html
 
 
 
