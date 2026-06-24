@@ -25,6 +25,11 @@
     * llm 보안 취약점 스캔
 
 * [C8. 피지컬 AI - VLA/VLM]
+
+* [C9. GPU Observability]
+
+* [C10. DRA]
+  
   
 ## 레퍼런스 ##
 
