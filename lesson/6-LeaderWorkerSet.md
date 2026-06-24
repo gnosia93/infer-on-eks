@@ -1,10 +1,10 @@
 ### LeaderWorkerSet (LWS)
-•	단일 파드로 띄우기 힘든 대형 LLM을 위해, 1개의 Leader 파드와 N개의 Worker 파드를 하나의 그룹으로 묶어주는 쿠버네티스 네이티브 Custom Resource 정의(CRD)입니다. multi-node 추론 시 네트워크 및 라이프사이클을 효율적으로 제어합니다.
+단일 파드로 띄우기 힘든 대형 LLM을 위해, 1개의 Leader 파드와 N개의 Worker 파드를 하나의 그룹으로 묶어주는 쿠버네티스 네이티브 Custom Resource 정의(CRD)입니다. multi-node 추론 시 네트워크 및 라이프사이클을 효율적으로 제어합니다.
 ### Ray 인프라 (KubeRay)
-•	Ray Cluster: LLM 서빙 프레임워크(vLLM, TGI)를 EKS 위에서 분산 처리하기 위한 백엔드로 Ray를 활용합니다.
-•	CPU 인퍼런스 (그라비톤): AWS Graviton(ARM64) 기반 c7g 인스턴스를 활용하여, 임베딩 모델이나 경량 모델 추론 시 가성비를 극대화합니다.
-•	GPU 인퍼런스: vLLM + Ray 조합으로 Tensor Parallelism(TP) 및 Pipeline Parallelism(PP)을 구현하여 복수의 GPU 노드에서 분산 추론을 수행합니다.
-•	AWS 인퍼런시아: vLLM이 최신 버전에서 AWS Neuron을 지원함에 따라, KubeRay와 Inf2를 연동하여 비용을 절감하는 분산 추론 환경을 구성합니다.
+*	Ray Cluster: LLM 서빙 프레임워크(vLLM, TGI)를 EKS 위에서 분산 처리하기 위한 백엔드로 Ray를 활용합니다.
+*	CPU 인퍼런스 (그라비톤): AWS Graviton(ARM64) 기반 c7g 인스턴스를 활용하여, 임베딩 모델이나 경량 모델 추론 시 가성비를 극대화합니다.
+*	GPU 인퍼런스: vLLM + Ray 조합으로 Tensor Parallelism(TP) 및 Pipeline Parallelism(PP)을 구현하여 복수의 GPU 노드에서 분산 추론을 수행합니다.
+*	AWS 인퍼런시아: vLLM이 최신 버전에서 AWS Neuron을 지원함에 따라, KubeRay와 Inf2를 연동하여 비용을 절감하는 분산 추론 환경을 구성합니다.
 ---
 [Part 1] LeaderWorkerSet 개념 및 이론 (40분)
 
