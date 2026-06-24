@@ -41,11 +41,9 @@
 
 
 ---
-* 이론.
-   * ai infra 를 구성하는.. 지탱.. ppt..
-   * eks 인퍼런스 ./w lws + plugin + lustre.
-   * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
+* 이론 교재
+   * AI Infra 의 이해 (90 Min)
+   * 모델 인프런스 이센셜 (60 Min)
+      * eks 인퍼런스 ./w lws + plugin + lustre.
+      * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
 
-* 실습 아키텍처
-   * ec2 베스천 호스트 겸 promptfoo 테스트용
-   * eks 클러스터 /w graviton system node ..
