@@ -32,6 +32,7 @@
 
 * [A1. 피지컬 AI - VLA/VLM]
 
+* [A2. Capcity Block]
 
 
   
