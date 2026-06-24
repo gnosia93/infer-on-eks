@@ -66,7 +66,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: "GSE-pub-subnet-1"
+          Value: "IOE-pub-subnet-1"
         - Key: "kubernetes.io/role/elb"
           Value: "1"
         - Key: !Sub "kubernetes.io/cluster/${ClusterName}"
@@ -81,7 +81,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: "GSE-pub-subnet-2"
+          Value: "IOE-pub-subnet-2"
         - Key: "kubernetes.io/role/elb"
           Value: "1"
         - Key: !Sub "kubernetes.io/cluster/${ClusterName}"
@@ -95,7 +95,7 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs "" ]
       Tags:
         - Key: Name
-          Value: "GSE-priv-subnet-1"
+          Value: "IOE-priv-subnet-1"
         - Key: "karpenter.sh/discovery"
           Value: !Ref ClusterName
         - Key: "kubernetes.io/role/internal-elb"
@@ -109,7 +109,7 @@ Resources:
       AvailabilityZone: !Select [ 1, !GetAZs "" ]
       Tags:
         - Key: Name
-          Value: "GSE-priv-subnet-2"
+          Value: "IOE-priv-subnet-2"
         - Key: "karpenter.sh/discovery"
           Value: !Ref ClusterName
         - Key: "kubernetes.io/role/internal-elb"
@@ -356,7 +356,7 @@ Resources:
           sudo -u ec2-user -i <<'EC2_USER_SCRIPT'
           curl -fsSL https://code-server.dev/install.sh | sh && sudo systemctl enable --now code-server@ec2-user
           sleep 5
-          sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: code!@#c/g' /home/ec2-user/.config/code-server/config.yaml
+          sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: inf!@#c/g' /home/ec2-user/.config/code-server/config.yaml
           EC2_USER_SCRIPT
           echo 'export PS1="$(uname -m) \$ "' >> /home/ec2-user/.bashrc
           sudo systemctl restart code-server@ec2-user
@@ -386,7 +386,7 @@ Resources:
           sudo -u ec2-user -i <<'EC2_USER_SCRIPT'
           curl -fsSL https://code-server.dev/install.sh | sh && sudo systemctl enable --now code-server@ec2-user
           sleep 5
-          sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: code!@#c/g' /home/ec2-user/.config/code-server/config.yaml
+          sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: inf!@#c/g' /home/ec2-user/.config/code-server/config.yaml
           EC2_USER_SCRIPT
           echo 'export PS1="$(uname -m) \$ "' >> /home/ec2-user/.bashrc
           sudo systemctl restart code-server@ec2-user
