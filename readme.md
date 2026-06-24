@@ -22,7 +22,7 @@
 * C7. LLM 성능 평가 및 보안
    * [llm 성능 평가](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
-   * [LLM 부하/서빙 성능 (Serving Performance)]
+   * [LLM 부하/서빙 성능 (Serving Performance)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-llm-serving-performance.md)
     
 * [C8. GPU Observability](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
 
