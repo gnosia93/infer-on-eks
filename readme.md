@@ -28,7 +28,7 @@
    * [GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
    * [EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8.efa-observability.md)
      
-* [C9. DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
+* [C9. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
 
 ## Appendix ##
