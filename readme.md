@@ -9,7 +9,7 @@
   * gpu
   * 인퍼런시아 
 
-* [C4. 플로그인 설치]
+* [C4. 플로그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-cluster-plugin.md)
 
 * [C5. lustre 파일 시스템]
       
