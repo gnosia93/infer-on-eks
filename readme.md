@@ -22,7 +22,8 @@
    * [cpu 인퍼런스 - 그라비톤](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-lws.md)
    * [gpu 인퍼런스]
    * [AWS 인퍼런시아]
-
+   * [vLLM 딥다이브]
+     
 * C7. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
