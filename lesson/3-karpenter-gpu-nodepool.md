@@ -41,7 +41,7 @@ kind: EC2NodeClass
 metadata:
   name: gpu
 spec:
-  role: "eksctl-KarpenterNodeRole-training-on-eks"
+  role: "eksctl-KarpenterNodeRole-infer-on-eks"
   amiSelectorTerms:
     # Required; when coupled with a pod that requests NVIDIA GPUs or AWS Neuron
     # devices, Karpenter will select the correct AL2023 accelerated AMI variant
