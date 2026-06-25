@@ -51,10 +51,10 @@ spec:
     - alias: al2023@latest
   subnetSelectorTerms:
     - tags:
-        karpenter.sh/discovery: "training-on-eks" 
+        karpenter.sh/discovery: "infer-on-eks" 
   securityGroupSelectorTerms:
     - tags:
-        karpenter.sh/discovery: "training-on-eks" 
+        karpenter.sh/discovery: "infer-on-eks" 
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
