@@ -10,7 +10,8 @@
   * 인퍼런시아 
 
 * [C4. 플로그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-cluster-plugin.md)
-
+  * [GPU 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
+    
 * [C5. lustre 파일시스템 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
       
 * [C6. LeaderWorkerSet (LWS)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
