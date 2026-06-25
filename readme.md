@@ -10,7 +10,7 @@
   * [AWS Inferentia 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-inferentia.md) 
 
 * [C4. 플로그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-cluster-plugin.md)
-  * [EFA 플러그인 설치]()
+  * [EFA 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-efa-plugin.md)
   * [GPU 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
   * [AWS Inferentia 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-inferentia-plugin.md)
     
