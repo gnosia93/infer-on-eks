@@ -50,7 +50,7 @@
 ---
 * 이론 교재
    * AI Infra 의 이해 (90 Min)
-   * 모델 인프런스 이센셜 (60 Min)
+   * ML 인퍼런스 이센셜 (60 Min)
       * eks 인퍼런스 ./w lws + plugin + lustre.
       * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
 
