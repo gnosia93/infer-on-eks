@@ -42,9 +42,6 @@
 
 * [A2. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
 
-* [LLM Routing]()
-
-* [LLM Observability]
 
   
 ## 레퍼런스 ##
