@@ -7,7 +7,7 @@
 * [C3. Karpenter 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-nodepool.md)
   * [Graviton 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-graviton-nodepool.md)
   * [GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-gpu-nodepool.md)
-  * 인퍼런시아 
+  * [AWS Inferentia 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-inferentia.md) 
 
 * [C4. 플로그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-cluster-plugin.md)
   * [GPU 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
