@@ -1,6 +1,3 @@
-대규모 분산 훈련에서 체크포인트 저장시 핵심 포인트는 데이터 저장을 위한 네트워크 대역폭(Throughput) 및 I/O 성능을 최대화 하는 것이다. 수천 개의 GPU 노드가 동시에 쓰기 작업을 수행할 때 성능 병목을 줄이기 위해서는 병렬 및 비동기 저장 (Parallel & Asynchronous Checkpointing) 기법 활용이 중요하며, 이를 통해 체크포인트를 저장하는 동안 GPU 연산이 중단되지 않도록 하는 것이다.  
-또한 PyTorch Distributed Checkpoint(DCP)를 활용하는 경우 각 Rank(프로세스)가 자신의 가중치만 저장하게 되고, 그 대상 경로를 FSx 러스터로 설정함으로써 쓰기 속도를 최대화 할 수 있다. 
-
 ## 러스터(Lustre) ##
 러스터(Lustre) 파일 시스템은 높은 처리량, 낮은 지연 시간, 뛰어난 확장성을 제공하는 병렬 분산 파일 시스템으로, 대규모 데이터셋을 처리해야 하는 AI 시스템에 필수적이다.
 AWS 에서 Lustre 파일 시스템을 사용하는 가장 빠른 방법은 완전 관리형 서비스인 Amazon FSx for Lustre 와 FSx for Lustre CSI(Container Storage Interface) 드라이버를 활용하여 쿠버네티스 클러스터에 통합하는 것이다.
@@ -140,7 +137,6 @@ kubectl logs -f -l app=fsx-csi-node -n fsx-csi-driver -c fsx-plugin
 ```
 
 
-
 ## EKS 연결하기 ##
 ### 1. PV/PVC 배포 ###
 ```
@@ -232,102 +228,9 @@ aws s3 cp test-file.txt s3://${S3_BUCKET}/
 kubectl exec -it pod-fsx -- bash -c "cd /data/fsx && ls -l"
 ```
 
-## Parallel & Asynchronous Checkpointing 예제 코드 ##
-아래는 에포크 단위로 체크 포인트를 저장하는 샘플이다. 
-```
-...
-
-CHECKPOINT_BASE_DIR = "/data/fsx"
-
-num_epochs = 10
-for epoch in range(num_epochs):
-    for step, batch in enumerate(train_loader):
-        # 학습 수행 (Iteration)
-        train_step(model, batch)
-        
-    # [에포크가 끝나는 시점] 여기서 체크포인트 저장
-    checkpoint_id = os.path.join(CHECKPOINT_BASE_DIR, f"epoch_{epoch}")
-    async_checkpointer.save(
-        checkpoint_id=checkpoint_id,
-        storage_writer=dcp.FileSystemWriter(checkpoint_id),
-        state_dict=state_dict,
-    )
-    print(f"Epoch {epoch} 완료: 비동기 DCP 저장 시작")
-
-...
-```
-
-#### 체크포인트 전략 ####
-대규모 모델의 경우 1 에포크가 며칠씩 걸릴 수도 있기 때문에, 체크 포인트는 Step 단위로 저장하는 것이 일반적이다. 이렇게 해야 학습 도중 노드가 다운 되더라도 훈련 손실을 최소화할 수 있다. 체크포인트 인터벌은 모델의 크기와 학습 시간에 맞춰 step 단위를 쓸지 epoch 단위를 쓸지 결정하면 된다.
+### S3 연동 ###
 
 
-## 자동 백업 & 삭제 보호 ##
 
-분산 훈련시 lustre 파일 시스템에는 체크포인트 데이터와 훈련 데이터를 저장하고 있으므로 자동 백업 가능과 삭제 보호 기능을 활성화 해야한다.  
-
-### 1. 자동 백업 ###
-
-#### FSx 자체 백업 기능 (Persistent 파일 시스템 대상) #### 
-S3 데이터 리포지토리와 연결되지 않은 영구(Persistent) 파일 시스템의 경우, Amazon FSx는 다음 두 가지 타입의 백업을 지원한다. 
-* 자동 일일 백업 (Automatic daily backups): 사용자가 설정한 백업 기간(1~90일, 기본 30일) 동안 매일 자동으로 백업이 수행된다.
-* 사용자 시작 백업 (User-initiated backups): 필요시 수동으로 특정 시점 백업을 생성할 수 있다. 
-이 두 가지 모두 블록 기반의 증분 백업으로 S3에 저장되어 비용 효율적이며 내구성이 뛰어나다. 
-```
-aws fsx describe-file-systems --file-system-ids <파일-시스템-ID> --query "FileSystems[0].LustreConfiguration"
-
-aws fsx update-file-system \
-  --file-system-id <파일-시스템-ID> \
-  --lustre-configuration "AutomaticBackupRetentionDays=<유지-일수>,DailyAutomaticBackupStartTime=<HH:MM>"
-```
-
-#### S3 데이터 리포지토리와의 자동 동기화 (Automatic Import/Export) #### 
-파일 시스템이 S3 버킷에 연결된 경우, "자동 내보내기(Automatic export)" 기능을 설정하여 파일 시스템의 변경 사항(파일 추가, 변경, 삭제)이 S3 버킷에 자동으로 업데이트되도록 할 수 있다. 이는 엄밀히 말해 전통적인 "백업"이라기보다는 지속적인 데이터 동기화 메커니즘이다 
-
-```
-# 파일 시스템의 /ns1/ 경로를 S3 버킷 s3://my-bucket/data/와 연결하는 예시
-aws fsx create-data-repository-association \
-  --file-system-id <파일-시스템-ID> \
-  --file-system-path /ns1/ \
-  --data-repository-path s3://<버킷-이름>/<폴더>/ \
-  --s3 '{"AutoImportPolicy": {"Events": ["NEW", "CHANGED"]}, "AutoExportPolicy": {"Events": ["NEW", "CHANGED"]}}'
-```
-
-### 2. 삭제 보호 ###
-
-RDS 나 EC2 와는 달리 lustre 의 경우 삭제 보호 기능이 제공되지 않는다. 
-삭제 보호 효과를 내는 유일한 대안은 특정 사용자나 스크립트가 실수로 삭제하지 못하도록 fsx:DeleteFileSystem 권한을 차단하는 것이다. 이렇게 하면 콘솔에서 삭제 버튼을 누르거나 CLI로 명령을 내려도 거부된다.
-
-[policy.json]
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PreventFSxDeletion",
-            "Effect": "Deny",
-            "Action": "fsx:DeleteFileSystem",
-            "Resource": "arn:aws:fsx:region:account-id:file-system/fs-xxxxxxxxxxxxxxxxx"
-        }
-    ]
-}
-```
-```
-aws iam create-policy \
-    --policy-name FSxDeleteProtectionPolicy \
-    --policy-document file://policy.json
-
-aws iam attach-user-policy \
-    --user-name <사용자-이름> \
-    --policy-arn arn:aws:iam::<계정-ID>:policy/FSxDeleteProtectionPolicy
-
-aws iam attach-role-policy \
-    --role-name <역할-이름> \
-    --policy-arn arn:aws:iam::<계정-ID>:policy/FSxDeleteProtectionPolicy
-```
-
-
-## 레퍼런스 ##
-
-* https://github.com/kubernetes-sigs/aws-fsx-csi-driver/blob/master/docs/install.md
 * https://aws.amazon.com/ko/blogs/tech/lustre/
 
