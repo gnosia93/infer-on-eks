@@ -1,0 +1,391 @@
+ 1. 먼저 알아야 할 배경 지식
+
+  vLLM을 제대로 이해하려면 LLM 인퍼런스의 두 단계를 먼저 알아야 합니다.
+
+  - Prefill (prompt 처리): 입력 전체를 한 번에 처리 → compute-bound
+  - Decode (토큰 생성): 한 토큰씩 autoregressive 생성 → memory-bound, KV 캐시가 계속 커짐
+
+  이 구조 때문에 KV 캐시 관리가 핵심 문제라는 걸 이해하는 게 출발점입니다.
+
+  2. vLLM의 핵심 아이디어 3가지
+
+  ┌───────────────────┬──────────────────────────────────────────┬────────────────────────────────────┐
+  │       개념        │                   무엇                   │              왜 중요               │
+  ├───────────────────┼──────────────────────────────────────────┼────────────────────────────────────┤
+  │ PagedAttention    │ KV 캐시를 OS 가상메모리처럼 페이지 블록  │ 메모리 단편화 제거 → 훨씬 많은     │
+  │                   │ 단위로 관리                              │ 동시 요청 처리                     │
+  ├───────────────────┼──────────────────────────────────────────┼────────────────────────────────────┤
+  │ Continuous        │ 요청을 토큰 단위로 배치에 넣고 뺌        │ GPU 유휴시간 최소화, 처리량 대폭   │
+  │ Batching          │                                          │ 상승                               │
+  ├───────────────────┼──────────────────────────────────────────┼────────────────────────────────────┤
+  │ Prefix Caching    │ 공통 프롬프트 KV 재사용                  │ system prompt 반복 시 효율         │
+  └───────────────────┴──────────────────────────────────────────┴────────────────────────────────────┘
+
+  이 중 PagedAttention 논문("Efficient Memory Management for LLM Serving", SOSP 2023)이 가장 중요합니다.
+  이거 하나는 꼭 읽으세요.
+
+  3. 실습 로드맵
+
+  1단계 — 그냥 돌려보기
+  pip install vllm
+  from vllm import LLM, SamplingParams
+
+  llm = LLM(model="meta-llama/Llama-3.2-1B-Instruct")  # 작은 모델로 시작
+  out = llm.generate(["안녕하세요, 오늘 날씨는"], SamplingParams(temperature=0.8, max_tokens=64))
+  print(out[0].outputs[0].text)
+
+  2단계 — OpenAI 호환 서버 띄우기
+  vllm serve meta-llama/Llama-3.2-1B-Instruct
+  # curl로 localhost:8000/v1/chat/completions 호출
+
+  3단계 — 옵션 만져보며 원리 체감
+  - --gpu-memory-utilization, --max-num-seqs, --max-model-len
+  - --quantization awq, --enable-prefix-caching
+  - --tensor-parallel-size (멀티 GPU)
+
+  4단계 — 코드 읽기
+  - vllm/engine/llm_engine.py (스케줄러 흐름)
+  - vllm/core/scheduler.py (continuous batching 실제 구현)
+  - vllm/attention/ (PagedAttention 커널)
+
+  4. 추천 자료
+
+  - 📄 PagedAttention 논문 (가장 우선)
+  - 📖 공식 docs: docs.vllm.ai — Quickstart와 "Architecture Overview"
+  - 💻 GitHub: github.com/vllm-project/vllm 의 examples/ 폴더
+
+  ---
+  궁금한 점이 있는데, 목적을 알면 더 좁혀드릴 수 있습니다:
+
+  - 사용법 위주(서빙 잘 하기)인지, 내부 구현/기여(코드 뜯어보기)인지?
+  - GPU 환경은 어떻게 되나요? (로컬 GPU 있음 / 클라우드 / 없어서 개념만)
+
+  방향 알려주시면 그에 맞춰 다음 단계를 구체화해드릴게요. 최신 버전 기준 정보나 특정 논문을 자세히
+  찾아드리는 것도 가능합니다.
+
+✻ Sautéed for 20s
+
+❯ 서빙 최적화, 서빙하기 위주.
+
+⏺ 서빙 위주라면 개념보다 **"어떤 상황에서 어떤 옵션을 켜느냐"**가 핵심입니다. 실무 관점으로
+  정리해드릴게요.
+
+  1. 먼저 목표를 정하세요 — 처리량 vs 지연시간
+
+  모든 튜닝은 이 트레이드오프에서 갈립니다.
+
+  ┌────────────────────────────────┬──────────────────────┬───────────────────────────────────────────┐
+  │              목표              │         성향         │                 대표 옵션                 │
+  ├────────────────────────────────┼──────────────────────┼───────────────────────────────────────────┤
+  │ Throughput (배치 처리, 대량    │ 배치 크게, GPU 꽉    │ --max-num-seqs ↑,                         │
+  │ 요청)                          │ 채움                 │ --gpu-memory-utilization ↑                │
+  ├────────────────────────────────┼──────────────────────┼───────────────────────────────────────────┤
+  │ Latency (챗봇, 실시간)         │ 배치 작게, 응답      │ speculative decoding, --max-num-seqs      │
+  │                                │ 빠르게               │ 적당히                                    │
+  └────────────────────────────────┴──────────────────────┴───────────────────────────────────────────┘
+
+  2. 핵심 서빙 커맨드
+
+  vllm serve meta-llama/Llama-3.1-8B-Instruct \
+    --gpu-memory-utilization 0.90 \
+    --max-model-len 8192 \
+    --max-num-seqs 256 \
+    --enable-prefix-caching \
+    --tensor-parallel-size 1
+
+  3. 성능에 직접 영향 주는 옵션 (우선순위 순)
+
+  ① --gpu-memory-utilization (0.9 기본)
+  KV 캐시로 쓸 GPU 메모리 비율. 높일수록 더 많은 동시 요청 처리. OOM 안 나는 선에서 최대한 올리기
+  (0.90~0.95).
+
+  ② --max-model-len
+  지원할 최대 컨텍스트 길이. 불필요하게 크게 잡으면 KV 캐시 예약 때문에 동시 처리량이 줄어듭니다. 실제
+  필요한 만큼만.
+
+  ③ --max-num-seqs
+  동시에 배치에 들어갈 최대 시퀀스 수. 처리량 튜닝의 핵심 노브.
+
+  ④ --enable-prefix-caching
+  system prompt나 공통 프리픽스가 반복되면 무조건 켜세요. RAG·챗봇에서 효과 큼.
+
+  ⑤ --quantization (awq / gptq / fp8)
+  메모리 부족하거나 더 큰 모델 올리고 싶을 때. FP8은 H100 이상에서 품질 손실 적음.
+
+  ⑥ --tensor-parallel-size
+  모델이 GPU 하나에 안 들어갈 때 여러 GPU로 분할. (예: 70B 모델 → 4)
+
+  ⑦ Speculative Decoding (지연시간 줄이기)
+  --speculative-model "[ngram]" --num-speculative-tokens 5
+  # 또는 draft 모델 지정
+
+  4. 반드시 해야 할 것 — 벤치마킹
+
+  옵션 추측하지 말고 측정하세요. vLLM이 벤치 스크립트를 제공합니다.
+
+  # 서버 띄운 상태에서
+  python benchmarks/benchmark_serving.py \
+    --backend vllm \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --dataset-name sharegpt \
+    --num-prompts 1000 \
+    --request-rate 10
+
+  봐야 할 지표:
+  - TTFT (Time To First Token) — 첫 토큰까지, 체감 반응성
+  - TPOT / ITL (Time Per Output Token) — 토큰 생성 속도
+  - Throughput (req/s, token/s)
+  - P50 / P99 latency — 꼬리 지연
+
+  5. 서빙 실무에서 자주 만나는 이슈
+
+  - OOM: --gpu-memory-utilization 낮추거나 --max-model-len 줄이기
+  - 처리량이 안 나옴: --max-num-seqs 올리고, prefix caching 켜고, request-rate 높여서 배치가 실제로 차는지
+  확인
+  - TTFT가 김 (긴 프롬프트): chunked prefill(--enable-chunked-prefill)로 prefill과 decode 겹치기
+  - 꼬리 지연(P99) 튐: 배치 크기 제한, chunked prefill로 완화
+
+  6. 프로덕션 배포
+
+  - Docker: 공식 vllm/vllm-openai 이미지 사용
+  - Kubernetes: 오토스케일링 + readiness probe
+  - 모니터링: vLLM이 /metrics로 Prometheus 지표 노출 (큐 길이, KV 캐시 사용률, throughput 등)
+  - 로드밸런싱: 여러 replica 앞에 LB, prefix-aware routing 하면 캐시 적중률↑
+
+  ---
+  추천 학습 순서: ① 작은 모델로 vllm serve 띄우기 → ② benchmark_serving.py로 baseline 측정 → ③ 옵션 하나씩
+  바꿔가며 지표 변화 관찰 → ④ 본인 워크로드에 맞는 조합 찾기.
+
+  이 과정을 직접 해보는 게 문서 100번 읽는 것보다 빠릅니다.
+
+  궁금한 것:
+  - GPU 환경(모델 종류·GPU 몇 장)이 어떻게 되나요? 그에 맞춰 구체적인 커맨드를 짜드릴 수 있어요.
+  - 최신 vLLM 옵션은 버전마다 바뀌니, 필요하면 현재 최신 문서 기준으로 정확히 확인해드릴게요 (V1 엔진 관련
+  변경사항 등).
+
+✻ Brewed for 30s
+
+❯ g6e.2xlarge 쓸꺼야.
+
+⏺ 좋습니다. g6e.2xlarge 사양부터 맞춰서 구체적으로 정리해드릴게요.
+
+  g6e.2xlarge 스펙 (이게 모든 결정의 기준)
+
+  ┌───────────────┬─────────────────┬────────────────────────────────────────────────────┐
+  │     항목      │       값        │                        의미                        │
+  ├───────────────┼─────────────────┼────────────────────────────────────────────────────┤
+  │ GPU           │ NVIDIA L40S 1장 │ 단일 GPU → TP=1 (tensor parallel 불필요)           │
+  ├───────────────┼─────────────────┼────────────────────────────────────────────────────┤
+  │ VRAM          │ 48GB GDDR6      │ 모델 + KV 캐시가 여기 다 들어가야 함               │
+  ├───────────────┼─────────────────┼────────────────────────────────────────────────────┤
+  │ 아키텍처      │ Ada Lovelace    │ FP8 지원 ✅ (품질 손실 적게 양자화 가능)           │
+  ├───────────────┼─────────────────┼────────────────────────────────────────────────────┤
+  │ 메모리 대역폭 │ ~864 GB/s       │ H100(3.35TB/s)보다 낮음 → decode가 상대적으로 느림 │
+  ├───────────────┼─────────────────┼────────────────────────────────────────────────────┤
+  │ vCPU / RAM    │ 8 / 64GB        │ CPU 오프로딩 여유는 적음                           │
+  └───────────────┴─────────────────┴────────────────────────────────────────────────────┘
+
+  핵심 포인트 2가지:
+  1. 48GB에 뭘 올릴 수 있나가 모델 선택을 결정합니다.
+  2. NVLink 없고 대역폭이 H100 대비 낮아서, 대역폭이 병목인 decode 최적화(FP8, speculative decoding)가
+  특히 효과적입니다.
+
+  48GB에 들어가는 모델 (대략)
+
+  ┌────────────────┬──────────┬───────────┬────────────────────────────┐
+  │      모델      │   FP16   │  FP8/AWQ  │            추천            │
+  ├────────────────┼──────────┼───────────┼────────────────────────────┤
+  │ 8B (Llama 3.1) │ ~16GB    │ ~8GB      │ ✅ 여유롭게, KV 캐시 넉넉  │
+  ├────────────────┼──────────┼───────────┼────────────────────────────┤
+  │ 14B (Qwen2.5)  │ ~28GB    │ ~14GB     │ ✅ 좋음                    │
+  ├────────────────┼──────────┼───────────┼────────────────────────────┤
+  │ 32B (Qwen2.5)  │ ~64GB ❌ │ ~18GB     │ ✅ FP8/AWQ로만             │
+  ├────────────────┼──────────┼───────────┼────────────────────────────┤
+  │ 70B            │ ❌       │ ~40GB빠듯 │ ⚠️ KV 캐시 거의 없음, 비추 │
+  └────────────────┴──────────┴───────────┴────────────────────────────┘
+
+  FP16 기준 모델 크기 = 파라미터 × 2GB. 나머지가 KV 캐시로 쓰여서 동시 처리량을 결정합니다. 48GB 중 모델이
+  많이 먹을수록 동시 요청 수가 줄어요.
+
+  추천 시작 커맨드
+
+  14B FP8 (밸런스 좋은 출발점):
+  vllm serve Qwen/Qwen2.5-14B-Instruct \
+    --quantization fp8 \
+    --gpu-memory-utilization 0.92 \
+    --max-model-len 8192 \
+    --max-num-seqs 128 \
+    --enable-prefix-caching \
+    --enable-chunked-prefill
+
+  8B FP16 (가장 안전, 처리량 높음):
+  vllm serve meta-llama/Llama-3.1-8B-Instruct \
+    --gpu-memory-utilization 0.92 \
+    --max-model-len 8192 \
+    --max-num-seqs 256 \
+    --enable-prefix-caching
+
+  L40S 특화 튜닝 포인트
+
+  - FP8을 적극 활용: Ada 아키텍처라 하드웨어 FP8 지원. 메모리도 아끼고 대역폭 병목인 decode도 빨라집니다.
+  L40S에서 가성비 최고 옵션.
+  - --tensor-parallel-size는 건들지 마세요: GPU 1장이라 TP=1(기본값). 여러 장 있는 것처럼 설정하면
+  에러납니다.
+  - Speculative decoding이 잘 먹힘: 대역폭 병목 환경이라 draft 모델로 decode 지연 줄이는 효과가 큼.
+  지연시간 민감하면 시도.
+  - KV 캐시 양자화: 긴 컨텍스트 필요하면 --kv-cache-dtype fp8로 KV 캐시도 줄여서 동시 처리량 확보.
+
+  주의할 점
+
+  - --gpu-memory-utilization을 너무 높이면(0.95+) CUDA graph·활성값 버퍼 여유가 없어 OOM. 0.90~0.92에서
+  시작하세요.
+  - 8 vCPU밖에 없어서 전처리/토크나이징이 병목될 수 있음. 요청 동시성 아주 높게 잡을 땐 CPU도 모니터링.
+  - 단일 GPU라 이 인스턴스로 70B는 사실상 무리. 필요하면 g6e.12xlarge(L40S 4장) 이상으로 가야 합니다.
+
+  다음 스텝
+
+  이 순서로 해보세요:
+
+  1. 위 8B 커맨드로 서버 띄우기 (가장 안 깨짐)
+  2. benchmark_serving.py로 baseline TTFT/throughput 측정
+  3. FP8 14B로 바꿔서 비교
+  4. 본인 워크로드(프롬프트 길이·동시 요청 수)로 --max-num-seqs, --max-model-len 조정
+
+  ---
+  방향을 더 좁히려면 알려주세요:
+
+  - 어떤 모델을 서빙할 계획인가요? (크기·용도)
+  - 워크로드 성격은? 챗봇(저지연) vs 배치 처리(고처리량), 프롬프트가 긴 편인지(RAG 등)
+
+  이거 알려주시면 딱 맞는 커맨드랑 예상 처리량까지 짚어드릴게요. 그리고 vLLM 옵션은 버전(특히 V1 엔진)마다
+  바뀌므로, 실제 띄울 때 최신 문서 기준으로 정확히 확인해드릴 수도 있습니다.
+
+✻ Cooked for 35s
+
+❯ 챗봇, 배치, RAG 용 다 보여줘.
+
+⏺ g6e.2xlarge(L40S 48GB) 기준으로 세 가지 워크로드별 커맨드와 튜닝 논리를 정리했습니다. 같은 하드웨어라도
+  어디에 예산을 쓰느냐가 완전히 달라집니다.
+
+  ---
+  1. 챗봇 — 저지연 우선 (Latency)
+
+  목표: TTFT 짧게, 토큰이 빠르게 흘러나오게. 배치를 작게 유지해 각 요청이 GPU를 빨리 차지하도록.
+
+  vllm serve meta-llama/Llama-3.1-8B-Instruct \
+    --gpu-memory-utilization 0.90 \
+    --max-model-len 8192 \
+    --max-num-seqs 64 \
+    --enable-prefix-caching \
+    --enable-chunked-prefill \
+    --speculative-config '{"method":"ngram","num_speculative_tokens":5,"prompt_lookup_max":4}'
+
+  논리:
+  - --max-num-seqs 64 — 낮게. 배치 커지면 개별 응답이 느려짐. 저지연은 처리량을 일부 포기.
+  - Speculative decoding — L40S는 대역폭 병목이라 decode 가속 효과 큼. ngram은 draft 모델 없이 프롬프트
+  반복 패턴으로 예측(챗봇/코드에서 잘 먹힘).
+  - 작은 모델(8B) 선택 — 응답 속도가 곧 UX. FP16로 품질 유지.
+  - Chunked prefill — 긴 프롬프트 들어와도 다른 유저의 decode가 안 막힘 → TTFT 안정.
+
+  볼 지표: TTFT, ITL(토큰 간 지연), P99.
+
+  ---
+  2. 배치 처리 — 고처리량 우선 (Throughput)
+
+  목표: 초당 최대 토큰. 지연은 신경 안 씀. GPU를 항상 꽉 채우는 게 전부.
+
+  vllm serve Qwen/Qwen2.5-14B-Instruct \
+    --quantization fp8 \
+    --gpu-memory-utilization 0.94 \
+    --max-model-len 4096 \
+    --max-num-seqs 512 \
+    --enable-chunked-prefill \
+    --max-num-batched-tokens 8192
+
+  또는 오프라인 배치라면 서버 없이:
+  from vllm import LLM, SamplingParams
+  llm = LLM(model="Qwen/Qwen2.5-14B-Instruct", quantization="fp8",
+            gpu_memory_utilization=0.94, max_num_seqs=512)
+  outputs = llm.generate(prompts, SamplingParams(max_tokens=512))  # 수천 개 한 번에
+
+  논리:
+  - --max-num-seqs 512 — 크게. 동시 시퀀스 많을수록 GPU utilization↑.
+  - --gpu-memory-utilization 0.94 — 최대한. KV 캐시 공간을 확보해 배치를 키움.
+  - FP8 양자화 — 모델을 줄여 남는 메모리를 전부 KV 캐시로 → 더 많은 동시 요청.
+  - --max-model-len 4096 — 실제 필요한 만큼만. 짧을수록 요청당 KV 캐시가 작아 배치가 커짐.
+  - Speculative decoding 끔 — 대량 배치에선 이미 GPU가 꽉 차서 오히려 오버헤드.
+  - 오프라인이면 LLM.generate() — 서버 오버헤드 없이 최고 처리량.
+
+  볼 지표: total throughput(req/s, token/s), GPU utilization.
+
+  ---
+  3. RAG — 긴 프롬프트 + 반복 프리픽스
+
+  목표: 검색된 긴 문맥을 효율적으로. 공통 프리픽스 재사용이 핵심.
+
+  vllm serve Qwen/Qwen2.5-14B-Instruct \
+    --quantization fp8 \
+    --gpu-memory-utilization 0.92 \
+    --max-model-len 32768 \
+    --max-num-seqs 128 \
+    --enable-prefix-caching \
+    --enable-chunked-prefill \
+    --kv-cache-dtype fp8
+
+  논리:
+  - --enable-prefix-caching 필수 — RAG는 system prompt·지시문이 매 요청 반복됨. 프리픽스 KV 재사용으로
+  prefill 비용 대폭 절감. 같은 문서를 여러 질문에 쓰면 그 문서 KV도 캐시됨.
+  - --max-model-len 32768 크게 — 검색 문맥이 길어서 컨텍스트 넉넉히. 단, 클수록 KV 캐시 예약↑ →
+  --max-num-seqs는 128로 타협.
+  - --kv-cache-dtype fp8 — 긴 컨텍스트는 KV 캐시가 메모리를 크게 먹음. FP8로 절반 줄여 동시 처리량 확보.
+  L40S가 FP8 지원하니 활용.
+  - Chunked prefill 중요 — RAG는 prefill이 무거움(긴 입력). 잘게 나눠 처리해 TTFT와 다른 요청 응답성 유지.
+  - FP8 모델 — 32K 컨텍스트에선 메모리가 빡빡하므로 모델부터 줄여 여유 확보.
+
+  볼 지표: TTFT(긴 프롬프트라 중요), prefix cache hit rate(/metrics에서 확인).
+
+  ---
+  세 줄 요약 비교
+
+  ┌────────────────┬───────────┬─────────────┬───────────────────────────┐
+  │                │   챗봇    │    배치     │            RAG            │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ 핵심           │ 낮은 지연 │ 높은 처리량 │ 긴 문맥 + 프리픽스 재사용 │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ max-num-seqs   │ 64 (작게) │ 512 (크게)  │ 128 (중간)                │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ max-model-len  │ 8K        │ 4K (짧게)   │ 32K (길게)                │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ gpu-mem-util   │ 0.90      │ 0.94        │ 0.92                      │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ Speculative    │ ✅ 켬     │ ❌ 끔       │ 상황따라                  │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ Prefix caching │ ✅        │ 선택        │ ✅ 필수                   │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ KV cache fp8   │ 선택      │ 선택        │ ✅                        │
+  ├────────────────┼───────────┼─────────────┼───────────────────────────┤
+  │ 우선 지표      │ TTFT, ITL │ throughput  │ TTFT, cache hit           │
+  └────────────────┴───────────┴─────────────┴───────────────────────────┘
+
+  ---
+  공통 실습 흐름
+
+  세 개 다 이 방식으로 검증하세요:
+
+  # 서버 띄운 뒤, 워크로드에 맞는 데이터셋으로 벤치
+  python benchmarks/benchmark_serving.py \
+    --backend vllm --model <모델> \
+    --dataset-name sharegpt \      # RAG면 긴 프롬프트 데이터셋으로
+    --num-prompts 1000 \
+    --request-rate 10              # 챗봇은 낮게, 배치는 inf
+
+  --request-rate를 챗봇은 낮게(실시간 도착 흉내), 배치는 inf(한 번에 쏟기)로 두면 각 시나리오가
+  재현됩니다.
+
+  ---
+  ⚠️ 버전 주의: --speculative-config 같은 옵션 문법은 vLLM 버전(특히 V1 엔진 전환)에 따라 바뀌었습니다. 위
+  문법은 비교적 최신 기준인데, 실제 설치한 버전에서 vllm serve --help로 한 번 확인하는 게 안전합니다.
+  원하시면 지금 최신 문서 기준으로 정확한 옵션 문법을 확인해드릴게요.
+
+  특정 모델을 정하셨으면, 그 모델 크기에 맞춰 예상 동시 처리량이랑 KV 캐시 여유까지 계산해드릴 수
+  있습니다.
