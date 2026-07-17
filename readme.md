@@ -35,6 +35,8 @@
      
 * [C9. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
+* [C10. vLLM]
+
 
 ## Appendix ##
 
