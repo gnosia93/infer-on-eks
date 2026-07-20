@@ -37,7 +37,7 @@
 
 * [C10. vLLM]
 
-* [C11. VLM(비전-언어 모델) 인퍼런스]()
+* [C11. VLM(비전-언어 모델) 인퍼런스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11-vlm-infer.md)
   
 ## Appendix ##
 
