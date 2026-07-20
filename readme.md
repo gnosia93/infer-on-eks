@@ -37,7 +37,8 @@
 
 * [C10. vLLM]
 
-
+* [영상 모델 인퍼런스]()
+  
 ## Appendix ##
 
 * [A1. 피지컬 AI - VLA/VLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-physical-ai.md)
