@@ -7,12 +7,10 @@
 * [C3. Karpenter 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-nodepool.md)
   * [Graviton 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-graviton-nodepool.md)
   * [GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-gpu-nodepool.md)
-  * [AWS Inferentia 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-inferentia.md) 
 
 * C4. 디바이스 플로그인 설치
   * [EFA 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-efa-plugin.md)
   * [NVIDIA 디바이스 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
-  * [AWS Inferentia 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-inferentia-plugin.md)
   * [쿠버네티스 네트워크 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-network-optimization.md) 
 
 * [C5. vLLM 의 이해 / 모델 배포]
