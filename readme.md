@@ -13,7 +13,7 @@
   * [EFA 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-efa-plugin.md)
   * [NVIDIA 디바이스 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
   * [AWS Inferentia 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-inferentia-plugin.md)
-  * [네트워크 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-network-optimization.md) 
+  * [쿠버네티스 네트워크 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-network-optimization.md) 
     
 * [C5. lustre 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
       
