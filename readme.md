@@ -1,5 +1,7 @@
 # infer-on-eks
 
+### _Basic_ ###
+
 * [C1. VPC 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/1-create-vpc.md)
 
 * [C2. EKS 클러스터 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-create-eks.md)
