@@ -17,29 +17,31 @@
 
 * [C5. vLLM 의 이해 / 모델 배포]
 
-* C6. LLM 성능 평가 및 보안
+* [C6. 배치 인퍼런스]
+
+* C7. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
    * [LLM 부하/서빙 성능 (Serving Performance)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-llm-serving-performance.md)
     
-* C7. Observability
+* C8. Observability
    * [GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
    * [EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8.efa-observability.md)
 
 ### _Advanced_ ###
 
-* [C8. lustre 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
+* [C9. lustre 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
       
-* [C9. LeaderWorkerSet (LWS) & Ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
+* [C10. LeaderWorkerSet (LWS) & Ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
    * [cpu 인퍼런스 - 그라비톤](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-lws.md)
    * [gpu 인퍼런스]
    * [AWS 인퍼런시아]
    * [vLLM 딥다이브]
      
-* [C10. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
+* [C11. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
-* [C11. VLM(비전-언어 모델) 인퍼런스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11-vlm-infer.md)
+* [C12. VLM(비전-언어 모델) 인퍼런스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11-vlm-infer.md)
 
   
 ## Appendix ##
