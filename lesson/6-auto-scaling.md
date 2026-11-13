@@ -4,3 +4,4 @@ GPU 노드의 오토스케일링은 CPU 노드와 다릅니다. 우선 kubelet�
 
 HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추가하거나 회수하는 역할은 GPU 확장에서도 CPU 때와 같습니다. 다만 확장을 일으키는 트리거로는 CPU나 메모리 사용률 대신 추론 서버가 내보내는 선행 지표를 써야 합니다. 요청 대기열 길이, TTFT나 p95 같은 지연 시간, KV 캐시 사용률이 여기에 해당합니다. GPU 워크로드는 노드를 추가하고, vLLM 컨테이너 이미지를 받고, 모델을 내려받아 추론 서버가 준비되기까지 수 분이 걸립니다. 그래서 이렇게 일찍 반응하는 지표로 확장을 시작하는 것이 특히 중요합니다.
 
+https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/gpu-scaling.svg
