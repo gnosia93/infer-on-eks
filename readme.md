@@ -17,7 +17,19 @@
 
 * [C5. vLLM 의 이해 / 모델 배포]
 
-* [C6. 배치 인퍼런스]
+* [C6. Auto Scaling]()
+
+
+
+
+
+
+
+
+
+
+
+* [배치 인퍼런스]
 
 * C7. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
