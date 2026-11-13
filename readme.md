@@ -17,7 +17,7 @@
 
 * [C5. vLLM 의 이해 / 모델 배포]
 
-* [C6. Auto Scaling]()
+* [C6. Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 
 
