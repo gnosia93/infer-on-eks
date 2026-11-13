@@ -15,7 +15,7 @@
   * [NVIDIA 디바이스 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
   * [쿠버네티스 네트워크 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-network-optimization.md) 
 
-* [C5. Qwen 32B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-model-deply.md)
+* [C5. Qwen3-32B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-model-deply.md)
 
 * [C6. Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
