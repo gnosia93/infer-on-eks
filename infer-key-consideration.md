@@ -20,6 +20,14 @@ GPU는 고비용 자원이므로 모델 크기(예: 7B~32B)와 양자화(AWQ, FP
 
 * **단일 노드 멀티 GPU (Tensor Parallelism):** 32B 이상 대형 모델이 GPU 1장 VRAM에 들어가지 않을 경우, 한 파드(Pod)에 여러 GPU를 할당(`tensor-parallel-size`)하고 GPU 간 고속 통신(NVLink)을 활용합니다.
 * **GPU 분할 (MIG / Time-Slicing):** 7B~8B 경량 모델이나 임베딩/리랭커 모델을 여러 개 띄울 때는 NVIDIA MIG(Multi-Instance GPU)로 물리적 파티셔닝을 하거나 Time-Slicing으로 GPU 1장을 여러 파드가 공유하도록 설계합니다.
+* **멀티 노드 멀티 GPU (Pipeline Parallelism + Tensor Parallelism)** 단일 서버(노드)의 GPU 메모리를 초과하는 초대형 모델을 서빙할 때 여러 워커 노드의 GPU를 하나로 묶어 추론하는 방식입니다.
+  * 하이브리드 병렬화 (TP + PP):
+	   * 노드 내부 (Intra-node): 고속 인터커넥트(NVLink/NVSwitch)로 연결된 GPU끼리는 연산량이 많은 Tensor Parallelism(TP)을 적용합니다.
+	   * 노드 간 (Inter-node): 상대적으로 대역폭이 낮은 서버 간 네트워크 구간은 데이터 전송량이 적은 Pipeline Parallelism(PP)으로 모델의 레이어(층)를 쪼개어 배치합니다.
+  * 초고속 노드 간 네트워크 필수:
+	   * 일반 이더넷(TCP/IP) 환경에서는 노드 간 통신 병목으로 추론 속도가 급격히 떨어집니다. 따라서 InfiniBand 또는 RoCE(RDMA over Converged Ethernet) 네트워크 환경과 GPUDirect RDMA 구성이 필수적입니다.
+  * 쿠버네티스 오케스트레이션 도구:
+	   * 일반 Deployment로는 파드 간 동시 기동 및 Rank(마스터-워커) 조율이 어렵기 때문에, LeaderWorkerSet (LWS), Ray Cluster (KubeRay), 또는 Volcano / Kueue 같은 분산 워크로드 전용 오퍼레이터를 사용하여 여러 노드의 파드를 하나의 논리적 추론 단위로 묶어 관리합니다.
 
 ---
 
