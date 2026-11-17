@@ -3,10 +3,9 @@
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/infer-arch-2.jpg)
 
 ### 트래픽 흐름 ###
-* AWS ALB → LiteLLM Service (Ingress/TargetGroup)를 바라봄
+* AWS ALB → LiteLLM Service (Ingress/TargetGroup)를 바라봄 (ALB 유휴 타임아웃을 600초(10분)로 늘려 긴 SSE 스트리밍 보호)
 * LiteLLM Proxy 파드 → Envoy Router Service를 바라봄 (api_base 설정)
-* Envoy Router 파드 → vLLM Headless Service를 통해 각 vLLM 파드들의 실제 IP를 바라봄
-(Envoy가 x-session-id 헤더를 해싱해서 특정 vLLM 파드 IP로 직접 꽂아줌)
+* Envoy Router 파드 → vLLM Headless Service를 통해 각 vLLM 파드들의 실제 IP를 바라봄 (Envoy가 x-session-id 헤더를 해싱해서 특정 vLLM 파드 IP로 직접 꽂아줌)
 
  만약 EKS 클러스터에 Istio가 설치되어 있다면 별도의 Envoy 파드를 띄우지 않으므로, LiteLLM은 그냥 http://vllm-headless-service:8000/v1을 바라보고 Istio의 사이드카 프록시가 중간에서 가로채어 라우팅
 
