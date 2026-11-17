@@ -1,3 +1,145 @@
+# Kubernetes 환경에서 ServiceMonitor로 vLLM 메트릭 수집하기
+
+Prometheus Operator(예: `kube-prometheus-stack`)가 설치된 환경에서는 `ServiceMonitor` 리소스를 통해 vLLM 파드의 메트릭을 자동으로 감지하고 수집할 수 있습니다.
+
+---
+
+## 1. 사전 확인 사항 (중요)
+
+`ServiceMonitor`가 정상 작동하려면 아래 두 가지 라벨(Label) 매칭이 정확해야 합니다.
+
+1. **Prometheus가 인식하는 라벨 확인**
+   Prometheus가 어떤 `ServiceMonitor`를 감시할지 결정하는 라벨을 먼저 확인합니다. (보통 `release: prometheus` 또는 `release: kube-prometheus-stack`)
+   ```bash
+   kubectl get prometheus -A -o yaml | grep -A 5 serviceMonitorSelector
+   ```
+2. **Service의 포트 이름(name) 지정**
+   `ServiceMonitor`는 포트 번호(`8000`)가 아닌 **포트 이름(`name`)**을 기준으로 타겟을 찾습니다.
+
+---
+
+## 2. 배포 매니페스트 작성
+
+### ① vLLM Deployment (`vllm-deployment.yaml`)
+vLLM 컨테이너가 실행되며 `8000` 포트로 `/metrics`를 노출하도록 구성합니다.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-server
+  namespace: default
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--model"
+            - "facebook/opt-125m"
+            - "--port"
+            - "8000"
+          ports:
+            - name: http # 포트 이름 지정
+              containerPort: 8000
+              protocol: TCP
+```
+
+### ② vLLM Service (`vllm-service.yaml`)
+`ServiceMonitor`가 이 서비스를 찾을 수 있도록 `metadata.labels`와 `ports.name`을 명확히 지정합니다.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  namespace: default
+  labels:
+    app: vllm # ServiceMonitor의 selector와 일치해야 함
+spec:
+  type: ClusterIP
+  selector:
+    app: vllm
+  ports:
+    - name: http-metrics # ServiceMonitor의 endpoints.port와 일치해야 함
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+```
+
+### ③ ServiceMonitor (`vllm-servicemonitor.yaml`)
+Prometheus에게 `vllm-service`의 `/metrics` 경로를 15초마다 긁어가도록 지시합니다.
+
+```yaml
+apiVersion: ://coreos.com
+kind: ServiceMonitor
+metadata:
+  name: vllm-servicemonitor
+  namespace: monitoring # 보통 Prometheus가 설치된 네임스페이스에 생성
+  labels:
+    # [필수] 1번 사전 확인에서 조회한 Prometheus의 serviceMonitorSelector 라벨 입력
+    release: kube-prometheus-stack 
+spec:
+  # vLLM Service가 위치한 네임스페이스 지정
+  namespaceSelector:
+    matchNames:
+      - default
+  # vLLM Service의 metadata.labels와 일치해야 함
+  selector:
+    matchLabels:
+      app: vllm
+  endpoints:
+    - port: http-metrics # vLLM Service의 ports.name과 일치해야 함
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+```
+
+---
+
+## 3. 적용 및 동작 확인
+
+### 리소스 배포
+```bash
+kubectl apply -f vllm-deployment.yaml
+kubectl apply -f vllm-service.yaml
+kubectl apply -f vllm-servicemonitor.yaml
+```
+
+### Prometheus Targets 등록 확인
+1. Prometheus 웹 UI에 접속합니다. (`kubectl port-forward svc/prometheus-operated 9090:9090 -n monitoring`)
+2. 상단 메뉴에서 **Status > Targets**로 이동합니다.
+3. 목록에 `serviceMonitor/monitoring/vllm-servicemonitor/0` 항목이 나타나고, **State**가 `UP`인지 확인합니다.
+
+---
+
+## 4. 트러블슈팅 체크리스트 (Targets에 안 뜰 때)
+
+* **라벨 불일치**: `ServiceMonitor`의 `metadata.labels`가 Prometheus CR의 `serviceMonitorSelector`와 다른 경우.
+* **네임스페이스 누락**: `vLLM`과 `Prometheus`가 다른 네임스페이스에 있는데, `ServiceMonitor`에 `namespaceSelector`를 빼먹은 경우.
+* **포트 이름 불일치**: `Service`에 `ports.name`을 안 적었거나, `ServiceMonitor`의 `endpoints.port`에 숫자를 적은 경우.
+
+
+
+
+
+
+
+
+
+
+-----------
+
 # LiteLLM 프로메테우스(Prometheus) 메트릭 수집 가이드
 
 **LiteLLM 프록시(Proxy)**에서 프로메테우스(Prometheus)로 TTFT를 포함한 추론 지표를 수집하려면 **`config.yaml`에 `prometheus` 콜백을 추가**하고 `/metrics` 엔드포인트를 프로메테우스가 스크랩하도록 연결하면 됩니다.
