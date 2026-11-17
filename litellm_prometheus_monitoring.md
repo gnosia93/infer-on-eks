@@ -130,6 +130,45 @@ kubectl apply -f vllm-servicemonitor.yaml
 * **포트 이름 불일치**: `Service`에 `ports.name`을 안 적었거나, `ServiceMonitor`의 `endpoints.port`에 숫자를 적은 경우.
 
 
+## 4. Grafana 데이터 조회 및 대시보드 구성
+
+Prometheus에 정상적으로 데이터가 쌓이고 있다면, Grafana에서 대시보드를 연결하여 실시간으로 추이를 모니터링할 수 있습니다.
+
+### ① Grafana 접속 및 데이터 소스(Data Source) 확인
+1. Grafana 웹 UI에 접속합니다.
+   ```bash
+   kubectl port-forward svc/kube-prometheus-stack-grafana 3000:80 -n monitoring
+   ```
+   *(기본 접속 정보: `http://localhost:3000` / ID: `admin`, PW: `prom-operator`)*
+2. 좌측 메뉴에서 **Connections > Data sources**로 이동하여 **Prometheus**가 등록되어 있는지 확인합니다. (`kube-prometheus-stack` 설치 시 자동 등록됨)
+
+---
+
+### ② 공식 vLLM 대시보드 Import (가장 빠른 방법)
+vLLM 공식 GitHub 저장소에서 제공하는 대시보드 JSON을 그대로 불러와 사용할 수 있습니다.
+
+1. Grafana 좌측 메뉴에서 **Dashboards > New > Import**를 클릭합니다.
+2. 아래 공식 대시보드 JSON URL 내용을 복사하여 **Import via dashboard JSON model** 입력란에 붙여넣고 **Load**를 클릭합니다.
+   * **공식 대시보드 경로**: `https://githubusercontent.com`
+3. 하단의 Prometheus 데이터 소스를 선택한 뒤 **Import**를 클릭합니다.
+
+---
+
+### ③ 주요 vLLM 메트릭 PromQL 쿼리 (직접 패널 생성 시)
+대시보드를 직접 커스텀할 경우, **Explore** 또는 **Dashboard > Add visualization**에서 아래 PromQL 쿼리를 입력하여 데이터를 조회합니다.
+
+| 모니터링 항목 | PromQL 쿼리 예시 | 설명 |
+| :--- | :--- | :--- |
+| **초당 생성 토큰 수 (Throughput)** | `rate(vllm:generation_tokens_total[1m])` | 1분 평균 초당 출력 토큰 수 (Tokens/sec) |
+| **초당 프롬프트 토큰 수** | `rate(vllm:prompt_tokens_total[1m])` | 1분 평균 초당 입력 토큰 수 |
+| **실행 중 / 대기 중 요청 수** | `vllm:num_requests_running`<br>`vllm:num_requests_waiting` | 현재 처리 중인 요청과 큐에서 대기 중인 요청 수 |
+| **GPU KV 캐시 사용률 (%)** | `vllm:gpu_cache_usage_perc * 100` | GPU 메모리 내 KV 캐시 점유율 |
+| **TTFT (첫 토큰 응답 시간, P95)** | `histogram_quantile(0.95, sum(rate(vllm:time_to_first_token_seconds_bucket[5m])) by (le))` | 요청 후 첫 토큰이 나오기까지 걸리는 시간 (상위 95%) |
+| **TPOT (토큰당 생성 시간, P95)** | `histogram_quantile(0.95, sum(rate(vllm:time_per_output_token_seconds_bucket[5m])) by (le))` | 출력 토큰 하나당 생성되는 평균 시간 (상위 95%) |
+
+> **💡 참고 (vLLM 버전별 메트릭 명칭 차이):**
+> * 일부 구버전 또는 엔진 설정에 따라 메트릭 앞부분의 콜론(`:`)이 언더바(`_`)로 수집될 수 있습니다. (예: `vllm:num_requests_running` → `vllm_num_requests_running`)
+> * Grafana **Explore** 메뉴에서 `vllm`을 입력해 자동 완성되는 메트릭 이름을 먼저 확인해 보세요.
 
 
 
