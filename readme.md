@@ -37,18 +37,11 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 * [C7. Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
-
-
-
-* C7. LLM 성능 평가 및 보안
+* C8. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
    * [LLM 부하/서빙 성능 (Serving Performance)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-llm-serving-performance.md)
     
-* C8. Observability
-   * [GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-gpu-observability.md)
-   * [EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8.efa-observability.md)
-
 ### _Advanced_ ###
 
 * [C9. lustre 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-create-lustre.md)
@@ -62,14 +55,9 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
      
 * [C11. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
-* [C12. VLM(비전-언어 모델) 인퍼런스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11-vlm-infer.md)
-
-  
 ## Appendix ##
 
-* [A1. 피지컬 AI - VLA/VLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-physical-ai.md)
-
-* [A2. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
+* [A1. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
 
 
   
