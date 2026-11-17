@@ -60,14 +60,3 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 * [A1. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
 
 
-  
-
-
-
----
-* 이론 교재
-   * AI Infra 의 이해 (90 Min)
-   * ML 인퍼런스 이센셜 (60 Min)
-      * eks 인퍼런스 ./w lws + plugin + lustre.
-      * prmptfool 이론.. --> llm 테스트이론.. + promptfoo 설명.
-
