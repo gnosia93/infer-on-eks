@@ -32,21 +32,12 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 
  
-* [C5. Qwen3-32B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-model-deploy.md)
+* [C4. Qwen3-32B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-model-deploy.md)
 
 * [C6. Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 
 
-
-
-
-
-
-
-
-
-* [배치 인퍼런스]
 
 * C7. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
