@@ -1,5 +1,7 @@
 # infer-on-eks
 
+This workshop is under construction, Not fully implemented yet ...
+
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/infer-arch-2.jpg)
 
 ### 트래픽 흐름 ###
