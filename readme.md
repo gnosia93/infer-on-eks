@@ -44,11 +44,8 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 * [C2. EKS 클러스터 생성하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-create-eks.md)
 
-* C3. Karpenter 노드풀 및 플러그인 설치
-  * [GPU 노드풀 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-karpenter-gpu-nodepool.md)
-  * [EFA 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-efa-plugin.md)
-  * [NVIDIA 디바이스 플러그인 설치](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-gpu-plugin.md)
- 
+* [C3. GPU 워크로드 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-gpu.md)
+  
 * [C4. vLLM - Gemma4-12B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
 
 * [C5. LiteLLM 및 세션 라우팅 설정]
