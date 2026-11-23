@@ -134,6 +134,8 @@ jq -rs '
 * 아직 Pulling 중일 때: 이미지를 받는 중이니 같은 kubectl wait 명령을 다시 실행한다.
 * ErrImagePull, ImagePullBackOff, FailedScheduling일 때: 기다려도 해결되지 않는다. 이미지 받기 실패나 노드 자원 부족 같은 원인을 먼저 고쳐야 한다.
 
+## 벤치 마크 결과 ##
+
 
 ## 참고자료 ##
 
