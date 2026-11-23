@@ -132,7 +132,7 @@ kubectl run s3-test -n vllm --rm -it --restart=Never \
 ```
 eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN이 annotation으로 붙은 쿠버네티스 서비스 어카운트까지 한 번에 만들어 준다. 클러스터에 withOIDC: true가 켜져 있으니 바로 쓸 수 있다. 네임스페이스가 아직 없으면 eksctl이 만든다.
 
-### 3. vLLM 매니페스트 ###
+### 4. vLLM 디플로이먼트 생성 ###
 ```
 apiVersion: v1
 kind: Namespace
