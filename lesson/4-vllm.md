@@ -19,7 +19,7 @@ echo "VPC ID: $VPC_ID"
 
 허깅페이스로 부터 오픈 웨이트 모델의 가중치를 받아 저장할 대상 S3 버킷을 생성한다. 
 ```
-BUCKET=$CLUSTER_NAME-$AWS_ACCOUNT_ID   
+export BUCKET="${CLUSTER_NAME:?}-${AWS_ACCOUNT_ID:?}"
 
 # 버킷 생성 (us-east-1 외 리전은 LocationConstraint가 필요합니다)
 aws s3api create-bucket \
