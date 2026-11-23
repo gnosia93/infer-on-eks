@@ -1,5 +1,25 @@
+### 1. S3 버킷 생성 ###
+```
+REGION=ap-northeast-2
+BUCKET=llm-models-<ACCOUNT_ID>   # 전 세계에서 유일한 이름, 소문자·숫자·하이픈만 사용
 
-### 1. S3 모델 업로드 ###
+# 버킷 생성 (us-east-1 외 리전은 LocationConstraint가 필요합니다)
+aws s3api create-bucket \
+  --bucket "$BUCKET" \
+  --region "$REGION" \
+  --create-bucket-configuration LocationConstraint="$REGION"
+
+# 퍼블릭 접근 차단 (새 버킷은 기본으로 켜져 있지만 명시해 둡니다)
+aws s3api put-public-access-block \
+  --bucket "$BUCKET" \
+  --public-access-block-configuration \
+  BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+
+# 생성 확인
+aws s3api head-bucket --bucket "$BUCKET"
+```
+
+### 2. 모델 업로드 ###
 
 ```
 # FP8 체크포인트를 받아 S3에 한 번 올립니다. 예비 버전이라 커밋을 고정하세요.
@@ -8,11 +28,11 @@ hf download RedHatAI/gemma-4-12B-it-FP8-Dynamic \
   --local-dir ./gemma-4-12B-it-FP8-Dynamic
 
 aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
-  s3://<MODEL_BUCKET>/models/gemma-4-12B-it-FP8-Dynamic \
+  s3://$BUCKET/models/gemma-4-12B-it-FP8-Dynamic \
   --exclude ".cache/*"
 ```
 
-### 2. IRSA 역할 ###
+### 3. IRSA 역할 ###
 ```
 {
   "Version": "2012-10-17",
@@ -20,7 +40,13 @@ aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
     {
       "Effect": "Allow",
       "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::<MODEL_BUCKET>",
+      "Resource": "arn:aws:s3:::{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::$BUCKET",
       "Condition": {
         "StringLike": {
           "s3:prefix": [
@@ -33,7 +59,23 @@ aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
     {
       "Effect": "Allow",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::<MODEL_BUCKET>/models/gemma-4-12B-it-FP8-Dynamic/*"
+      "Resource": "arn:aws:s3:::$BUCKET/models/gemma-4-12B-it-FP8-Dynamic/*"
+    }
+  ]
+}",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "models/gemma-4-12B-it-FP8-Dynamic",
+            "models/gemma-4-12B-it-FP8-Dynamic/*"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::$BUCKET/models/gemma-4-12B-it-FP8-Dynamic/*"
     }
   ]
 }
