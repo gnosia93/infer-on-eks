@@ -189,11 +189,16 @@ Spot 인터럽션 큐는 AWS가 보내는 Spot 중단 예고를 받아 Karpenter
 인터럽션 큐가 없으면 Karpenter는 이 사전 경고를 받지 못한다. 따라서 Spot 인스턴스가 회수될 때 노드가 미리 정리되지 못하고, 인스턴스가 갑자기 사라진 뒤에야 쿠버네티스가 "노드 응답 없음(NotReady)"을 인지하게 된다. 이 인지에는 노드 상태 타임아웃(보통 수십 초에서 수 분)이 걸리고, 그 시간이 지나야 비로소 파드가 다른 노드로 재스케줄된다. 결과적으로 복구가 느려지고, 처리 중이던 작업은 우아하게 마무리되지 못한 채 갑작스럽게 종료된다. 다만 작업 자체는 멱등성 설계나 큐 재처리(재큐) 메커니즘이 있으면 손실 없이 복구되므로, 인터럽션 큐의 부재가 데이터를 잃게 만들지는 않는다. 즉 인터럽션 큐가 없어도 정확성은 유지되지만, Spot 중단 시 복구가 느리고 비효율적이 된다.
 
 ```
-aws sqs list-queues --queue-name-prefix $CLUSTER_NAME
-# Karpenter-<클러스터명> 같은 큐가 보이면 생성된 것
+# 큐가 있는지 (없으면 QueueDoesNotExist 오류)
+aws sqs get-queue-url --queue-name $CLUSTER_NAME
 
-kubectl get pod -n karpenter -o yaml | grep -i interruption
-# 또는 Karpenter 설정/env에 INTERRUPTION_QUEUE 값이 있는지
+# eksctl이 만든 리소스 목록. 큐를 켰다면 KarpenterInterruptionQueue와 Rule 4개가 보여야 함
+aws cloudformation describe-stack-resources --stack-name eksctl-$CLUSTER_NAME-karpenter \
+  --query 'StackResources[].[LogicalResourceId,ResourceType]' --output table
+
+# Karpenter가 큐를 쓰도록 설정됐는지 (클러스터 이름이 출력되면 정상)
+kubectl get deploy karpenter -n karpenter \
+  -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="INTERRUPTION_QUEUE")].value}'
 ```
 
 
