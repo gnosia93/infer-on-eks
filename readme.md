@@ -28,7 +28,7 @@ This workshop is under construction, Not fully implemented yet ...
   * [모델 배포하기 - 디플로이먼트/서비스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
   * [모델 레이턴시 측정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-latency.md)
     
-* [C5. LiteLLM 및 세션 라우팅 설정]
+* C5. 세션 / 트래픽 라우팅
   * [LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
   * [Istio L7 Router]
   * [AWS ALB - Ingress] 
