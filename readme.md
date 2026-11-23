@@ -25,7 +25,6 @@ This workshop is under construction, Not fully implemented yet ...
   
 * C4. vLLM - Gemma4-12B 모델 배포
   * [기본 배포 - 일반 이미지](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
-  * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
   * [모델 레이턴시 측정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-latency.md)
     
 * [C5. LiteLLM 및 세션 라우팅 설정]
@@ -35,6 +34,7 @@ This workshop is under construction, Not fully implemented yet ...
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/eks_s3_fast_model_loading_full_guide.md
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/llm-coldstart-soci-blog-outline.md  
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/llm-coldstart-soci-karpenter-v2.md 
+  * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
 * [C7. 성능 측정 및 Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
