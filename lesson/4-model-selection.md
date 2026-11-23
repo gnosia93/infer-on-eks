@@ -244,5 +244,4 @@ Bedrock 안에서 쓸 수 있는 절감 수단도 대조군에 넣으세요. 서
 
 ---
 
-※ 출처 내용은 라이선스 준수를 위해 요약하고 재구성했습니다 (Content was rephrased for compliance with licensing restrictions).
 
