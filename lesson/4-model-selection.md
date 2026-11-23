@@ -15,8 +15,6 @@
 
 1~4를 점수에 섞으면 큰 비용 절감이 품질 미달을 덮어 버립니다. 그래서 이 네 단계는 합격/불합격으로만 판정합니다.
 
-오픈 웨이트를 도입한다고 꼭 직접 호스팅할 필요는 없습니다. Bedrock도 Qwen, Gemma, Mistral, DeepSeek, GLM, Kimi, gpt-oss 같은 오픈 웨이트 모델을 서버리스로 제공하고, OpenAI 호환 API도 지원합니다. 2025년 12월에 18종, 2026년 2월에 6종이 추가됐습니다([AWS 블로그](https://aws.amazon.com/blogs/aws/amazon-bedrock-adds-fully-managed-open-weight-models), [What's New](https://aws.amazon.com/about-aws/whats-new/2026/02/amazon-bedrock-adds-support-six-open-weights-models)). 그러니 후보는 "모델 × 배포 방식" 조합으로 잡으세요(6장).
-
 ## 1. 선정 프로세스
 
 | 단계 | 할 일 | 산출물 / 종료 조건 |
