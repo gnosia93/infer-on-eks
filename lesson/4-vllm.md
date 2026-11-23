@@ -16,15 +16,16 @@ echo "VPC ID: $VPC_ID"
 ```
 
 ### 1. S3 버킷 생성 ###
+
+허깅페이스로 부터 오픈 웨이트 모델의 가중치를 받아 저장할 대상 S3 버킷을 생성한다. 
 ```
-REGION=ap-northeast-2
-BUCKET=llm-models-<ACCOUNT_ID>   # 전 세계에서 유일한 이름, 소문자·숫자·하이픈만 사용
+BUCKET=$CLUSTER_NAME-$AWS_ACCOUNT_ID   
 
 # 버킷 생성 (us-east-1 외 리전은 LocationConstraint가 필요합니다)
 aws s3api create-bucket \
   --bucket "$BUCKET" \
-  --region "$REGION" \
-  --create-bucket-configuration LocationConstraint="$REGION"
+  --region "$AWS_REGION" \
+  --create-bucket-configuration LocationConstraint="$AWS_REGION"
 
 # 퍼블릭 접근 차단 (새 버킷은 기본으로 켜져 있지만 명시해 둡니다)
 aws s3api put-public-access-block \
