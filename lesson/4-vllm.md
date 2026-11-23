@@ -413,7 +413,8 @@ kubectl logs -n "$NS" "$POD" --timestamps \
 2026-11-23T15:43:22.393764308Z INFO:     Application startup complete.
 ```
 
-
+### 3. 스케줄링 타임라인 ###
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-pod-schedule-timeline.png)
 
 ## 참고자료 ##
 
