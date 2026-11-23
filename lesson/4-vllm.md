@@ -114,20 +114,20 @@ echo "$POLICY_ARN"
 # 3. IRSA 역할과 서비스 어카운트 만들기
 eksctl create iamserviceaccount \
   --cluster "${CLUSTER_NAME}" \
-  --namespace vllm \
-  --name vllm \
+  --namespace llm-serving \
+  --name vllm-model-reader \
   --role-name "${CLUSTER_NAME}-gemma-s3-read" \
   --attach-policy-arn "${POLICY_ARN}" \
   --approve
 
 # 4. 서비스 어카운트에 역할이 연결됐는지 확인
-kubectl get sa vllm -n vllm \
+kubectl get sa vllm-model-reader -n llm-serving \
   -o jsonpath='{.metadata.annotations.eks\.amazonaws\.com/role-arn}'
 
-# 5. 서비스 어카운트로 테스트 파드를 띄워서 실제로 S3를 읽을 수 있는지 확인
-kubectl run s3-test -n vllm --rm -it --restart=Never \
+# 5. 테스트 파드로 S3 읽기 확인
+kubectl run s3-test -n llm-serving --rm -it --restart=Never \
   --image=public.ecr.aws/aws-cli/aws-cli \
-  --overrides='{"spec":{"serviceAccountName":"vllm"}}' \
+  --overrides='{"spec":{"serviceAccountName":"vllm-model-reader"}}' \
   -- s3 ls "s3://${BUCKET}/models/gemma-4-12B-it-FP8-Dynamic/"
 ```
 eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN이 annotation으로 붙은 쿠버네티스 서비스 어카운트까지 한 번에 만들어 준다. 클러스터에 withOIDC: true가 켜져 있으니 바로 쓸 수 있다. 네임스페이스가 아직 없으면 eksctl이 만든다.
