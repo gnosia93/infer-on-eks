@@ -30,7 +30,8 @@ This workshop is under construction, Not fully implemented yet ...
     
 * [C5. LiteLLM 및 세션 라우팅 설정]
   * [LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
-  * [Istio L7 GateWay] 
+  * [Istio L7 Router]
+  * [AWS ALB - Ingress] 
 
 * C6. 콜드 스타트 해결
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/s3_datasync_fast_model_loading.md 
