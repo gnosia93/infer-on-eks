@@ -57,7 +57,7 @@ export KARPENTER_VERSION="1.8.1"
 export VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values="${CLUSTER_NAME}" --query "Vpcs[].VpcId" --output text)
 
 echo "Cluster Name: $AWS_REGION"
-echo "AWS Account iD: $AWS_ACCOUNT_ID"
+echo "AWS Account ID: $AWS_ACCOUNT_ID"
 echo "Cluster Name: $CLUSTER_NAME"
 echo "EKS Version: $K8S_VERSION"
 echo "Karpenter Version: $KARPENTER_VERSION"
