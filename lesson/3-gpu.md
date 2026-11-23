@@ -19,7 +19,7 @@ helm install nvdp nvdp/nvidia-device-plugin \
 kubectl get daemonset -n nvidia
 ```
 
-### 2. GPU 노드풀 생성 ###
+### 2. 카펜터 GPU 노드풀 생성 ###
 ```
 cat <<EOF > nodepool-gpu.yaml 
 apiVersion: karpenter.sh/v1
@@ -161,6 +161,24 @@ Wed Dec 10 06:44:46 2025
 
 vs-code 웹콘솔에서 새로운 터미널을 하나 열어서 eks-node-viwer 를 실행한다. 
 ![](https://github.com/gnosia93/vlm-distillation/blob/main/images/eks-node-view-nvidia-smi.png)
+
+
+
+### 4. spot 인터럽션 큐 확인 ###
+
+Spot 인터럽션 큐는 AWS가 보내는 Spot 중단 예고를 받아 Karpenter가 노드를 미리 정리할 수 있게 해주는 장치다. AWS는 Spot 인스턴스를 회수하기 약 2분 전에 중단 경고를 보내고, 이 밖에도 Rebalance 권고, 인스턴스 상태 변경, 예정된 점검 같은 이벤트를 EventBridge로 발생시킨다. 이 이벤트들을 EventBridge 규칙이 SQS 큐(인터럽션 큐)로 전달하면, Karpenter가 이 큐를 폴링하다가 자신이 관리하는 노드가 곧 사라진다는 메시지를 발견한다. 그러면 Karpenter는 해당 노드를 스케줄 불가로 표시(cordon)하고, 그 위의 파드를 우아하게 축출(drain)한 뒤, 축출된 파드를 위한 대체 노드를 미리 프로비저닝한다. 즉 인스턴스가 실제로 회수되기 전 2분의 여유 안에 워크로드를 다른 노드로 옮겨, 중단을 매끄럽게 처리하는 것이 이 큐의 역할이다.
+
+인터럽션 큐가 없으면 Karpenter는 이 사전 경고를 받지 못한다. 따라서 Spot 인스턴스가 회수될 때 노드가 미리 정리되지 못하고, 인스턴스가 갑자기 사라진 뒤에야 쿠버네티스가 "노드 응답 없음(NotReady)"을 인지하게 된다. 이 인지에는 노드 상태 타임아웃(보통 수십 초에서 수 분)이 걸리고, 그 시간이 지나야 비로소 파드가 다른 노드로 재스케줄된다. 결과적으로 복구가 느려지고, 처리 중이던 작업은 우아하게 마무리되지 못한 채 갑작스럽게 종료된다. 다만 작업 자체는 멱등성 설계나 큐 재처리(재큐) 메커니즘이 있으면 손실 없이 복구되므로, 인터럽션 큐의 부재가 데이터를 잃게 만들지는 않는다. 즉 인터럽션 큐가 없어도 정확성은 유지되지만, Spot 중단 시 복구가 느리고 비효율적이 된다.
+
+```
+aws sqs list-queues --queue-name-prefix <클러스터명>
+# Karpenter-<클러스터명> 같은 큐가 보이면 생성된 것
+
+kubectl get pod -n karpenter -o yaml | grep -i interruption
+# 또는 Karpenter 설정/env에 INTERRUPTION_QUEUE 값이 있는지
+```
+
+
 
 
 ## EFA 활성화 ##
