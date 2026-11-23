@@ -45,6 +45,14 @@ source ~/.bashrc
 ```
 go 컴파일 과정에서 다소 시간이 소요된다.
 
+
+#### 3. 허깅페이스 CLI 설치 ####
+```
+sudo dnf install -y python3.12 python3.12-pip
+python3.12 -m pip install --user -U huggingface_hub
+hf version
+```
+
 ## EKS 클러스터 생성하기 ##
 
 ### 1. 환경 설정 ###
