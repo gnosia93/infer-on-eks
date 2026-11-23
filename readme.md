@@ -36,7 +36,7 @@ This workshop is under construction, Not fully implemented yet ...
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/llm-coldstart-soci-karpenter-v2.md 
   * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
-* [C7. 성능 측정 및 Auto Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
+* [C7. GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 * C8. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
