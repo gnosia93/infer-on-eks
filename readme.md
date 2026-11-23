@@ -46,8 +46,11 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 * [C3. GPU 스케줄링 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-gpu.md)
   
-* [C4. vLLM - Gemma4-12B 모델 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
-
+* C4. vLLM - Gemma4-12B 모델 배포
+  * [기본 배포](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
+  * [배포시간 단축](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
+  * [레이턴시 측정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-latency.md)
+    
 * [C5. LiteLLM 및 세션 라우팅 설정]
 
 * C6. 콜드 스타트 해결
