@@ -98,9 +98,28 @@ jq -rs '
 ' bench-results/c*.json | column -t
 ```
 
+[결과]
+```
+conc  fail  req/s  out_tok/s  TTFT_p50  TTFT_p99  TPOT_p50  TPOT_p99  ITL_p99  E2E_p50  E2E_p99
+1     0     0.17   43         111       120       23        23        23.8     5974     5985
+2     0     0.33   83         137       222       23.3      23.6      24.2     6148     6165
+4     0     0.59   152        319       414       24.2      25        25       6497     6521
+8     0     1.12   286        490       706       26.2      27.5      33.8     7158     7222
+16    0     1.89   483        578       1496      30.8      32.7      192.9    8440     9250
+32    0     2.89   739        634       2789      40.8      42.8      223.7    11014    12977
+64    0     4.03   1032       688       5535      59.1      61.1      230.2    15792    20499
+```
+
 `fail`이 0이 아니면 vLLM 서버 로그(`kubectl logs -n llm-serving deploy/gemma4-12b-vllm`)를 확인한다. 요청별 에러 메시지가 필요하면 `--save-detailed`를 추가해 다시 돌린다. 에러 메시지는 결과 JSON의 `errors` 필드에 남는다.
 
+
 ### 3. 결과 읽는 법 ###
+
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/streaming-latency.png)
+* 위쪽 막대: 서버가 하는 일을 순서대로 보여 준다. 큐 대기, prefill, decode 순서이고, decode 한 칸에서 토큰이 하나 나온다.
+* 가운데 점: 클라이언트에 토큰이 도착한 시각으로 점과 점 사이의 간격 하나하나가 ITL이다.
+* 빨간 칸: 다른 요청의 prefill이 같은 스텝에 끼어들어 그 스텝이 길어진 경우로 토큰3과 토큰4 사이의 ITL이 길어졌다.
+* 아래 화살표: TTFT와 TPOT × (N − 1)을 더하면 E2EL이다.
 
 | 지표 | 의미 | 해석 |
 |---|---|---|
@@ -134,12 +153,7 @@ jq -rs '
 * 아직 Pulling 중일 때: 이미지를 받는 중이니 같은 kubectl wait 명령을 다시 실행한다.
 * ErrImagePull, ImagePullBackOff, FailedScheduling일 때: 기다려도 해결되지 않는다. 이미지 받기 실패나 노드 자원 부족 같은 원인을 먼저 고쳐야 한다.
 
-## 벤치 마크 결과 ##
-![](https://github.com/gnosia93/infer-on-eks/blob/main/images/streaming-latency.png)
-* 위쪽 막대: 서버가 하는 일을 순서대로 보여 준다. 큐 대기, prefill, decode 순서이고, decode 한 칸에서 토큰이 하나 나온다.
-* 가운데 점: 클라이언트에 토큰이 도착한 시각으로 점과 점 사이의 간격 하나하나가 ITL이다.
-* 빨간 칸: 다른 요청의 prefill이 같은 스텝에 끼어들어 그 스텝이 길어진 경우로 토큰3과 토큰4 사이의 ITL이 길어졌다.
-* 아래 화살표: TTFT와 TPOT × (N − 1)을 더하면 E2EL이다.
+
 
 
 ## 참고자료 ##
