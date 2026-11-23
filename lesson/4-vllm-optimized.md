@@ -289,5 +289,4 @@ kubectl get events -n llm-serving --field-selector reason=Pulled \
 - [Karpenter Blueprints: Using SOCI snapshotter parallel pull/unpack mode](https://aws-samples.github.io/karpenter-blueprints/blueprints/soci-snapshotter/)
 - [nodeadm 예제: Enabling fast image pull](https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/examples/)
 
-출처 문서의 내용은 요약하고 재구성했습니다.
 
