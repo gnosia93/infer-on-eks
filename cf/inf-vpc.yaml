@@ -15,13 +15,9 @@ Parameters:
     Type: String
     Default: "10.0.0.0/16"
 
-  GravitonType:
-    Type: String
-    Default: "c7g.4xlarge"
-
   X86Type:
     Type: String
-    Default: "c6i.4xlarge"
+    Default: "c7i.4xlarge"
 
   # 1. 최신 AL2023 ARM64 AMI (Graviton용)
   LatestAmiIdArm64:
@@ -347,36 +343,6 @@ Resources:
           ToPort: 443
           CidrIp: ${MY_IP}
 
-  GravitonBox:
-    Type: AWS::EC2::Instance
-    Properties:
-      # SSM을 통해 최신 AL2023 ARM64 AMI 자동 참조
-      ImageId: !Ref LatestAmiIdArm64
-      InstanceType: !Ref GravitonType
-      KeyName: !Ref KeyPairName
-      SubnetId: !Ref PublicSubnet1 # VPC 템플릿의 서브넷 참조
-      SecurityGroupIds:
-        - !Ref InstanceSecurityGroup
-      IamInstanceProfile: GetStartedEKS_Profile
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: 30
-            VolumeType: gp3
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          sudo -u ec2-user -i <<'EC2_USER_SCRIPT'
-          curl -fsSL https://code-server.dev/install.sh | sh && sudo systemctl enable --now code-server@ec2-user
-          sleep 5
-          sed -i 's/127.0.0.1:8080/0.0.0.0:9090/g; s/^password: .*/password: inf!@#c/g' /home/ec2-user/.config/code-server/config.yaml
-          EC2_USER_SCRIPT
-          echo 'export PS1="$(uname -m) \$ "' >> /home/ec2-user/.bashrc
-          sudo systemctl restart code-server@ec2-user
-      Tags:
-        - Key: Name
-          Value: gse-graviton-code
-
   X86Box:
     Type: AWS::EC2::Instance
     Properties:
@@ -391,7 +357,7 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 30
+            VolumeSize: 300
             VolumeType: gp3
       UserData:
         Fn::Base64: !Sub |
@@ -405,12 +371,9 @@ Resources:
           sudo systemctl restart code-server@ec2-user
       Tags:
         - Key: Name
-          Value: gse-x86-code
+          Value: ioe-x86-code
 
 Outputs:
-  GravitonVsCode:
-    Description: "배스천 호스트 접속용 퍼블릭 DNS"
-    Value: !Sub "http://${GravitonBox.PublicDnsName}:9090"
   X86VsCode:
     Description: "VS Code 서버 접속 URL"
     Value: !Sub "http://${X86Box.PublicDnsName}:9090"
