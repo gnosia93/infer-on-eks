@@ -199,6 +199,7 @@ Resources:
             Effect: Allow
             Action:
               - "eks:*"
+              - "pricing:GetProducts"
               - "cloudformation:*"
               - "ec2:RunInstances"
               - "ec2:Describe*"
