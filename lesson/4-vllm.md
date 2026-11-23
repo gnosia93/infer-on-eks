@@ -328,25 +328,58 @@ emptyDir은 파드가 노드에 배치될 때 빈 디렉터리로 만들어지�
 - `cache`는 노드 디스크를 쓴다. GPU 노드의 EBS 볼륨(EC2NodeClass의 `blockDeviceMappings`)에 vLLM 이미지와 이 20Gi가 함께 들어갈 여유가 있어야 한다.
 
 
+## 기동 시간 측정 ##
 
-### 3. 설정 메모 ###
+### 1. 노드, 이미지, 컨테이너 타임라인 ###
+```
+NS=llm-serving
+POD=$(kubectl get pod -n "$NS" -l app.kubernetes.io/name=gemma4-12b-vllm \
+  -o jsonpath='{.items[0].metadata.name}')
+NODE=$(kubectl get pod -n "$NS" "$POD" -o jsonpath='{.spec.nodeName}')
+NODECLAIM=$(kubectl get nodeclaims -o json \
+  | jq -r --arg n "$NODE" '.items[] | select(.status.nodeName == $n) | .metadata.name')
+echo "pod=$POD node=$NODE nodeclaim=$NODECLAIM"
 
-#### 모델과 이미지 ####
-* 8비트 방식: Red Hat이 llm-compressor로 가중치와 활성값을 모두 FP8로 만든 체크포인트이다. Red Hat 평가에서 BF16 대비 성능을 약 100% 유지하였다. Google 원본(BF16)을 S3에 올리고 싶으면 S3 경로를 바꾸고 --quantization=fp8 한 줄을 추가하면 된다. 이 경우 vLLM이 로드할 때 FP8로 변환하고, S3에서 읽는 양은 약 2배(약 24GB)가 된다.
-* vLLM 버전: 12B Unified는 vLLM 0.23.0 이상이 필요하다. CUDA 13 이미지는 노드 드라이버 R580 이상이 필요하다.
+jq -rs '
+def epoch: sub("\\.[0-9]+"; "") | fromdateiso8601;
+def cond($o; $type): $o.status.conditions[]? | select(.type == $type) | .lastTransitionTime;
+.[0] as $pod | .[1] as $nc | .[2] as $node | .[3] as $ev
+| def event($reason): first($ev.items[]? | select(.reason == $reason) | .firstTimestamp // .eventTime);
+[
+  {k: "created",     step: "파드 생성",                                        t: $pod.metadata.creationTimestamp},
+  {k: "nc_created",  step: "NodeClaim 생성 (Karpenter가 노드를 띄우기로 결정)", t: $nc.metadata.creationTimestamp},
+  {k: "launched",    step: "EC2 인스턴스 생성 (NodeClaim Launched)",            t: cond($nc; "Launched")},
+  {k: "registered",  step: "노드가 클러스터에 등록 (NodeClaim Registered)",      t: cond($nc; "Registered")},
+  {k: "node_ready",  step: "kubelet 준비 완료 (Node Ready)",                    t: cond($node; "Ready")},
+  {k: "initialized", step: "GPU 리소스 등록 완료 (NodeClaim Initialized)",       t: cond($nc; "Initialized")},
+  {k: "scheduled",   step: "파드가 노드에 배정 (PodScheduled)",                  t: cond($pod; "PodScheduled")},
+  {k: "pulling",     step: "이미지 받기 시작 (Pulling)",                         t: event("Pulling")},
+  {k: "pulled",      step: "이미지 받기 완료 (Pulled)",                          t: event("Pulled")},
+  {k: "started",     step: "컨테이너 시작",                                      t: $pod.status.containerStatuses[0].state.running.startedAt},
+  {k: "ready",       step: "vLLM 준비 완료 (Pod Ready)",                         t: cond($pod; "Ready")}
+]
+| map(select(.t != null) | .e = (.t | epoch))
+| sort_by(.e)
+| (map({key: .k, value: .e}) | from_entries) as $e
+| def dur($a; $b): if $e[$a] != null and $e[$b] != null then "\($e[$b] - $e[$a])초" else "-" end;
+  (.[] | "\(.t)  +\(.e - $e.created)초  \(.step)"),
+  "",
+  "노드 준비 (파드 생성 → 노드 배정):  \(dur("created"; "scheduled"))",
+  "이미지 받기 (Pulling → Pulled):     \(dur("pulling"; "pulled"))",
+  "vLLM 기동 (컨테이너 시작 → Ready):  \(dur("started"; "ready"))",
+  "전체 (파드 생성 → Ready):           \(dur("created"; "ready"))",
+  "이미지 정보: \(first($ev.items[]? | select(.reason == "Pulled") | .message) // "-")"
+' <(kubectl get pod -n "$NS" "$POD" -o json) \
+  <(kubectl get nodeclaim "$NODECLAIM" -o json) \
+  <(kubectl get node "$NODE" -o json) \
+  <(kubectl get events -n "$NS" --field-selector involvedObject.name="$POD" -o json)
+```
 
-#### Run:ai Model Streamer ####
-* concurrency 4: AWS 문서의 계산식 ceil(모델 크기 ÷ 청크 크기) 의 결과값이다. FP8 체크포인트를 약 13GB로 잡고 4GB 청크로 나눈 값입니다.
-* CPU 메모리: 청크 4개를 동시에 읽으면 CPU 버퍼가 최대 약 16GB까지 커질 수 있으므로, 메모리를 40Gi로 설정하였다.
-헤드리스 서비스와 스케일링
-
-#### 선택 사항 ####
-* 콜드 스타트 단축: 새 노드에서 파드가 뜰 때는 노드 기동, 수 GB짜리 이미지 pull, 가중치 스트리밍, torch.compile 순서로 시간이 듭니다. AWS 문서는 두 가지를 권장합니다 [3].
-   * S3 Gateway VPC 엔드포인트를 두면 NAT 게이트웨이 병목이 없어진다.
-   * torch.compile 캐시를 NVMe 인스턴스 스토어 hostPath에 두면, 같은 노드에서 재시작할 때 컴파일을 건너뛴다. 다만 Pod Security baseline 정책은 hostPath를 막아놓아서 위 YAML은 emptyDir을 사용하였다.
-* PodDisruptionBudget: minAvailable: 1로 하나 추가해 두면, Karpenter가 노드를 정리할 때 두 파드가 동시에 내려가지 않는다.
-문제가 생기면
-
+### 2. vLLM 기동 단계별 시간 ###
+```
+kubectl logs -n "$NS" "$POD" --timestamps \
+  | grep -E "RunAI Streamer|Model loading took|torch.compile takes|Graph capturing finished|init engine|Application startup complete"
+```
 
 ## 참고자료 ##
 
