@@ -176,7 +176,7 @@ spec:
       serviceAccountName: vllm-model-reader
       terminationGracePeriodSeconds: 120
       nodeSelector:
-        karpenter.sh/nodepool: gpu-text-g7e       # 실제 GPU NodePool 이름으로 변경
+        karpenter.sh/nodepool: gpu
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
@@ -189,21 +189,21 @@ spec:
             matchLabels:
               app.kubernetes.io/name: gemma4-12b-vllm
         - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone  # 가능하면 서로 다른 AZ에 배치
+          topologyKey: topology.kubernetes.io/zone      # 가능하면 서로 다른 AZ에 배치
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: gemma4-12b-vllm
       securityContext:
         runAsNonRoot: true
-        runAsUser: 2000                           # vLLM 이미지에 내장된 vllm 사용자
+        runAsUser: 2000                                 # vLLM 이미지에 내장된 vllm 사용자
         runAsGroup: 0
         fsGroup: 0
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: vllm
-          image: vllm/vllm-openai:v0.33.0          # 0.23.0 이상 필요. 운영에서는 @sha256 다이제스트로 고정
+          image: vllm/vllm-openai:v0.33.0                # 0.23.0 이상 필요. 운영에서는 @sha256 다이제스트로 고정
           command: ["vllm", "serve"]
           args:
             - s3://<MODEL_BUCKET>/models/gemma-4-12B-it-FP8-Dynamic
@@ -296,7 +296,6 @@ metadata:
   labels:
     app.kubernetes.io/name: gemma4-12b-vllm
 spec:
-  clusterIP: None                                  # 헤드리스: DNS가 파드 IP 목록을 그대로 반환
   publishNotReadyAddresses: false
   selector:
     app.kubernetes.io/name: gemma4-12b-vllm
