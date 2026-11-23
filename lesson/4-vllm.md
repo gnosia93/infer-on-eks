@@ -157,7 +157,7 @@ metadata:
     app.kubernetes.io/name: gemma4-12b-vllm
     app.kubernetes.io/component: text-inference
 spec:
-  replicas: 2                       # KEDA로 스케일링하면 이 줄을 지우고 minReplicaCount: 2로 옮깁니다
+  replicas: 1                       
   revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
