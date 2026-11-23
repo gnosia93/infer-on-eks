@@ -10,6 +10,7 @@ This workshop is under construction, Not fully implemented yet ...
 * text 는 Gemma 4 26B, 이미지는 Z-Image Turbo (6B) 모델 사용.
 * litellm 은 bedrock 으로 fallback 설정. 최초 text 및 이미지 pod 가 5% 정도의 트래픽 처리 -> 향후 100% 까지 canary.
 * 클라리언트는 세션 id 를 가지고 요청함.
+* litellm 은 랑데뷰 해싱 알고리즘을 이용하여 세션 id 가 동일한 경우 동일 vllm pod 로 트래픽을 라우팅, vllm pod 추가/삭제시에도 정상 동작.
 * vllm 으로 text 및 이미지 모델 서빙 / prefix caching 사용.
 * 이미지 생성 요청은 SQS 에 요청을 기록.
 * rate limit / 장애감지 공유 및  응답 캐싱 (Exact Match Caching) 공유 용도로 elasticache 적용.
