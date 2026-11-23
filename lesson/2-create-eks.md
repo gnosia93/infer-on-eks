@@ -1,22 +1,8 @@
 ## 사전 준비 ##
 
-테라폼을 실행한 로컬 PC 에서 아래와 같이 output 정보를 확인한다.  
-```
-% terraform output
-com_graviton_dns = "ec2-3-34-182-75.ap-northeast-2.compute.amazonaws.com"
-com_graviton_vscode = "http://ec2-3-34-182-75.ap-northeast-2.compute.amazonaws.com:9090"
-com_x86_dns = "ec2-43-202-5-201.ap-northeast-2.compute.amazonaws.com"
-com_x86_vscode = "http://ec2-43-202-5-201.ap-northeast-2.compute.amazonaws.com:9090"
-```
-
 com_x86_vscode 서버에 웹으로 접속한 후, 터미널을 열어 kubectl, eksctl, helm 을 설치한다. (VS Code 패스워드는 code!@#c 이다)
 별다른 코멘트가 없다면 모든 작업은 com_x86_vscode 웹환경의 터미널에서 수행한다. 
 ![](https://github.com/gnosia93/training-on-eks/blob/main/chapter/images/code-server.png)
-
-먼저, 터미널의 프롬프트가 x86_64 임을 확인한다.
-```
-x86_64 $ 
-```
  
 #### 1. kubectl 설치 #### 
 ```
