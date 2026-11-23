@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Terraform to CloudFormation: Development Environment with EKS Roles'
+Description: 'CloudFormation: Development Environment with EKS Roles'
 
 Parameters:
   KeyPairName:
@@ -19,12 +19,7 @@ Parameters:
     Type: String
     Default: "c7i.4xlarge"
 
-  # 1. 최신 AL2023 ARM64 AMI (Graviton용)
-  LatestAmiIdArm64:
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64'
-
-  # 2. 최신 AL2023 x86_64 AMI (x86용)
+  # 최신 AL2023 x86_64 AMI (x86용)
   LatestAmiIdX86:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
