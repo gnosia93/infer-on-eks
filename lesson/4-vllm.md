@@ -134,20 +134,6 @@ eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN�
 
 ### 4. vLLM 디플로이먼트 생성 ###
 ```
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: llm-serving
----
-# S3 읽기 권한 (IRSA). EKS Pod Identity를 쓰면 annotation 대신 Pod Identity association을 만듭니다.
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: vllm-model-reader
-  namespace: llm-serving
-  annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<VLLM_S3_READ_ROLE>
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -157,7 +143,7 @@ metadata:
     app.kubernetes.io/name: gemma4-12b-vllm
     app.kubernetes.io/component: text-inference
 spec:
-  replicas: 1                       
+  replicas: 1
   revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
@@ -177,40 +163,41 @@ spec:
       terminationGracePeriodSeconds: 120
       nodeSelector:
         karpenter.sh/nodepool: gpu
+        node.kubernetes.io/instance-type: g6e.4xlarge
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
       topologySpreadConstraints:
         - maxSkew: 1
-          topologyKey: kubernetes.io/hostname     # 두 파드를 서로 다른 노드에 배치
+          topologyKey: kubernetes.io/hostname       # 레플리카를 늘리면 파드를 서로 다른 노드에 배치
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: gemma4-12b-vllm
         - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone      # 가능하면 서로 다른 AZ에 배치
+          topologyKey: topology.kubernetes.io/zone  # 가능하면 서로 다른 AZ에 배치
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: gemma4-12b-vllm
       securityContext:
         runAsNonRoot: true
-        runAsUser: 2000                                 # vLLM 이미지에 내장된 vllm 사용자
+        runAsUser: 2000                             # vLLM 이미지에 내장된 vllm 사용자
         runAsGroup: 0
         fsGroup: 0
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: vllm
-          image: vllm/vllm-openai:v0.33.0                # 0.23.0 이상 필요. 운영에서는 @sha256 다이제스트로 고정
+          image: vllm/vllm-openai:v0.33.0           # 0.23.0 이상 필요. 운영에서는 @sha256 다이제스트로 고정
           command: ["vllm", "serve"]
           args:
-            - s3://<MODEL_BUCKET>/models/gemma-4-12B-it-FP8-Dynamic
-            - --load-format=runai_streamer         # S3에서 GPU 메모리로 바로 스트리밍
+            - s3://${BUCKET:?}/models/gemma-4-12B-it-FP8-Dynamic
+            - --load-format=runai_streamer          # S3에서 GPU 메모리로 바로 스트리밍
             - '--model-loader-extra-config={"concurrency":4}'
             - --served-model-name=gemma-4-12b
-            - --kv-cache-dtype=fp8                 # KV 캐시도 8비트 (메모리 약 50% 절감)
+            - --kv-cache-dtype=fp8                  # KV 캐시도 8비트 (메모리 약 50% 절감)
             - --max-model-len=32768
             - --enable-prefix-caching
             - --reasoning-parser=gemma4
@@ -219,12 +206,12 @@ spec:
             - --port=8000
           env:
             - name: AWS_REGION
-              value: ap-northeast-2
+              value: ${AWS_REGION:?}
             - name: AWS_DEFAULT_REGION
-              value: ap-northeast-2
-            - name: HF_HUB_OFFLINE                 # Hugging Face 접속 차단. 모든 파일을 S3에서 읽음
+              value: ${AWS_REGION}
+            - name: HF_HUB_OFFLINE                  # Hugging Face 접속 차단. 모든 파일을 S3에서 읽음
               value: "1"
-            - name: RUNAI_STREAMER_CHUNK_BYTESIZE  # 4GiB 청크 (AWS 권장값)
+            - name: RUNAI_STREAMER_CHUNK_BYTESIZE   # 4GiB 청크 (AWS 권장값)
               value: "4294967296"
             - name: RUNAI_STREAMER_S3_REQUEST_TIMEOUT_MS
               value: "3000"
@@ -235,28 +222,28 @@ spec:
             - name: TRITON_CACHE_DIR
               value: /home/vllm/.cache/triton
           ports:
-            - name: http                           # OpenAI 호환 API와 /metrics 공용 포트
+            - name: http                            # OpenAI 호환 API와 /metrics 공용 포트
               containerPort: 8000
               protocol: TCP
-          resources:                               # g7e.2xlarge(8 vCPU, 64GiB) 기준
+          resources:                                # g6e.4xlarge(16 vCPU, 128GiB, L40S 48GB) 기준
             requests:
-              cpu: "6"
-              memory: 40Gi
+              cpu: "12"
+              memory: 80Gi
               nvidia.com/gpu: "1"
             limits:
-              memory: 40Gi
+              memory: 80Gi
               nvidia.com/gpu: "1"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
-          startupProbe:                            # S3 스트리밍 + torch.compile + CUDA graph 캡처 (최대 15분)
+          startupProbe:                             # S3 스트리밍 + torch.compile + CUDA graph 캡처 (최대 15분)
             httpGet:
               path: /health
               port: http
             periodSeconds: 10
             failureThreshold: 90
-          readinessProbe:                          # Ready인 파드만 헤드리스 서비스 DNS에 나타남
+          readinessProbe:                           # Ready인 파드만 서비스 트래픽을 받음
             httpGet:
               path: /health
               port: http
@@ -271,7 +258,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 4
           lifecycle:
-            preStop:                               # DNS에서 빠질 시간을 준 뒤 종료
+            preStop:                                # 서비스 엔드포인트에서 빠질 시간을 준 뒤 종료
               exec:
                 command: ["sleep", "20"]
           volumeMounts:
@@ -280,11 +267,11 @@ spec:
             - name: cache
               mountPath: /home/vllm/.cache
       volumes:
-        - name: dshm                               # PyTorch 프로세스 간 공유 메모리
+        - name: dshm                                # PyTorch 프로세스 간 공유 메모리
           emptyDir:
             medium: Memory
             sizeLimit: 8Gi
-        - name: cache                              # 설정 파일, torch.compile·Triton 캐시
+        - name: cache                               # 설정 파일, torch.compile·Triton 캐시
           emptyDir:
             sizeLimit: 20Gi
 ---
@@ -296,6 +283,7 @@ metadata:
   labels:
     app.kubernetes.io/name: gemma4-12b-vllm
 spec:
+  type: ClusterIP
   publishNotReadyAddresses: false
   selector:
     app.kubernetes.io/name: gemma4-12b-vllm
@@ -304,6 +292,7 @@ spec:
       port: 8000
       targetPort: http
       protocol: TCP
+EOF
 ```
 
 
