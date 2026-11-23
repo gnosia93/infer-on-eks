@@ -10,6 +10,10 @@
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/model-sel-criteria.png)
 
+> [!TIP]
+>
+> SLO (서비스 수준 목표): 서비스가 반드시 지켜야 할 최소한의 속도·안정성 기준선입니다. (예: 응답 시간 1.5초 이내, 성공률 99.9% 이상)
+> 비열등 (Non-inferiority): 새 모델이 기존 모델보다 더 뛰어날 필요는 없지만, 성능이나 품질이 뒤처지지 않고 대등한 수준임을 뜻합니다. (비용 절감이 주목적일 때 쓰는 합격 기준)
 
 ## 0. 판단 원칙
 
