@@ -135,7 +135,7 @@ jq -rs '
 * ErrImagePull, ImagePullBackOff, FailedScheduling일 때: 기다려도 해결되지 않는다. 이미지 받기 실패나 노드 자원 부족 같은 원인을 먼저 고쳐야 한다.
 
 ## 벤치 마크 결과 ##
-
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/streaming-latency.png)
 
 ## 참고자료 ##
 
