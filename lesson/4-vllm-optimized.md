@@ -309,4 +309,3 @@ kubectl get events -n llm-serving --field-selector reason=Pulled \
 - [AWS DLC: Available Images](https://aws.github.io/deep-learning-containers/reference/available_images/)
 - [AWS DLC: Region Availability](https://aws.github.io/deep-learning-containers/reference/region_availability/)
 
-출처 문서의 내용은 요약하고 재구성했습니다.
