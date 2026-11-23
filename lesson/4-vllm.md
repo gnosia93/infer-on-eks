@@ -1,3 +1,20 @@
+### 환경 설정 ###
+```
+export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+export CLUSTER_NAME="infer-on-eks"
+export K8S_VERSION="1.34"
+export KARPENTER_VERSION="1.8.1"
+export VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values="${CLUSTER_NAME}" --query "Vpcs[].VpcId" --output text)
+
+echo "Cluster Name: $AWS_REGION"
+echo "AWS Account ID: $AWS_ACCOUNT_ID"
+echo "Cluster Name: $CLUSTER_NAME"
+echo "EKS Version: $K8S_VERSION"
+echo "Karpenter Version: $KARPENTER_VERSION"
+echo "VPC ID: $VPC_ID"
+```
+
 ### 1. S3 버킷 생성 ###
 ```
 REGION=ap-northeast-2
