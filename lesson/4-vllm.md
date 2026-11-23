@@ -74,7 +74,7 @@ Completed 5.5 GiB/14.0 GiB (695.1 MiB/s) with 1 file(s) remaining
 ```
 
 
-### 3. IRSA 역할 ###
+### 3. IRSA 역할과 서비스 어카운트 만들기 ###
 ```
 # 1. 정책 파일 만들기
 cat > gemma-s3-read-policy.json <<EOF
