@@ -297,6 +297,37 @@ spec:
 EOF
 ```
 
+### vLLM 파드의 emptyDir 볼륨 (dshm, cache) ###
+
+#### emptyDir ####
+
+emptyDir은 파드가 노드에 배치될 때 빈 디렉터리로 만들어지고, 파드가 삭제되면 함께 지워지는 임시 볼륨이다. 같은 파드 안에서 컨테이너가 죽었다가 다시 시작하면 데이터가 남아 있다. 롤링 업데이트나 노드 교체로 파드가 새로 만들어지면 빈 상태로 시작한다.
+
+#### dshm: 공유 메모리 늘리기 ####
+
+- `/dev/shm`은 프로세스끼리 메모리를 공유할 때 쓰는 경로다. PyTorch와 vLLM은 프로세스 사이에 데이터를 넘길 때 이곳을 쓰고, GPU 여러 개로 텐서 병렬을 하면 특히 많이 쓴다.
+- 컨테이너의 `/dev/shm`은 기본이 64MB라서 부족하면 `Bus error`나 `No space left on device`로 프로세스가 죽는다. Kubernetes에는 Docker의 `--shm-size` 같은 옵션이 없어서, 메모리 기반 emptyDir을 `/dev/shm`에 마운트하는 방법으로 크기를 늘린다.
+- `medium: Memory`는 디스크 대신 RAM(tmpfs)에 만든다는 뜻이다.
+- `sizeLimit: 8Gi`는 상한이다. 8Gi를 미리 잡아 두지 않고 실제로 쓴 만큼만 메모리를 차지한다. 상한을 넘으면 쓰기가 `No space left on device`로 실패한다.
+- 여기에 쓴 데이터는 컨테이너의 메모리 사용량에 포함된다. `limits.memory: 80Gi`에 8Gi가 더해지는 것이 아니라, 80Gi 안에서 함께 쓴다.
+
+#### cache: 쓰기 가능한 캐시 디렉터리 ####
+
+- `medium`을 생략했기 때문에 노드 디스크(노드에 붙은 EBS 볼륨)에 만들어진다.
+- 환경 변수 `XDG_CACHE_HOME=/home/vllm/.cache`와 `TRITON_CACHE_DIR=/home/vllm/.cache/triton`이 이 경로를 가리킨다. 그래서 다음 파일이 여기에 쌓인다.
+  - S3에서 내려받은 모델 설정 파일(config, 토크나이저 등): `vllm/assets/model_streamer/` 아래
+  - torch.compile 결과: `vllm/torch_compile_cache/` 아래
+  - Triton이 컴파일한 GPU 커널: `triton/` 아래
+- 모델 가중치는 runai_streamer가 S3에서 GPU 메모리로 바로 보내고 디스크에는 저장하지 않는다. 그래서 20Gi면 충분하다.
+- emptyDir은 모든 사용자가 쓸 수 있는 권한으로 만들어진다. 그래서 컨테이너가 UID 2000으로 실행돼도 캐시를 쓸 곳이 확실히 있다.
+- 사용량이 20Gi를 넘으면 kubelet이 파드를 축출(Evicted)한다.
+
+#### 운영할 때 알아 둘 점 ####
+
+- 새 파드는 빈 캐시로 시작하므로 torch.compile과 Triton 커널 컴파일을 처음부터 다시 한다. startupProbe에 최대 15분을 준 이유 중 하나다. 같은 파드 안에서 컨테이너만 재시작하면 캐시가 남아 있어서 더 빨리 뜬다.
+- `cache`는 노드 디스크를 쓴다. GPU 노드의 EBS 볼륨(EC2NodeClass의 `blockDeviceMappings`)에 vLLM 이미지와 이 20Gi가 함께 들어갈 여유가 있어야 한다.
+
+
 
 ### 3. 설정 메모 ###
 
