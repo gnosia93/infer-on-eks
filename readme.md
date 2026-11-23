@@ -53,10 +53,7 @@ This workshop is under construction, Not fully implemented yet ...
       
 * [C10. LeaderWorkerSet (LWS) & Ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-LeaderWorkerSet.md)
    * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
-   * [cpu 인퍼런스 - 그라비톤](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-lws.md)
-   * [gpu 인퍼런스]
-   * [AWS 인퍼런시아]
-   * [vLLM 딥다이브]
+
      
 * [C11. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
