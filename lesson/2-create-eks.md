@@ -1,6 +1,6 @@
 ## 사전 준비 ##
 
-com_x86_vscode 서버에 웹으로 접속한 후, 터미널을 열어 kubectl, eksctl, helm 을 설치한다. (VS Code 패스워드는 code!@#c 이다)
+X86VsCode 서버에 웹으로 접속한 후, 터미널을 열어 kubectl, eksctl, helm 을 설치한다. (VS Code 패스워드는 code!@#c 이다)
 별다른 코멘트가 없다면 모든 작업은 com_x86_vscode 웹환경의 터미널에서 수행한다. 
 ![](https://github.com/gnosia93/training-on-eks/blob/main/chapter/images/code-server.png)
  
