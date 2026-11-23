@@ -24,7 +24,7 @@ This workshop is under construction, Not fully implemented yet ...
 * [C3. GPU 스케줄링 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-gpu.md)
   
 * C4. vLLM - Gemma4-12B 모델 배포
-  * [모델 선정 기준]
+  * [모델 선정 기준 (Bedrock -> Open Weight)]
   * [모델 배포하기 - 디플로이먼트/서비스](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm.md)
   * [모델 레이턴시 측정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-latency.md)
     
