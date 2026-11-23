@@ -171,7 +171,23 @@ Spot 인터럽션 큐는 AWS가 보내는 Spot 중단 예고를 받아 Karpenter
 인터럽션 큐가 없으면 Karpenter는 이 사전 경고를 받지 못한다. 따라서 Spot 인스턴스가 회수될 때 노드가 미리 정리되지 못하고, 인스턴스가 갑자기 사라진 뒤에야 쿠버네티스가 "노드 응답 없음(NotReady)"을 인지하게 된다. 이 인지에는 노드 상태 타임아웃(보통 수십 초에서 수 분)이 걸리고, 그 시간이 지나야 비로소 파드가 다른 노드로 재스케줄된다. 결과적으로 복구가 느려지고, 처리 중이던 작업은 우아하게 마무리되지 못한 채 갑작스럽게 종료된다. 다만 작업 자체는 멱등성 설계나 큐 재처리(재큐) 메커니즘이 있으면 손실 없이 복구되므로, 인터럽션 큐의 부재가 데이터를 잃게 만들지는 않는다. 즉 인터럽션 큐가 없어도 정확성은 유지되지만, Spot 중단 시 복구가 느리고 비효율적이 된다.
 
 ```
-aws sqs list-queues --queue-name-prefix <클러스터명>
+export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+export CLUSTER_NAME="infer-on-eks"
+export K8S_VERSION="1.34"
+export KARPENTER_VERSION="1.8.1"
+export VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values="${CLUSTER_NAME}" --query "Vpcs[].VpcId" --output text)
+
+echo "Cluster Name: $AWS_REGION"
+echo "AWS Account ID: $AWS_ACCOUNT_ID"
+echo "Cluster Name: $CLUSTER_NAME"
+echo "EKS Version: $K8S_VERSION"
+echo "Karpenter Version: $KARPENTER_VERSION"
+echo "VPC ID: $VPC_ID"
+```
+
+```
+aws sqs list-queues --queue-name-prefix $CLUSTER_NAME
 # Karpenter-<클러스터명> 같은 큐가 보이면 생성된 것
 
 kubectl get pod -n karpenter -o yaml | grep -i interruption
