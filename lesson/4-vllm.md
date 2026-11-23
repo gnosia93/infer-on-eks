@@ -39,11 +39,11 @@ COMMIT_SHA=$(curl -s https://huggingface.co/api/models/RedHatAI/gemma-4-12B-it-F
 echo "${COMMIT_SHA}"
 
 hf download RedHatAI/gemma-4-12B-it-FP8-Dynamic \
-  --revision "${COMMIT_SHA}" \
+  --revision "${COMMIT_SHA:?}" \
   --local-dir ./gemma-4-12B-it-FP8-Dynamic
 
 aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
-  s3://"${BUCKET}"/models/gemma-4-12B-it-FP8-Dynamic \
+  "s3://${BUCKET:?}/models/gemma-4-12B-it-FP8-Dynamic" \
   --exclude ".cache/*"
 ```
 
