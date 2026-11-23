@@ -36,7 +36,7 @@ aws cloudformation describe-stacks --stack-name infer-on-eks --query "Stacks[0].
 ```
 OUTPUT=$(aws cloudformation describe-stacks --region ${AWS_REGION} \
   --stack-name infer-on-eks \
-  --query "Stacks[0].Outputs[?OutputKey=='GravitonVsCode' || OutputKey=='X86VsCode'].\
+  --query "Stacks[0].Outputs[?OutputKey=='X86VsCode'].\
   {Name: OutputKey, Value: OutputValue}" \
   --output table)
 echo ${OUTPUT}
