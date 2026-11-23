@@ -30,7 +30,7 @@ This workshop is under construction, Not fully implemented yet ...
     
 * C5. 세션 / 트래픽 라우팅
   * [LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
-  * [Istio L7 Router]
+  * [Istio L7 Router - Session Aware]
   * [AWS ALB - Ingress] 
 
 * C6. 콜드 스타트 해결
