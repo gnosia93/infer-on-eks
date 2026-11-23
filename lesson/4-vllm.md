@@ -27,12 +27,6 @@ aws s3api create-bucket \
   --region "$AWS_REGION" \
   --create-bucket-configuration LocationConstraint="$AWS_REGION"
 
-# 퍼블릭 접근 차단 (새 버킷은 기본으로 켜져 있지만 명시해 둡니다)
-aws s3api put-public-access-block \
-  --bucket "$BUCKET" \
-  --public-access-block-configuration \
-  BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
-
 # 생성 확인
 aws s3api head-bucket --bucket "$BUCKET"
 ```
