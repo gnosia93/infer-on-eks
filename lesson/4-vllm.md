@@ -41,7 +41,19 @@ echo "${COMMIT_SHA}"
 hf download RedHatAI/gemma-4-12B-it-FP8-Dynamic \
   --revision "${COMMIT_SHA:?}" \
   --local-dir ./gemma-4-12B-it-FP8-Dynamic
+```
 
+[결과]
+```
+Downloading bytes:                                                                                                            |  0.00B            Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.          
+Fetching 10 files: 100%|██████████████████████████████████████████████████████████████████████████████████████████| 10/10 [01:29<00:00,  8.97s/it]
+Download complete: ███████████████████████████████████████████████████████████████████████████████████████████████████████████| 13.6GB, 68.2MB/s  ✓ Downloadedion complete: 100%|███████████████████████████████████████████████████████████████████████████████████████| 15.1GB / 15.1GB,  163MB/s  
+  path: /home/ec2-user/gemma-4-12B-it-FP8-Dynamic
+Download complete: ███████████████████████████████████████████████████████████████████████████████████████████████████████████| 13.6GB, 68.2MB/s  
+Reconstruction complete: 100%|███████████████████████████████████████████████████████████████████████████████████████| 15.1GB / 15.1GB,  163MB/s  
+```
+s3 에 업로드 한다.
+```
 aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
   "s3://${BUCKET:?}/models/gemma-4-12B-it-FP8-Dynamic" \
   --exclude ".cache/*"
