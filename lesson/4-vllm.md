@@ -414,9 +414,6 @@ kubectl logs -n "$NS" "$POD" --timestamps \
 ```
 
 
-## LLM 레이턴시 측정 ##
-
-
 
 ## 참고자료 ##
 
