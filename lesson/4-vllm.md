@@ -59,6 +59,21 @@ aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
   --exclude ".cache/*"
 ```
 
+[결과]
+```
+upload: gemma-4-12B-it-FP8-Dynamic/.gitattributes to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/.gitattributes
+upload: gemma-4-12B-it-FP8-Dynamic/generation_config.json to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/generation_config.json
+upload: gemma-4-12B-it-FP8-Dynamic/processor_config.json to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/processor_config.json
+upload: gemma-4-12B-it-FP8-Dynamic/chat_template.jinja to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/chat_template.jinja
+upload: gemma-4-12B-it-FP8-Dynamic/README.md to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/README.md
+upload: gemma-4-12B-it-FP8-Dynamic/recipe.yaml to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/recipe.yaml
+upload: gemma-4-12B-it-FP8-Dynamic/tokenizer_config.json to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/tokenizer_config.json
+upload: gemma-4-12B-it-FP8-Dynamic/config.json to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/config.json
+upload: gemma-4-12B-it-FP8-Dynamic/tokenizer.json to s3://infer-on-eks-499514681453/models/gemma-4-12B-it-FP8-Dynamic/tokenizer.json
+Completed 5.5 GiB/14.0 GiB (695.1 MiB/s) with 1 file(s) remaining  
+```
+
+
 ### 3. IRSA 역할 ###
 ```
 {
