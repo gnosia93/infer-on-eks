@@ -4,50 +4,34 @@ X86VsCode 서버에 웹으로 접속한 후, 터미널을 열어 kubectl, eksctl
 별다른 코멘트가 없다면 모든 작업은 com_x86_vscode 웹환경의 터미널에서 수행한다. 
 ![](https://github.com/gnosia93/training-on-eks/blob/main/chapter/images/code-server.png)
  
-#### 1. kubectl 설치 #### 
+#### 1. 툴 설치 #### 
 ```
 ARCH=amd64     
+PLATFORM=$(uname -s)_$ARCH
+
 curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.33.3/2025-08-03/bin/linux/$ARCH/kubectl
 chmod +x ./kubectl
 mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
 echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
 
-kubectl version --client
-```
-
-#### 2. eksctl 설치 ####
-```
-ARCH=amd64    
-PLATFORM=$(uname -s)_$ARCH
 curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
 
 tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 
-eksctl version
-```
-
-#### 3. helm 설치 ####
-```
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
 sh get_helm.sh
 
-helm version
-``` 
-
-#### 4. k9s 설치 ####
-```
-ARCH=amd64
-if [ "$(uname -m)" != 'aarch64' ]; then
-  ARCH="amd64"
-fi
-echo ${ARCH}" architecture detected .."
 curl --silent --location "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_${ARCH}.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/k9s /usr/local/bin/
+
+kubectl version --client
+eksctl version
+helm version
 k9s version
 ```
 
-#### 5. eks-node-viewer 설치 ####
+#### 2. eks-node-viewer 설치 ####
 ```
 sudo dnf update -y
 sudo dnf install golang -y
