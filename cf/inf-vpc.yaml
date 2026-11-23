@@ -184,6 +184,19 @@ Resources:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable
 
+  S3GatewayEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+      VpcEndpointType: Gateway
+      RouteTableIds:
+        - !Ref PrivateRouteTable
+        - !Ref PublicRouteTable
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-s3-endpoint"
+
   BastionEKSAdminPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
