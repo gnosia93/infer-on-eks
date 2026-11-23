@@ -136,6 +136,11 @@ jq -rs '
 
 ## 벤치 마크 결과 ##
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/streaming-latency.png)
+* 위쪽 막대: 서버가 하는 일을 순서대로 보여 준다. 큐 대기, prefill, decode 순서이고, decode 한 칸에서 토큰이 하나 나온다.
+* 가운데 점: 클라이언트에 토큰이 도착한 시각으로 점과 점 사이의 간격 하나하나가 ITL이다.
+* 빨간 칸: 다른 요청의 prefill이 같은 스텝에 끼어들어 그 스텝이 길어진 경우로 토큰3과 토큰4 사이의 ITL이 길어졌다.
+* 아래 화살표: TTFT와 TPOT × (N − 1)을 더하면 E2EL이다.
+
 
 ## 참고자료 ##
 
