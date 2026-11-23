@@ -281,6 +281,7 @@ Resources:
             Action:
               - "s3:CreateBucket"
               - "s3:ListBucket"
+              - "s3:ListAllMyBuckets"
               - "s3:GetObject"
               - "s3:PutObject"
             Resource:
