@@ -13,7 +13,7 @@ helm search repo nvdp --devel
 helm install nvdp nvdp/nvidia-device-plugin \
   --namespace nvidia \
   --create-namespace \
-  --version 0.18.2 \
+  --version 0.20.2 \
   --set gfd.enabled=true
 
 kubectl get daemonset -n nvidia
