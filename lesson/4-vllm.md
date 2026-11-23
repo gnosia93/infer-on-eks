@@ -376,6 +376,28 @@ def cond($o; $type): $o.status.conditions[]? | select(.type == $type) | .lastTra
   <(kubectl get events -n "$NS" --field-selector involvedObject.name="$POD" -o json)
 ```
 
+[결과]
+```
+pod=gemma4-12b-vllm-64bf5f5b7-mk94p node=ip-10-0-11-177.ap-northeast-2.compute.internal nodeclaim=gpu-qzshv
+2026-11-23T15:36:08Z  +0초  파드 생성
+2026-11-23T15:36:19Z  +11초  NodeClaim 생성 (Karpenter가 노드를 띄우기로 결정)
+2026-11-23T15:36:21Z  +13초  EC2 인스턴스 생성 (NodeClaim Launched)
+2026-11-23T15:36:43Z  +35초  노드가 클러스터에 등록 (NodeClaim Registered)
+2026-11-23T15:36:53Z  +45초  kubelet 준비 완료 (Node Ready)
+2026-11-23T15:37:13Z  +65초  GPU 리소스 등록 완료 (NodeClaim Initialized)
+2026-11-23T15:37:13Z  +65초  파드가 노드에 배정 (PodScheduled)
+2026-11-23T15:37:14Z  +66초  이미지 받기 시작 (Pulling)
+2026-11-23T15:40:10Z  +242초  이미지 받기 완료 (Pulled)
+2026-11-23T15:40:11Z  +243초  컨테이너 시작
+2026-11-23T15:43:24Z  +436초  vLLM 준비 완료 (Pod Ready)
+
+노드 준비 (파드 생성 → 노드 배정):  65초
+이미지 받기 (Pulling → Pulled):     176초
+vLLM 기동 (컨테이너 시작 → Ready):  193초
+전체 (파드 생성 → Ready):           436초
+이미지 정보: Successfully pulled image "vllm/vllm-openai:v0.33.0" in 2m56.371s (2m56.371s including waiting). Image size: 9738549569 bytes.
+```
+
 ### 2. vLLM 기동 단계별 시간 ###
 ```
 kubectl logs -n "$NS" "$POD" --timestamps \
