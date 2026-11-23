@@ -122,6 +122,19 @@ jq -rs '
 - **프록시 추가 후:** 나중에 LiteLLM이나 ALB를 앞에 붙이면 `TARGET_URL`을 바꿔서 같은 측정을 한다. 프록시에 API 키를 걸었다면 파드 env에 `OPENAI_API_KEY`를 넣는다. `vllm bench serve`가 이 값을 `Authorization: Bearer` 헤더로 보낸다. 프록시에 등록한 모델 이름이 다르면 `--model`도 바꾼다. 이번 결과와의 차이가 프록시 계층이 더한 지연이다.
 - **정리:** 측정이 끝나면 `kubectl delete pod vllm-bench -n llm-serving`으로 파드를 지운다.
 
+### 5. 주의할 점 ###
+여기서 Ready는 벤치마크가 끝났다는 뜻이 아닙니다. 컨테이너가 시작됐다는 뜻이다.
+
+* vllm-bench 파드에는 readinessProbe가 없다. 그래서 컨테이너가 실행되자마자 Ready가 된다.
+* vLLM 서버 파드는 다르다. readinessProbe로 /health를 확인하므로 모델 로딩이 끝나야 Ready가 된다.
+벤치마크가 끝났는지는 로그에 ===== done =====이 찍혔는지로 확인한다.
+
+타임아웃이 나면 kubectl describe pod vllm-bench -n llm-serving을 실행해 Events에서 원인을 찾는다.
+
+* 아직 Pulling 중일 때: 이미지를 받는 중이니 같은 kubectl wait 명령을 다시 실행한다.
+* ErrImagePull, ImagePullBackOff, FailedScheduling일 때: 기다려도 해결되지 않는다. 이미지 받기 실패나 노드 자원 부족 같은 원인을 먼저 고쳐야 한다.
+
+
 ## 참고자료 ##
 
 * [vLLM, vllm bench serve CLI](https://docs.vllm.ai/en/stable/cli/bench/serve/)
