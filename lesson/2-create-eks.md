@@ -140,6 +140,7 @@ iam:
 
 karpenter:
   version: "${KARPENTER_VERSION}"
+  withSpotInterruptionQueue: true
 EOF
 ```
 ```
