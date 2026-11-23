@@ -17,7 +17,7 @@ echo "VPC ID: $VPC_ID"
 
 ### 1. S3 버킷 생성 ###
 
-허깅페이스로 부터 오픈 웨이트 모델의 가중치를 받아 저장할 대상 S3 버킷을 생성한다. 
+모델 가중치를 저장할 S3 버킷을 생성한다. 
 ```
 export BUCKET="${CLUSTER_NAME:?}-${AWS_ACCOUNT_ID:?}"
 
@@ -32,15 +32,18 @@ aws s3api head-bucket --bucket "$BUCKET"
 ```
 
 ### 2. 모델 업로드 ###
-* https://huggingface.co/RedHatAI/gemma-4-12B-it-FP8-Dynamic
+
+허깅페이스에서 [gemma 모델](https://huggingface.co/RedHatAI/gemma-4-12B-it-FP8-Dynamic) 체크포인트를 받아 S3에 업로드 한다.
 ```
-# FP8 체크포인트를 받아 S3에 한 번 올립니다. 예비 버전이라 커밋을 고정하세요.
+COMMIT_SHA=$(curl -s https://huggingface.co/api/models/RedHatAI/gemma-4-12B-it-FP8-Dynamic | jq -r .sha)
+echo "${COMMIT_SHA}"
+
 hf download RedHatAI/gemma-4-12B-it-FP8-Dynamic \
-  --revision <COMMIT_SHA> \
+  --revision "${COMMIT_SHA}" \
   --local-dir ./gemma-4-12B-it-FP8-Dynamic
 
 aws s3 sync ./gemma-4-12B-it-FP8-Dynamic \
-  s3://$BUCKET/models/gemma-4-12B-it-FP8-Dynamic \
+  s3://"${BUCKET}"/models/gemma-4-12B-it-FP8-Dynamic \
   --exclude ".cache/*"
 ```
 
