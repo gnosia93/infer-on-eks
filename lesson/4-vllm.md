@@ -213,3 +213,31 @@ spec:
       targetPort: http
       protocol: TCP
 ```
+
+
+### 3. 설정 메모 ###
+
+#### 모델과 이미지 ####
+* 8비트 방식: Red Hat이 llm-compressor로 가중치와 활성값을 모두 FP8로 만든 체크포인트이다. Red Hat 평가에서 BF16 대비 성능을 약 100% 유지하였다. Google 원본(BF16)을 S3에 올리고 싶으면 S3 경로를 바꾸고 --quantization=fp8 한 줄을 추가하면 된다. 이 경우 vLLM이 로드할 때 FP8로 변환하고, S3에서 읽는 양은 약 2배(약 24GB)가 된다.
+* vLLM 버전: 12B Unified는 vLLM 0.23.0 이상이 필요하다. CUDA 13 이미지는 노드 드라이버 R580 이상이 필요하다.
+
+#### Run:ai Model Streamer ####
+* concurrency 4: AWS 문서의 계산식 ceil(모델 크기 ÷ 청크 크기) 의 결과값이다. FP8 체크포인트를 약 13GB로 잡고 4GB 청크로 나눈 값입니다.
+* CPU 메모리: 청크 4개를 동시에 읽으면 CPU 버퍼가 최대 약 16GB까지 커질 수 있으므로, 메모리를 40Gi로 설정하였다.
+헤드리스 서비스와 스케일링
+
+#### 선택 사항 ####
+* 콜드 스타트 단축: 새 노드에서 파드가 뜰 때는 노드 기동, 수 GB짜리 이미지 pull, 가중치 스트리밍, torch.compile 순서로 시간이 듭니다. AWS 문서는 두 가지를 권장합니다 [3].
+   * S3 Gateway VPC 엔드포인트를 두면 NAT 게이트웨이 병목이 없어진다.
+   * torch.compile 캐시를 NVMe 인스턴스 스토어 hostPath에 두면, 같은 노드에서 재시작할 때 컴파일을 건너뛴다. 다만 Pod Security baseline 정책은 hostPath를 막아놓아서 위 YAML은 emptyDir을 사용하였다.
+* PodDisruptionBudget: minAvailable: 1로 하나 추가해 두면, Karpenter가 노드를 정리할 때 두 파드가 동시에 내려가지 않는다.
+문제가 생기면
+
+
+## 참고자료 ##
+
+* [vLLM Recipes, Google/gemma-4-12B-it (FP8 구성)](https://recipes.vllm.ai/Google/gemma-4-12B-it?variant=fp8&hardware=h100&features=reasoning)
+* [RedHatAI/gemma-4-12B-it-FP8-Dynamic 모델 카드](https://huggingface.co/RedHatAI/gemma-4-12B-it-FP8-Dynamic)
+* [AWS, Accelerate model loading on Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/ml-inference-fast-model-loading.html)
+* [vLLM, Using Docker, Run:ai Model Streamer](https://docs.vllm.ai/en/latest/models/extensions/runai_model_streamer/)
+* [Gemma 4 12B 양자화 모델 카드의 Blackwell 메모](https://huggingface.co/aleksandard/gemma-4-12B-it-int4-MLPonly-AutoRound)
