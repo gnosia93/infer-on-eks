@@ -276,6 +276,16 @@ Resources:
               - "sqs:*"
               - "events:*"
             Resource: "*"
+          - Sid: S3Access
+            Effect: Allow
+            Action:
+              - "s3:CreateBucket"
+              - "s3:ListBucket"
+              - "s3:GetObject"
+              - "s3:PutObject"
+            Resource:
+              - "arn:aws:s3:::*"
+              - "arn:aws:s3:::*/*"
           - Sid: ECRManagement
             Effect: Allow
             Action:
