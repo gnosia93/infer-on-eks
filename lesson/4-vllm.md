@@ -133,6 +133,7 @@ kubectl run s3-test -n llm-serving --rm -it --restart=Never \
 eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN이 annotation으로 붙은 쿠버네티스 서비스 어카운트까지 한 번에 만들어 준다. 클러스터에 withOIDC: true가 켜져 있으니 바로 쓸 수 있다. 네임스페이스가 아직 없으면 eksctl이 만든다.
 
 ### 4. vLLM 디플로이먼트 생성 ###
+파드, 디플로이먼트 및 서비스를 생성한다.
 ```
 kubectl apply -f - <<EOF
 ---
@@ -328,7 +329,7 @@ emptyDir은 파드가 노드에 배치될 때 빈 디렉터리로 만들어지�
 - `cache`는 노드 디스크를 쓴다. GPU 노드의 EBS 볼륨(EC2NodeClass의 `blockDeviceMappings`)에 vLLM 이미지와 이 20Gi가 함께 들어갈 여유가 있어야 한다.
 
 
-## 기동 시간 측정 ##
+## 스케줄링 시간 측정 ##
 
 ### 1. 노드, 이미지, 컨테이너 타임라인 ###
 ```
@@ -380,6 +381,10 @@ def cond($o; $type): $o.status.conditions[]? | select(.type == $type) | .lastTra
 kubectl logs -n "$NS" "$POD" --timestamps \
   | grep -E "RunAI Streamer|Model loading took|torch.compile takes|Graph capturing finished|init engine|Application startup complete"
 ```
+
+## LLM 레이턴시 측정 ##
+
+
 
 ## 참고자료 ##
 
