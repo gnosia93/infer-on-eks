@@ -134,6 +134,8 @@ eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN�
 
 ### 4. vLLM 디플로이먼트 생성 ###
 ```
+kubectl apply -f - <<EOF
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
