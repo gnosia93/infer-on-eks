@@ -76,19 +76,15 @@ Completed 5.5 GiB/14.0 GiB (695.1 MiB/s) with 1 file(s) remaining
 
 ### 3. IRSA 역할 ###
 ```
+# 1. 정책 파일 만들기
+cat > gemma-s3-read-policy.json <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
       "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::$BUCKET",
+      "Resource": "arn:aws:s3:::${BUCKET:?}",
       "Condition": {
         "StringLike": {
           "s3:prefix": [
@@ -101,27 +97,40 @@ Completed 5.5 GiB/14.0 GiB (695.1 MiB/s) with 1 file(s) remaining
     {
       "Effect": "Allow",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::$BUCKET/models/gemma-4-12B-it-FP8-Dynamic/*"
-    }
-  ]
-}",
-      "Condition": {
-        "StringLike": {
-          "s3:prefix": [
-            "models/gemma-4-12B-it-FP8-Dynamic",
-            "models/gemma-4-12B-it-FP8-Dynamic/*"
-          ]
-        }
-      }
-    },
-    {
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::$BUCKET/models/gemma-4-12B-it-FP8-Dynamic/*"
+      "Resource": "arn:aws:s3:::${BUCKET}/models/gemma-4-12B-it-FP8-Dynamic/*"
     }
   ]
 }
+EOF
+cat gemma-s3-read-policy.json         # Resource에 실제 버킷 이름이 들어갔는지 확인
+
+# 2. IAM 정책 만들기
+POLICY_ARN=$(aws iam create-policy \
+  --policy-name "${CLUSTER_NAME}-gemma-s3-read" \
+  --policy-document file://gemma-s3-read-policy.json \
+  --query Policy.Arn --output text)
+echo "$POLICY_ARN"
+
+# 3. IRSA 역할과 서비스 어카운트 만들기
+eksctl create iamserviceaccount \
+  --cluster "${CLUSTER_NAME}" \
+  --namespace vllm \
+  --name vllm \
+  --role-name "${CLUSTER_NAME}-gemma-s3-read" \
+  --attach-policy-arn "${POLICY_ARN}" \
+  --approve
+
+# 4. 서비스 어카운트에 역할이 연결됐는지 확인
+kubectl get sa vllm -n vllm \
+  -o jsonpath='{.metadata.annotations.eks\.amazonaws\.com/role-arn}'
+
+# 5. 서비스 어카운트로 테스트 파드를 띄워서 실제로 S3를 읽을 수 있는지 확인
+kubectl run s3-test -n vllm --rm -it --restart=Never \
+  --image=public.ecr.aws/aws-cli/aws-cli \
+  --overrides='{"spec":{"serviceAccountName":"vllm"}}' \
+  -- s3 ls "s3://${BUCKET}/models/gemma-4-12B-it-FP8-Dynamic/"
 ```
+eksctl이 OIDC 신뢰 정책을 가진 IAM 역할을 만들고, 그 역할 ARN이 annotation으로 붙은 쿠버네티스 서비스 어카운트까지 한 번에 만들어 준다. 클러스터에 withOIDC: true가 켜져 있으니 바로 쓸 수 있다. 네임스페이스가 아직 없으면 eksctl이 만든다.
 
 ### 3. vLLM 매니페스트 ###
 ```
