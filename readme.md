@@ -57,7 +57,7 @@ This workshop is under construction, Not fully implemented yet ...
      
 * [C11. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-dra.md)
 
-* C12. Observability & KEDA Based Pod Scaling
+* [C12. GPU Pod Auto Scaling with KEDA]()
 
 
 ## Appendix ##
