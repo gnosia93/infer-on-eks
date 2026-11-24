@@ -58,7 +58,6 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 ## Appendix ##
 
-* [A1. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
 * [A2. EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-efa-observability.md)
 * [A4. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a4-dra.md)
 * [A5. 이미지 서비스 아키텍처](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a5-difussion-async.md)
