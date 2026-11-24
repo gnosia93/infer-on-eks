@@ -1,14 +1,13 @@
 ## GPU 노드풀 최적화: Bottlerocket + SOCI Parallel Pull ##
 
-GPU 노드를 새롭게 할당받고, vLLM 컨테이너를 해당 노드에 스케줄링 하는 시간을 줄이기 위해서  
-Bottlerocket AMI에 SOCI parallel pull 옵션이 적용된 `gpu-optimized` NodePool과 EC2NodeClass를 생성한다. 
+기존 `gpu` NodePool과 EC2NodeClass는 그대로 둔다. Bottlerocket AMI에 SOCI parallel pull을 켠 `gpu-optimized` NodePool과 EC2NodeClass를 따로 만든다. vLLM Deployment는 nodeSelector만 바꿔 새 풀로 옮긴다. 4장에서 잰 콜드 스타트는 약 436초였고, 그중 이미지 받기가 약 176초였다. 이 장의 목표는 이미지 받는 시간을 줄이는 것이다.
 
 ### 구성 ###
 | 항목 | gpu (기존) | gpu-optimized (이 장) |
 |---|---|---|
 | AMI | AL2023 NVIDIA (`al2023@latest`) | Bottlerocket NVIDIA 변형 `aws-k8s-1.34-nvidia` (버전 고정) |
 | 이미지 받기 | containerd 기본 방식 | SOCI snapshotter의 parallel pull 모드 |
-| EBS | 루트 볼륨 600Gi gp3 (기본 성능) | OS 볼륨 4Gi + 데이터 볼륨 100Gi gp3 (16,000 IOPS, 1,000MiB/s) |
+| 디스크 | 루트 EBS 600Gi gp3 | 컨테이너 데이터는 NVMe 인스턴스 스토어(g6e.4xlarge는 600GB). EBS는 OS 4Gi + 데이터 20Gi |
 | GPU 디바이스 플러그인 | `nvidia` 네임스페이스의 nvdp DaemonSet | OS에 들어 있는 `nvidia-k8s-device-plugin` 서비스 |
 | taint | `nvidia.com/gpu=present:NoSchedule` | `nvidia.com/gpu=bottlerocket:NoSchedule` |
 | 노드 접속 | `kubectl debug node` + `chroot /host` | SSM 세션 (control/admin 컨테이너) |
@@ -42,7 +41,7 @@ echo "Cluster Name: ${CLUSTER_NAME}"
 echo "EKS Version: ${K8S_VERSION}"
 echo "Bottlerocket Version: ${BOTTLEROCKET_VERSION}"
 ```
-- **BOTTLEROCKET_VERSION:** 이 리전에 나온 최신 Bottlerocket NVIDIA 변형의 버전이다. 값에 빌드 ID가 붙어 있으면(`1.70.0-xxxxxxxx`) 잘라 낸다. SOCI parallel pull은 1.44.0 이상에서 쓸 수 있다.
+- **BOTTLEROCKET_VERSION:** 이 리전에 나온 최신 Bottlerocket NVIDIA 변형의 버전이다. 값에 빌드 ID가 붙어 있으면(`1.70.0-xxxxxxxx`) 잘라 낸다. SOCI parallel pull은 1.44.0 이상에서 쓸 수 있다. SOCI 디렉터리까지 NVMe로 옮기려면 1.46.0 이상이어야 한다(2.2절).
 
 [예상 결과]
 ```
@@ -111,6 +110,9 @@ spec:
         - key: karpenter.k8s.aws/instance-category
           operator: In
           values: ["g", "p"]
+        - key: karpenter.k8s.aws/instance-local-nvme
+          operator: Gt
+          values: ["99"]                 # NVMe 인스턴스 스토어가 100GiB 이상인 인스턴스만 고른다
       nodeClassRef:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
@@ -141,18 +143,17 @@ spec:
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: "${CLUSTER_NAME}"
+  instanceStorePolicy: RAID0             # NVMe를 포맷해 컨테이너 데이터와 SOCI 디렉터리를 옮긴다 (2.2절)
   blockDeviceMappings:
     - deviceName: /dev/xvda              # OS 볼륨
       ebs:
         volumeSize: 4Gi
         volumeType: gp3
         encrypted: true
-    - deviceName: /dev/xvdb              # 데이터 볼륨: 컨테이너 이미지, SOCI 스냅샷, emptyDir, 파드 로그
+    - deviceName: /dev/xvdb              # 데이터 볼륨: NVMe로 옮기지 않은 나머지 데이터
       ebs:
-        volumeSize: 100Gi
+        volumeSize: 20Gi
         volumeType: gp3
-        iops: 16000                      # AWS 블로그 권장값
-        throughput: 1000                 # MiB/s. g6e.4xlarge의 EBS 최대 처리량(1,000MB/s)과 같다
         encrypted: true
   userData: |
     [settings.container-runtime]
@@ -169,17 +170,18 @@ spec:
 EOF
 kubectl apply -f nodepool-gpu-optimized.yaml
 ```
-NodePool은 `nodeClassRef`와 taint 값만 다르다. requirements, 레이블, expireAfter, limits, disruption은 `gpu` 풀과 같다.
+NodePool은 `nodeClassRef`, taint 값, NVMe 조건만 다르다. requirements의 나머지, 레이블, expireAfter, limits, disruption은 `gpu` 풀과 같다. NVMe 조건이 없으면 NVMe가 없는 인스턴스(예: p3.2xlarge)가 뜰 수 있다. 그런 노드에서는 컨테이너 데이터가 20Gi 데이터 볼륨에 쌓이므로 vLLM 이미지가 들어가지 않는다.
 
 #### 2.2 EC2NodeClass 설정 ####
 | 항목 | 설명 |
 |---|---|
 | `amiSelectorTerms` | `bottlerocket@v1.70.0`처럼 버전을 고정한다. Karpenter는 이 버전의 일반 변형과 NVIDIA 변형을 함께 찾고, GPU 인스턴스에는 NVIDIA 변형을 쓴다. `@latest`로 두면 새 버전이 나올 때마다 drift로 노드가 교체되고 vLLM도 다시 뜬다. 최근 Bottlerocket 릴리스 간격은 1~2주다. |
+| `instanceStorePolicy` | `RAID0`이면 Karpenter가 userData에 부팅 명령 `000-mount-instance-storage`를 넣는다. 이 명령은 먼저 `apiclient ephemeral-storage init`으로 NVMe 디스크를 묶어 xfs로 포맷한다. 디스크가 하나면 RAID 없이 그대로 쓴다. 이어서 `apiclient ephemeral-storage bind`로 기본 디렉터리를 NVMe로 옮긴다. 기본 디렉터리는 `/var/lib/containerd`, `/var/lib/kubelet`, `/var/log/pods`, `/var/lib/soci-snapshotter`, `/var/lib/host-containerd`다. SOCI는 받은 레이어를 디스크에 쓰므로 디스크가 받는 시간을 좌우한다. |
+| Bottlerocket 버전 조건 | Karpenter는 Bottlerocket 1.46.0 이상에서만 위의 기본 목록으로 옮긴다. 버전이 그보다 낮으면 containerd, kubelet, 파드 로그 디렉터리만 옮기고 SOCI 데이터는 EBS에 남긴다. Karpenter는 노드의 ephemeral-storage도 NVMe 크기로 계산한다. |
 | `/dev/xvda` | Bottlerocket OS 볼륨이다. OS 이미지가 4GiB라서 Karpenter 기본값과 같은 4Gi로 둔다. |
-| `/dev/xvdb` | 데이터 볼륨이다. 컨테이너 이미지, SOCI 스냅샷(`/var/lib/soci-snapshotter`), emptyDir, 파드 로그가 여기에 쌓인다. Karpenter 기본값 20Gi로는 vLLM 이미지와 emptyDir(최대 20Gi)을 함께 담기에 부족하다. 그래서 100Gi로 늘린다. |
-| `iops`, `throughput` | SOCI는 받은 레이어를 디스크에 쓰므로 디스크 성능이 받는 시간을 좌우한다. 그래서 AWS 블로그 권장값인 16,000 IOPS와 1,000MiB/s를 쓴다. g6e.4xlarge의 EBS 최대 처리량이 1,000MB/s라 이보다 올려도 효과가 없다. |
-| `encrypted` | 블록 디바이스를 직접 적으면 Karpenter 기본 매핑을 통째로 대신한다. 그래서 암호화를 명시한다. |
-| `userData` | Bottlerocket 설정 API의 TOML이다. Karpenter가 클러스터 이름, API 서버 주소, 레이블, taint를 덧붙인다. Karpenter는 `settings.kubernetes` 아래의 모르는 키만 버린다. `container-runtime` 같은 다른 설정은 그대로 넘긴다. |
+| `/dev/xvdb` | 데이터 볼륨이다. 컨테이너 데이터가 NVMe로 가므로 Karpenter 기본값과 같은 20Gi, 기본 성능(3,000 IOPS, 125MiB/s)으로 둔다. NVMe로 옮기지 않은 나머지 데이터가 여기에 남는다. |
+| `encrypted` | 블록 디바이스를 직접 적으면 Karpenter 기본 매핑을 통째로 대신한다. 그래서 EBS 암호화를 명시한다. 인스턴스 스토어는 하드웨어에서 암호화된다. |
+| `userData` | Bottlerocket 설정 API의 TOML이다. Karpenter가 클러스터 이름, API 서버 주소, 레이블, taint, 위의 부팅 명령을 덧붙인다. Karpenter는 `settings.kubernetes` 아래의 모르는 키만 버린다. `container-runtime` 같은 다른 설정은 그대로 넘긴다. |
 
 #### 2.3 SOCI 설정 ####
 값은 Karpenter Blueprint 예제와 같다.
@@ -216,7 +218,7 @@ bottlerocket-aws-k8s-1.34-aarch64-v1.70.0-xxxxxxxx          ami-0xxxxxxxxxxxxxxx
 NodePool이 amd64만 허용하므로 GPU 노드에는 `nvidia-x86_64` AMI가 쓰인다.
 
 ### 3. 새 노드 확인 ###
-vLLM을 옮기기 전에 테스트 파드로 노드를 하나 띄운다. 이 노드에서 GPU, device plugin, SOCI 설정을 먼저 확인한다.
+vLLM을 옮기기 전에 테스트 파드로 노드를 하나 띄운다. 이 노드에서 GPU, device plugin, NVMe, SOCI 설정을 먼저 확인한다.
 
 #### 3.1 GPU 테스트 파드 ####
 ```
@@ -261,6 +263,8 @@ kubectl logs gpu-pod-br
 export NODE=$(kubectl get pod gpu-pod-br -o jsonpath='{.spec.nodeName}')
 kubectl get nodes -l karpenter.sh/nodepool=gpu-optimized \
   -o custom-columns='NAME:.metadata.name,OS:.status.nodeInfo.osImage,RUNTIME:.status.nodeInfo.containerRuntimeVersion,GPU:.status.allocatable.nvidia\.com/gpu'
+kubectl get node ${NODE} -o json \
+  | jq -r '.status.capacity["ephemeral-storage"] | rtrimstr("Ki") | tonumber / 1048576 | floor | "ephemeral-storage: \(.)Gi"'
 kubectl get node ${NODE} -o jsonpath='{.spec.taints}'; echo
 ```
 
@@ -268,9 +272,11 @@ kubectl get node ${NODE} -o jsonpath='{.spec.taints}'; echo
 ```
 NAME                                            OS                                             RUNTIME                           GPU
 ip-10-0-xx-xx.ap-northeast-2.compute.internal   Bottlerocket OS 1.70.0 (aws-k8s-1.34-nvidia)   containerd://2.3.x+bottlerocket   1
+ephemeral-storage: 558Gi
 [{"effect":"NoSchedule","key":"nvidia.com/gpu","value":"bottlerocket"}]
 ```
-GPU가 1이면 Bottlerocket의 device plugin이 GPU를 등록한 것이다.
+- **GPU:** 1이면 Bottlerocket의 device plugin이 GPU를 등록한 것이다.
+- **ephemeral-storage:** kubelet이 보는 노드 디스크 크기다. 약 558Gi(600GB)가 나오면 kubelet 디렉터리가 NVMe에 있는 것이다. 20Gi 안팎이 나오면 NVMe가 묶이지 않은 것이다(7절).
 
 #### 3.3 nvdp 파드가 없는지 확인 ####
 ```
@@ -284,12 +290,12 @@ No resources found in nvidia namespace.
 NFD worker, nvdp, GFD 파드가 하나라도 보이면 1절을 다시 확인한다.
 
 #### 3.4 SOCI 설정 확인 ####
-Bottlerocket의 control 컨테이너에서는 SSM 에이전트가 돈다. SSM Run Command로 보낸 명령은 이 컨테이너에서 실행된다. 여기서 `apiclient`로 노드 설정을 읽는다.
+Bottlerocket의 control 컨테이너에서는 SSM 에이전트가 돈다. SSM Run Command로 보낸 명령은 이 컨테이너에서 실행된다. 여기서 `apiclient`로 노드 설정과 NVMe 디스크를 확인한다.
 ```
 INSTANCE_ID=$(kubectl get node ${NODE} -o jsonpath='{.spec.providerID}' | awk -F/ '{print $NF}')
 CMD_ID=$(aws ssm send-command --instance-ids ${INSTANCE_ID} \
   --document-name AWS-RunShellScript \
-  --parameters 'commands=["apiclient get settings.container-runtime.snapshotter","apiclient get settings.container-runtime-plugins.soci-snapshotter"]' \
+  --parameters 'commands=["apiclient get settings.container-runtime.snapshotter","apiclient get settings.container-runtime-plugins.soci-snapshotter","apiclient get settings.bootstrap-commands","apiclient ephemeral-storage list-disks"]' \
   --query Command.CommandId --output text)
 aws ssm wait command-executed --command-id ${CMD_ID} --instance-id ${INSTANCE_ID}
 aws ssm get-command-invocation --command-id ${CMD_ID} --instance-id ${INSTANCE_ID} \
@@ -320,8 +326,34 @@ aws ssm get-command-invocation --command-id ${CMD_ID} --instance-id ${INSTANCE_I
     }
   }
 }
+{
+  "settings": {
+    "bootstrap-commands": {
+      "000-mount-instance-storage": {
+        "commands": [
+          [
+            "apiclient",
+            "ephemeral-storage",
+            "init"
+          ],
+          [
+            "apiclient",
+            "ephemeral-storage",
+            "bind"
+          ]
+        ],
+        "essential": true,
+        "mode": "always"
+      }
+    }
+  }
+}
+/dev/nvme1n1
 ```
-`max-concurrent-downloads`처럼 기본값이 있는 다른 키가 함께 나올 수 있다.
+- **기본값 키:** `max-concurrent-downloads`처럼 기본값이 있는 다른 키가 함께 나올 수 있다.
+- **bind 명령:** `bind` 뒤에 `--dirs`가 없어야 SOCI 디렉터리까지 옮기는 기본 목록이 쓰인다.
+- **디스크 이름:** 마지막 줄은 NVMe 디스크 목록이다. 디스크 이름은 다를 수 있다.
+- **마운트 확인:** 실제 마운트를 보려면 6.2절처럼 admin 컨테이너에 들어가 `sudo sheltie` 뒤에 `findmnt /var/lib/soci-snapshotter`를 실행한다.
 
 #### 3.5 테스트 노드 정리 ####
 ```
@@ -429,17 +461,25 @@ disable-admin-container                                  # 다 쓰면 끈다
 - **노드 교체:** cordon, KEDA 레플리카 고정, NodeClaim 삭제 순서는 11장 6.2절과 같다.
 
 #### 6.3 그 밖의 차이 ####
-- **AMI 올리기:** 환경 설정에서 `BOTTLEROCKET_VERSION`을 다시 구하고 2.1절 매니페스트를 다시 만들어 apply 한다. 기존 노드는 drift로 하나씩 교체되고, 그때 vLLM 파드도 다시 뜬다. userData나 블록 디바이스를 바꿀 때도 같다.
+- **AMI 올리기:** 환경 설정에서 `BOTTLEROCKET_VERSION`을 다시 구하고 2.1절 매니페스트를 다시 만들어 apply 한다. 기존 노드는 drift로 하나씩 교체되고, 그때 vLLM 파드도 다시 뜬다. userData, 블록 디바이스, `instanceStorePolicy`를 바꿀 때도 같다.
 - **레지스트리:** parallel pull은 HTTP range GET으로 레이어를 나눠 받는다. ECR은 이를 지원한다. 4장 이미지(`vllm/vllm-openai`)는 Docker Hub에 있다. 받기가 실패하거나 느리면 `max-concurrent-downloads-per-image`를 낮추거나 ECR에 있는 이미지(예: AWS DLC vLLM 이미지)를 쓴다.
-- **인스턴스 스토어:** g6e.4xlarge에는 600GB NVMe 인스턴스 스토어가 있다. AWS 블로그는 NVMe가 있으면 SOCI 디렉터리를 NVMe에 두라고 권한다. 하지만 Karpenter 1.8.1은 Bottlerocket의 디스크를 자동으로 묶지 않는다. 쓰려면 `settings.bootstrap-commands`로 `apiclient ephemeral-storage init`과 `bind`를 직접 실행해야 한다. 이 장은 성능을 예측하기 쉬운 EBS를 쓴다.
-- **비용:** gp3는 3,000 IOPS와 125MiB/s를 넘는 만큼 따로 과금된다. 비용을 줄이려면 Karpenter Blueprint가 출발점으로 제시한 값(600MiB/s, 3,000 IOPS)으로 낮춘다. 그다음 받는 시간을 다시 잰다.
+- **인스턴스 스토어 데이터:** 인스턴스를 중지하거나 종료하면 NVMe의 데이터는 지워진다. 노드가 새로 뜨면 이미지를 어차피 다시 받으므로 문제가 없다.
+- **EBS와 비교:** AWS 문서에는 g6e.4xlarge NVMe의 무작위 IOPS(쓰기 40,000)만 있고 순차 처리량은 없다. 5절에서 잰 이미지 받기 시간이 기대보다 길면 데이터를 EBS에 두는 설정으로 바꿔 비교한다. 아래처럼 `instanceStorePolicy` 줄을 지우고 데이터 볼륨을 키운다. 이 설정은 노드마다 EBS IOPS와 처리량 요금이 추가로 든다. 이 값을 넣으면 g6e.4xlarge의 EBS 최대 처리량(1,000MB/s)까지 쓴다.
+```yaml
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs: {volumeSize: 4Gi, volumeType: gp3, encrypted: true}
+    - deviceName: /dev/xvdb
+      ebs: {volumeSize: 100Gi, volumeType: gp3, iops: 16000, throughput: 1000, encrypted: true}
+```
 - **노드풀 선택:** 노드풀을 지정하지 않은 GPU 파드(예: 3장의 `gpu-pod`)는 두 풀 중 어느 쪽에도 뜰 수 있다. 특정 풀에 띄우려면 nodeSelector에 `karpenter.sh/nodepool`을 지정한다.
 
 ### 7. 문제 해결 ###
 | 증상 | 확인할 것 |
 |---|---|
 | `gpu-optimized` EC2NodeClass의 READY가 False다 | `kubectl describe ec2nodeclass gpu-optimized`의 Conditions를 본다. `AMIsReady`가 False면 alias의 버전이 이 리전에 없다. `aws ssm get-parameter --name /aws/service/bottlerocket/aws-k8s-${K8S_VERSION}-nvidia/x86_64/${BOTTLEROCKET_VERSION}/image_id`로 확인한다. |
-| NodeClaim은 있는데 노드가 클러스터에 붙지 않는다 | `kubectl describe nodeclaim -l karpenter.sh/nodepool=gpu-optimized`의 Conditions를 본다. Launched가 False면 `kubectl logs -n karpenter deploy/karpenter`에서 오류를 찾는다. Launched인데 Registered가 되지 않으면 `aws ec2 get-console-output --instance-id <인스턴스 ID> --latest --output text`로 부팅 로그를 본다. |
+| NodeClaim은 있는데 노드가 클러스터에 붙지 않는다 | `kubectl describe nodeclaim -l karpenter.sh/nodepool=gpu-optimized`의 Conditions를 본다. Launched가 False면 `kubectl logs -n karpenter deploy/karpenter`에서 오류를 찾는다. Launched인데 Registered가 되지 않으면 `aws ec2 get-console-output --instance-id <인스턴스 ID> --latest --output text`로 부팅 로그를 본다. NVMe 부팅 명령은 `essential = true`라서 실패하면 노드가 뜨지 않는다. |
+| 노드의 ephemeral-storage가 20Gi 안팎이다 | NVMe가 묶이지 않은 것이다. 3.4절에서 `000-mount-instance-storage`가 있는지 본다. Bottlerocket 버전이 1.46.0 이상인지, 인스턴스에 NVMe가 있는지도 확인한다. |
 | 노드는 Ready인데 GPU 수가 비어 있다 | 6.2절처럼 들어가 `journalctl -u nvidia-k8s-device-plugin`을 본다. |
 | `nvidia` 네임스페이스 파드가 새 노드에 떠 있다 | 1절의 NFD worker toleration이 `Equal present`인지, 노드 taint 값이 `bottlerocket`인지 본다. |
 | 이미지 받는 시간이 그대로다 | 3.4절로 snapshotter가 `soci`인지 본다. `kubectl get pod -o wide`로 파드가 gpu-optimized 노드에 떴는지도 본다. |
@@ -464,7 +504,9 @@ kubectl delete ec2nodeclass gpu-optimized
 * [Bottlerocket 설정: kubelet-device-plugins](https://bottlerocket.dev/en/os/1.68.x/api/settings/kubelet-device-plugins/)
 * [Bottlerocket: Host Containers (SSM 접속)](https://bottlerocket.dev/en/os/1.68.x/install/quickstart/aws/host-containers/)
 * [Bottlerocket 릴리스](https://github.com/bottlerocket-os/bottlerocket/releases)
+* [Bottlerocket ephemeral-storage 구현](https://github.com/bottlerocket-os/bottlerocket-core-kit/blob/develop/sources/api/apiserver/src/server/ephemeral_storage.rs)
 * [Karpenter v1.8 NodeClasses 문서](https://github.com/aws/karpenter-provider-aws/blob/v1.8.1/website/content/en/v1.8/concepts/nodeclasses.md)
+* [Karpenter v1.8.1 Bottlerocket 부트스트랩 코드 (instanceStorePolicy 처리)](https://github.com/aws/karpenter-provider-aws/blob/v1.8.1/pkg/providers/amifamily/bootstrap/bottlerocket.go)
 * [NVIDIA k8s-device-plugin 차트 values (v0.20.2)](https://github.com/NVIDIA/k8s-device-plugin/blob/v0.20.2/deployments/helm/nvidia-device-plugin/values.yaml)
 * [Amazon EKS: 네트워크 정책 요건](https://docs.aws.amazon.com/eks/latest/userguide/cni-network-policy-configure.html)
 * [Amazon EC2 가속 컴퓨팅 인스턴스 사양](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html)
