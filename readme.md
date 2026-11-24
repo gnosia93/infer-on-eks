@@ -23,8 +23,10 @@ _Work In Progress..._
   * [세션 ID 기반 vLLM 요청 라우팅 (Istio/Envoy Consistent Hashing)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-istio.md)
   * [서비스 엔드 포인트 만들기 - ALB Ingress](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-alb-ingress.md)
 
-* [C6. 콜드 스타트 최적화 (파드 스케일링 속도 최적화)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
-  * [최적화 하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-s3-express.md)
+* [C6. 콜드 스타트 최적화 (파드 기동 시간 단축)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
+  * [S3 Express One Zone 에 모델 저장] 
+  * [GPU 노드풀 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-s3-express.md)
+  * [vLLM 초기화 최적화]()
     
 * C7. Headroom-based Proactive Scaling with KEDA (한계치에 도달하기 전에 미리 확보)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
