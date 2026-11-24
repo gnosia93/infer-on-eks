@@ -24,9 +24,7 @@ _Work In Progress..._
   * [서비스 엔드 포인트 만들기 - ALB Ingress](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-alb-ingress.md)
 
 * [C6. 콜드 스타트 최적화 (파드 스케일링 속도 최적화)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
-  * [Bottlerocket AMI]
-  * [SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
-  * [S3 One Zone](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-s3-express.md)
+  * [최적화 하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-s3-express.md)
     
 * C7. Headroom-based Proactive Scaling with KEDA (한계치에 도달하기 전에 미리 확보)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
