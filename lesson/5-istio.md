@@ -335,3 +335,50 @@ ENDPOINT                 STATUS      OUTLIER CHECK     CLUSTER
 ```
 
 엔드포인트 목록에는 Ready인 vLLM 파드만 `HEALTHY`로 나온다. 해시는 이 목록 안에서만 고른다.
+
+#### 6.2 세션별 라우팅 확인 ####
+
+vLLM 파드를 2개로 고정한다. 그다음 LiteLLM 파드 2개를 차례로 거쳐, 세션 3개를 세션마다 3번씩 보낸다. 두 번째 GPU 노드가 뜨고 파드가 Ready가 되기까지 약 7분이 걸린다.
+
+```
+# vLLM을 2개로 고정 (KEDA 자동 조절을 잠시 멈춤)
+kubectl annotate scaledobject gemma4-12b-vllm -n llm-serving \
+  autoscaling.keda.sh/paused-replicas="2" --overwrite
+kubectl rollout status deployment/gemma4-12b-vllm -n llm-serving --timeout=15m
+kubectl get pods -n llm-serving -l app.kubernetes.io/name=gemma4-12b-vllm -o wide
+
+for POD in $(kubectl get pod -n llm-serving -l app.kubernetes.io/name=litellm -o name); do
+  kubectl -n llm-serving port-forward "${POD}" 4000:4000 >/dev/null 2>&1 &
+  PF_PID=$!
+  sleep 3
+  for SID in chat-aaaa-0001 chat-bbbb-0002 chat-cccc-0003; do
+    for i in 1 2 3; do
+      curl -s -o /dev/null -w "${POD##*/} ${SID} %{http_code}\n" http://localhost:4000/v1/chat/completions \
+        -H "Authorization: Bearer ${MASTER_KEY}" \
+        -H "Content-Type: application/json" \
+        -H "session_id: ${SID}" \
+        -d '{"model": "gemma-4-12b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 8}'
+    done
+  done
+  kill "${PF_PID}"; wait "${PF_PID}" 2>/dev/null
+done
+```
+
+모든 줄의 응답 코드가 200이어야 한다. 그다음 두 LiteLLM 사이드카의 로그를 모아, 세션별로 어느 vLLM 파드로 갔는지 센다.
+
+```
+kubectl logs -n llm-serving -l app.kubernetes.io/name=litellm -c istio-proxy --tail=-1 \
+  | grep -o 'session=chat-[^ ]* upstream=[^ ]*:8000' | sort | uniq -c
+```
+
+[예상 결과] (IP는 환경마다 다르고, 어느 세션이 어느 파드로 갈지는 해시로 정해진다)
+```
+      6 session=chat-aaaa-0001 upstream=<vLLM 파드1 IP>:8000
+      6 session=chat-bbbb-0002 upstream=<vLLM 파드2 IP>:8000
+      6 session=chat-cccc-0003 upstream=<vLLM 파드1 IP>:8000
+```
+
+- **정상 결과:** 세션마다 줄이 하나씩 나오고 숫자가 6(요청 3번 × LiteLLM 파드 2개)이면 정상이다. 같은 세션이 어느 LiteLLM 파드를 거쳐도 같은 vLLM 파드로 갔다는 뜻이다.
+- **파드 맞추기:** upstream IP가 어느 vLLM 파드인지는 위 `kubectl get pods -o wide`의 IP 열과 맞춰 본다.
+- **같은 파드에 몰린 세션:** 세션이 3개뿐이라 두 세션이 같은 파드로 갈 수도 있다. 확인할 것은 한 세션이 파드 하나로만 간다는 점이다.
+- **줄이 두 개 이상일 때:** 한 세션에 줄이 두 개 이상 나오면 8절 문제 해결을 본다.
