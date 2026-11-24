@@ -1,4 +1,3 @@
-로그에 보이는 구간만 약 2분 5초이고, 가장 오래 걸리는 건 torch.compile(55초)과 첫 번째 CUDA graph 캡처(14초) 이다. 둘 다 두 번째 기동부터 건너뛸 수 있다.
 
 
 
@@ -13,6 +12,9 @@
 2026-11-23T15:43:18.971310602Z (EngineCore pid=225) INFO 11-23 15:43:18 [core.py:405] init engine (profile, create kv cache, warmup model) took 108.99 s (compilation: 54.72 s)
 2026-11-23T15:43:22.393764308Z INFO:     Application startup complete.
 ```
+로그에 보이는 구간만 약 2분 5초이고, 가장 오래 걸리는 건 torch.compile(55초)과 첫 번째 CUDA graph 캡처(14초) 이다. 둘 다 두 번째 기동부터 건너뛸 수 있다.
+
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-launch-time-table.png)
 
 ### vLLM 최적화 ###
 
