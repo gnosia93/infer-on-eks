@@ -158,3 +158,6 @@ kubectl get scaledobject gemma4-12b-vllm -n llm-serving -o jsonpath='{.status.ex
 kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/llm-serving/s0-prometheus?labelSelector=scaledobject.keda.sh%2Fname%3Dgemma4-12b-vllm" \
   | jq -r '.items[0].value'
 ```
+첫 명령은 s0-prometheus(동시 요청)와 s1-prometheus(KV 캐시)를 출력합니다.
+
+
