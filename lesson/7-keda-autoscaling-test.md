@@ -118,4 +118,11 @@ kubectl get crd -o name | grep -E 'monitoring.coreos.com|keda.sh' | xargs -r kub
 
 ## 레퍼런스 ##
 
-* [KEDA 이벤트 기반 오토스케일링 도입](https://gnobaaaaar.tistory.com/150) 
+* [KEDA, Prometheus scaler](https://keda.sh/docs/2.21/scalers/prometheus/)
+* [KEDA, ScaledObject specification](https://keda.sh/docs/2.21/reference/scaledobject-spec/)
+* [KEDA, Cluster 요구 사항 (Kubernetes 호환 버전)](https://keda.sh/docs/2.21/operate/cluster/)
+* [Kubernetes, Horizontal Pod Autoscaling](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/)
+* [kube-prometheus-stack 93.9.0 values.yaml](https://github.com/prometheus-community/helm-charts/blob/kube-prometheus-stack-93.9.0/charts/kube-prometheus-stack/values.yaml)
+* [vLLM v0.33.0, vllm/v1/metrics/loggers.py](https://github.com/vllm-project/vllm/blob/v0.33.0/vllm/v1/metrics/loggers.py)
+* [vLLM, vllm serve 인자 (--shutdown-timeout)](https://docs.vllm.ai/en/latest/cli/serve/)
+
