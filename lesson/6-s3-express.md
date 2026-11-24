@@ -1,6 +1,7 @@
 ## GPU 노드풀 최적화: Bottlerocket + SOCI Parallel Pull ##
 
-기존 `gpu` NodePool과 EC2NodeClass는 그대로 둔다. Bottlerocket AMI에 SOCI parallel pull을 켠 `gpu-optimized` NodePool과 EC2NodeClass를 따로 만든다. vLLM Deployment는 nodeSelector만 바꿔 새 풀로 옮긴다. 4장에서 잰 콜드 스타트는 약 436초였고, 그중 이미지 받기가 약 176초였다. 이 장의 목표는 이미지 받는 시간을 줄이는 것이다.
+GPU 노드를 새롭게 할당받고, vLLM 컨테이너를 해당 노드에 스케줄링 하는 시간을 줄이기 위해서  
+Bottlerocket AMI에 SOCI parallel pull 옵션이 적용된 `gpu-optimized` NodePool과 EC2NodeClass를 생성한다. 
 
 ### 구성 ###
 | 항목 | gpu (기존) | gpu-optimized (이 장) |
