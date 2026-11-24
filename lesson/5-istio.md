@@ -290,3 +290,48 @@ EOF
 - **로그 내용:** 로그에는 `session=<x-session-id 값> upstream=<vLLM 파드 IP:8000>`이 남는다.
 - **정리 시점:** 세션 ID는 사용자를 구분하는 값이다. 그래서 확인이 끝나면 6.4절에서 이 설정을 지운다.
 
+### 6. 동작 확인 ###
+
+#### 6.1 사이드카 설정 확인 ####
+
+```
+LITELLM_POD=$(kubectl get pod -n llm-serving -l app.kubernetes.io/name=litellm -o jsonpath='{.items[0].metadata.name}')
+VLLM_HOST=gemma4-12b-vllm.llm-serving.svc.cluster.local
+
+# 1) 부하 분산 방식
+istioctl proxy-config cluster "${LITELLM_POD}.llm-serving" --fqdn "${VLLM_HOST}" -o json \
+  | jq '.[] | select(.name | startswith("outbound|8000")) | {name, lbPolicy, ringHashLbConfig}'
+
+# 2) 해시 키
+istioctl proxy-config route "${LITELLM_POD}.llm-serving" --name 8000 -o json \
+  | jq '.[].virtualHosts[] | select(any(.domains[]; startswith("gemma4-12b-vllm"))) | .routes[].route.hashPolicy'
+
+# 3) 해시 대상 엔드포인트
+istioctl proxy-config endpoint "${LITELLM_POD}.llm-serving" --cluster "outbound|8000||${VLLM_HOST}"
+```
+
+[예상 결과]
+```json
+{
+  "name": "outbound|8000||gemma4-12b-vllm.llm-serving.svc.cluster.local",
+  "lbPolicy": "RING_HASH",
+  "ringHashLbConfig": {
+    "minimumRingSize": "1024"
+  }
+}
+```
+```json
+[
+  {
+    "header": {
+      "headerName": "x-session-id"
+    }
+  }
+]
+```
+```
+ENDPOINT                 STATUS      OUTLIER CHECK     CLUSTER
+<vLLM 파드1 IP>:8000     HEALTHY     OK                outbound|8000||gemma4-12b-vllm.llm-serving.svc.cluster.local
+```
+
+엔드포인트 목록에는 Ready인 vLLM 파드만 `HEALTHY`로 나온다. 해시는 이 목록 안에서만 고른다.
