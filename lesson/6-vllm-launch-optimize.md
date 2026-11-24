@@ -1,9 +1,4 @@
 
-
-
-
-
-
 ### vLLM 로그 ###
 ```
 2026-11-23T15:41:29.952313791Z (EngineCore pid=225) INFO 11-23 15:41:29 [model_runner.py:428] Model loading took 12.75 GiB memory and 12.762926 seconds
@@ -18,19 +13,38 @@ vLLM은 torch.compile 결과를 /home/vllm/.cache/vllm/torch_compile_cache에, T
 
 
 
-### vLLM 최적화 ###
+### vLLM 시작 최적화 ###
 
-`1.1 CUDA 그래프 캡처 대상 줄이기 (21초 -> 3~5초 단축)`
+#### 1. 파드가 바뀌어도 캐시 디렉터리 유지하기 ####
 
-기본적으로 vLLM은 다양한 동시 요청 수(배치 크기: 1, 2, 4, 8 ... 최대 512개)에 대해 그래프를 모두 미리 캡처합니다. 실제 서비스 트래픽에 맞춰 최대 캡처 크기를 낮추면 캡처 시간이 대폭 줄어듭니다.
+vLLM은 `torch.compile 결과`를 /home/vllm/.cache/vllm/torch_compile_cache에, `Triton 커널`을 /home/vllm/.cache/triton에 저장해요. 다음 기동 때 캐시가 맞으면 컴파일하지 않고 불러오기 때문에 55초가 몇 초로 줄어둔다. 캐시를 쓰면 Directly load ... 로그가 찍히고, 마지막 줄의 compilation: 값이 작아진다.
+
+emptyDir는 같은 파드 안에서 컨테이너가 재시작될 때만 남는다. 새 파드도 캐시를 쓰게 하려면 `S3 에 저장후 init container 에서 emptyDir로 내려받는다`.
+캐시 키에는 vLLM 버전, 주요 서빙 인자(max-model-len 등), GPU 종류가 들어간다. 
+
+#### 2. 메모리 측정 결과 재사용하기: VLLM_ENABLE_STARTUP_PLAN=1 ####
+
+첫 번째 캡처는 KV 캐시 크기를 정하기 전에 CUDA graph가 쓸 메모리를 재려고 한 번 캡처하고 버리는 과정이다. 
+VLLM_ENABLE_STARTUP_PLAN=1(기본값은 꺼짐)을 켜면, 처음 측정한 KV 캐시 크기를 /home/vllm/.cache/vllm/startup_plan/에 저장한다. 다음 기동부터는 설정과 GPU가 같으면 메모리 측정과 이 캡처를 건너뛴다. 적용되면 Applying persisted startup plan ... 로그가 찍혀요.
+
+#### 3. CUDA graph 캡처 크기 줄이기 ####
+
+CUDA graph는 배치 크기마다 따로 캡처한다. 최대 크기의 기본값은 max_num_seqs의 2배이고 상한은 512 이다. 
+--max-cudagraph-capture-size=128로 낮추면 1~128 사이의 19개 크기만 캡처한다. 2번을 안 쓰면 첫 번째 캡처 시간도 같이 줄어든다. 대신 배치가 이 값보다 크면 CUDA graph 없이 실행돼서 느려진다. 
+
 ```
-vllm serve <모델명> --compilation-config '{"cudagraph_capture_sizes": [1, 2, 4, 8, 16, 32]}'
+          args:
+            # ...기존 인자...
+            - --max-cudagraph-capture-size=128
+          env:
+            # ...기존 env...
+            - name: VLLM_ENABLE_STARTUP_PLAN
+              value: "1"
+          volumeMounts:
+            - name: vllm-cache
+              mountPath: /home/vllm/.cache
+
 ```
-
-`1.2 torch.compile 시간 단축 하기 (55초 -> 5초)`
-torch.compile은 현재 연결된 GPU 아키텍처(예: A100, L40S, H100 등)와 입력 형태에 맞춰 여러 개의 자잘한 GPU 연산(커널)을 하나로 합치고(Kernel Fusion) 최적화된 Triton/CUDA 코드를 즉석에서 빌드하는 작업으로, 작업결과는 수십 MB ~ 수백 MB (모델 크기와 무관하게 매우 작음) 이다. GPU에서 연산을 빠르게 돌리기 위한 컴파일된 커널 코드 (.so, .cubin 등) 이다.
-
-최초 1회 빌드된 결과물을 디스크에 저장해 두면, 이후 서버를 껐다 켜거나 새 컨테이너를 띄울 때는 컴파일을 건너뛰고 바로 로드한다. VLLM_CACHE_ROOT와 TORCHINDUCTOR_CACHE_DIR 경로를 호스트 디스크나 EBS/EFS/S3 같은 영구 볼륨에 연결해 두면 된다. 첫 실행만 55초 걸리고, 두 번째 실행부터는 컴파일 시간이 수 초 수준으로 사라진다. S3 Express One Zone 같은 곳에 미리 캐시 폴더를 올려두고 컨테이너 시작 시 땡겨오는 방식도 많이 씁니다.
+1번과 2번을 적용하면 두 번째 기동부터 컴파일 약 50초와 첫 번째 캡처 14초가 감소한다. 그래서 `1분 정도 빨라져서 130초 기동시간이 소요된다. (기존 193초)` 
 
 
-### 튜닝후 - 120초 ###
