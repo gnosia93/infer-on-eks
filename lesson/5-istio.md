@@ -43,3 +43,24 @@ export ISTIO_VERSION="1.32.0"
 kubectl config current-context        # infer-on-eks 클러스터인지 확인
 echo "Istio Version: ${ISTIO_VERSION}"
 ```
+
+### 1. istioctl 설치 ###
+
+istioctl은 Istio 설정을 확인하고 진단하는 CLI다. Istio 설치는 2절에서 Helm으로 하고, istioctl은 확인용으로만 쓴다. 클라이언트 버전은 설치할 Istio 버전과 맞춘다.
+
+```
+curl -sL https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} sh -
+sudo install -m 0755 istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl
+istioctl version --remote=false
+```
+
+[예상 결과]
+```
+client version: 1.32.0
+```
+
+현재 디렉터리에 `istio-1.32.0/` 폴더가 생긴다. 예제(`samples/`)도 들어 있지만 이 장에서는 쓰지 않는다.
+
+### 2. Istio 설치 ###
+
+istio-base와 istiod만 설치한다. 외부 트래픽은 ALB가 LiteLLM 파드로 바로 보내므로 인그레스 게이트웨이는 설치하지 않는다.
