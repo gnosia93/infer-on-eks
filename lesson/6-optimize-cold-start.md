@@ -21,3 +21,15 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
     * CUDA graph compile & vLLM init
        * PVC 로 구워서 마운트  ? 
 * Headroom-based Proactive Scaling with KEDA   
+
+## 최적화 하기 ##
+
+### 1. S3 Express One Zone 버킷 생성 ###
+Express 존에 버킷을 생성하고, 모델을 다운로드 받는다. 
+
+### 2. 카펜터 노드풀 생성 ### 
+Bottlerocket AMI 와 SOCI Parallel Pull 이 가능한 GPU 노드풀을 생성한다.
+
+### 3. 서비스 어카운트 생성 ###
+
+### 4. vLLM 파드 스케줄링 ###
