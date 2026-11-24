@@ -41,9 +41,7 @@ This workshop is under construction, Not fully implemented yet ...
   * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
 * [C7. KEDA Pod Autoscaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7.keda-autoscaling.md)
-
-
-* [C7. GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
+  * [GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 
 
