@@ -20,7 +20,7 @@ This workshop is under construction, Not fully implemented yet ...
   * [모델 레이턴시 측정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-latency.md)
     
 * C5. 세션 / 트래픽 라우팅
-  * [LiteLLM 배포 설정하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
+  * [LiteLLM 배포하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
   * [Istio/Envoy 사이드카 프록시 - `x-sesssion-id` 기반 Consistent Hashing 라우팅]
   * [AWS ALB - Ingress]
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/litellm-istio-vllm-prefix-cache.md
