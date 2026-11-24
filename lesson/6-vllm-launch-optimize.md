@@ -11,10 +11,9 @@
 vLLM은 torch.compile 결과를 /home/vllm/.cache/vllm/torch_compile_cache에, Triton 커널을 /home/vllm/.cache/triton에 저장해요. 다음 기동 때 캐시가 있으면 컴파일하지 않고 불러오기 때문에 `55`초가 `몇 초`로 줄어든다.
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-launch-time-table.png)
 
-이 단어는 ${\color{red}빨간색}$이고, 이 단어는 파란색입니다.
 ### vLLM 기동 최적화 ###
 
-${\color{blue}.cache 디렉토리의 내용을 S3 에 저장한 후, 신규 파드가 기동될때 init container 에서 emptyDir 로 내려 받도록 하여 vLLM 기동 시간은 193초 에서 2분 정도로 줄였다.}$
+${\color{blue} .cache 디렉토리의 내용을 S3 에 저장한 후, 신규 파드가 기동될때 init container 에서 emptyDir 로 내려 받도록 하여 vLLM 기동 시간은 193초 에서 2분 정도로 줄였다. }$
 
 #### 1. 파드가 바뀌어도 캐시 디렉터리 유지하기 ####
 
