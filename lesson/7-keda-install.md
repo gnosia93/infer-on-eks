@@ -57,7 +57,7 @@ args가 바뀌므로 롤링 업데이트가 한 번 일어납니다. 새 파드�
 
 ## ScaledObject 만들기 ##
 
-### 스케일링 기준 ###
+### 1. 스케일링 기준 ###
 * 주 트리거 (동시 요청 수): 모든 파드의 running + waiting 합계를 1분 평균으로 봅니다.
   * 4장 측정에서 SLO(TTFT p99 1초, ITL p99 50ms)를 지키는 파드당 최대 동시성은 8이었습니다.
   * 새 파드가 요청을 받기까지 약 8분이 걸립니다(노드 준비 65초, 이미지 받기 176초, vLLM 기동 193초).
@@ -79,4 +79,52 @@ args가 바뀌므로 롤링 업데이트가 한 번 일어납니다. 새 파드�
 | 13 ~ 18 | 3 |
 | 19 이상 | 4 (maxReplicaCount) |
 
-
+### ScaledObject 매니페스트 ###
+```
+kubectl apply -f - <<'EOF'
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: gemma4-12b-vllm
+  namespace: llm-serving
+spec:
+  scaleTargetRef:
+    name: gemma4-12b-vllm                   # 같은 네임스페이스의 Deployment
+  minReplicaCount: 1
+  maxReplicaCount: 4
+  pollingInterval: 15                       # ScaledObject 상태 갱신 주기
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0     # 늘릴 때는 바로
+          policies:
+            - type: Pods
+              value: 2                      # 1분에 최대 2개씩
+              periodSeconds: 60
+        scaleDown:
+          stabilizationWindowSeconds: 600   # 최근 10분 중 가장 큰 값 아래로는 줄이지 않음
+          policies:
+            - type: Pods
+              value: 1                      # 5분에 1개씩
+              periodSeconds: 300
+  triggers:
+    - type: prometheus
+      name: inflight
+      metricType: AverageValue
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+        query: >-
+          sum(avg_over_time(vllm:num_requests_running{namespace="llm-serving",model_name="gemma-4-12b"}[1m]))
+          + sum(avg_over_time(vllm:num_requests_waiting{namespace="llm-serving",model_name="gemma-4-12b"}[1m]))
+        threshold: "6"                      # 파드당 동시 요청 6개
+    - type: prometheus
+      name: kvcache
+      metricType: AverageValue
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+        query: >-
+          sum(avg_over_time(vllm:kv_cache_usage_perc{namespace="llm-serving",model_name="gemma-4-12b"}[1m]))
+        threshold: "0.7"                    # 파드당 KV 캐시 70%
+EOF
+```
