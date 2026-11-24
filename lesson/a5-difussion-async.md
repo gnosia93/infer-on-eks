@@ -1,3 +1,6 @@
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/arch-1.png)
+
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/arch-2.png)
 
 ### API 서버 ###
 ```
