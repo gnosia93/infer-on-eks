@@ -79,7 +79,7 @@ args가 바뀌므로 롤링 업데이트가 한 번 일어납니다. 새 파드�
 | 13 ~ 18 | 3 |
 | 19 이상 | 4 (maxReplicaCount) |
 
-### ScaledObject 매니페스트 ###
+### 2. ScaledObject 생성 ###
 ```
 kubectl apply -f - <<'EOF'
 apiVersion: keda.sh/v1alpha1
@@ -140,3 +140,21 @@ EOF
 * HPA가 레플리카를 늘리면 새 파드는 Pending이 되고 Karpenter가 g6e.4xlarge를 띄웁니다.
 * 레플리카가 줄면 파드가 지워진 노드가 비고, NodePool의 consolidateAfter: 20m가 지나면 Karpenter가 노드를 회수합니다.
 * 그 20분 안에 다시 늘어나면 새 파드가 빈 노드에 바로 올라갑니다. 이미지도 노드에 남아 있어서 노드 준비와 이미지 받기(약 4분)를 건너뜁니다.
+
+### 동작확인 ###
+```
+kubectl get scaledobject,hpa -n llm-serving
+kubectl describe hpa keda-hpa-gemma4-12b-vllm -n llm-serving | sed -n '/^Conditions:/,$p'
+```
+* ScaledObject: READY가 True인지 봅니다. ACTIVE는 지표가 0보다 클 때 True이므로 요청이 없으면 False입니다.
+* HPA TARGETS: KEDA가 만든 HPA 이름은 keda-hpa-gemma4-12b-vllm입니다. TARGETS에는 트리거별로 "현재 값/목표"가 나옵니다. 요청이 없으면 0/6 (avg), 0/700m (avg)이고, 처음 1분 정도는 <unknown>으로 보일 수 있습니다.
+* HPA Conditions: ScalingActive가 True면 HPA가 지표를 정상으로 받고 있는 것입니다.
+* READY가 False일 때: kubectl describe scaledobject gemma4-12b-vllm -n llm-serving의 Events와 kubectl logs -n keda deploy/keda-operator에서 원인을 찾습니다. 대부분 serverAddress나 PromQL 오류입니다.
+
+#### HPA가 받는 값을 직접 보려면 아래 명령을 씁니다. ####
+```
+kubectl get scaledobject gemma4-12b-vllm -n llm-serving -o jsonpath='{.status.externalMetricNames}'; echo
+
+kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/llm-serving/s0-prometheus?labelSelector=scaledobject.keda.sh%2Fname%3Dgemma4-12b-vllm" \
+  | jq -r '.items[0].value'
+```
