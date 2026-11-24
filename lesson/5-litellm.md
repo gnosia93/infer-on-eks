@@ -250,4 +250,58 @@ spec:
       protocol: TCP
 EOF
 ```
+
+### 5. 확인 ###
+```
+kubectl rollout status deployment/litellm -n llm-serving
+kubectl get pods -n llm-serving -l app.kubernetes.io/name=litellm -o wide
+```
+두 파드가 Running(1/1)이고 서로 다른 노드에 있으면 된다. 다음으로 인증, session_id 처리, 잘못된 값 거부를 차례로 확인한다.
+
+```
+MASTER_KEY=$(kubectl get secret litellm-secrets -n llm-serving -o jsonpath='{.data.LITELLM_MASTER_KEY}' | base64 -d)
+kubectl -n llm-serving port-forward svc/litellm 4000:4000 >/dev/null 2>&1 &
+PF_PID=$!
+
+# 1) 키 없이 요청 → 401
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4000/v1/models
+
+# 2) session_id 헤더를 넣은 정상 요청 → 응답 메시지
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Authorization: Bearer ${MASTER_KEY}" \
+  -H "Content-Type: application/json" \
+  -H "session_id: user42-chat-0001" \
+  -d '{"model": "gemma-4-12b", "messages": [{"role": "user", "content": "안녕하세요"}], "max_tokens": 64}' \
+  | jq '.choices[0].message'
+
+# 3) 형식이 틀린 session_id → 400
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4000/v1/chat/completions \
+  -H "Authorization: Bearer ${MASTER_KEY}" \
+  -H "Content-Type: application/json" \
+  -H "session_id: bad value!" \
+  -d '{"model": "gemma-4-12b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 8}'
+```
  
+vLLM은 받은 헤더를 로그에 남기지 않는다. 그래서 헤더가 실제로 넘어가는지는 LiteLLM 디버그 로그에서 vLLM으로 보낸 요청을 보고 확인한다. 디버그 로그에는 프롬프트도 찍히므로 확인이 끝나면 바로 끈다.
+```
+kubectl set env deployment/litellm -n llm-serving LITELLM_LOG=DEBUG
+kubectl rollout status deployment/litellm -n llm-serving
+
+# 파드가 바뀌었으므로 port-forward를 다시 연 뒤 위 2) 요청을 한 번 더 보낸다
+kill $PF_PID
+kubectl -n llm-serving port-forward svc/litellm 4000:4000 >/dev/null 2>&1 &
+PF_PID=$!
+
+kubectl logs -n llm-serving -l app.kubernetes.io/name=litellm --tail=-1 --prefix | grep -i 'x-session-id'
+
+# 디버그 로그 끄기
+kubectl set env deployment/litellm -n llm-serving LITELLM_LOG-
+```
+
+### 6. 다음 단계에서 알아 둘 점 ###
+* Ingress: alb.ingress.kubernetes.io/target-type: ip로 설정하고, 헬스 체크 경로는 /health/liveliness를 쓴다. 긴 스트리밍을 위해 idle timeout은 600초로 늘린다.
+* readiness gate: 네임스페이스에 elbv2.k8s.aws/pod-readiness-gate-inject=enabled 레이블을 붙이고 LiteLLM 파드를 다시 만든다. 그러면 롤링 업데이트 때 새 파드가 ALB 타깃에서 healthy가 된 뒤에 기존 파드가 내려간다.
+* ALB 헤더 설정: 클라이언트가 session_id를 쓰는 동안에는 drop_invalid_header_fields를 켜지 않는다.
+* vLLM 연결 재사용: 지금은 LiteLLM이 vLLM ClusterIP Service로 바로 보낸다. LiteLLM은 백엔드 연결을 재사용하므로 KEDA가 vLLM 파드를 늘려도 새 파드에는 요청이 늦게 간다(앞 장 9절). Envoy/Istio 라우터는 요청마다 파드를 고르므로, 붙이면 해결된다.
+* 노드 업그레이드: 업그레이드 때 두 파드가 동시에 내려가지 않게 하려면 PodDisruptionBudget(minAvailable: 1)을 추가한다.
+
