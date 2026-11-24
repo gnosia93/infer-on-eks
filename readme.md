@@ -23,13 +23,12 @@ _Work In Progress..._
   * [Istio/Envoy - `x-sesssion-id` 기반 Consistent Hashing 라우팅](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-istio.md)
   * [서비스 엔드 포인트 만들기 - ALB Ingress](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-alb-ingress.md)
 
-* C6. 콜드 스타트 해결
+* [C6. 콜드 스타트 해결](](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md))
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/s3_datasync_fast_model_loading.md 
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/eks_s3_fast_model_loading_full_guide.md
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/llm-coldstart-soci-blog-outline.md  
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/llm-coldstart-soci-karpenter-v2.md 
   * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
-  * [GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 * C7. KEDA (Kubernetes Event-Driven Autoscaling)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
