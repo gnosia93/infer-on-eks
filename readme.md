@@ -39,7 +39,7 @@ _Work In Progress..._
 * [C8. vLLM Network Policy](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/8-cni-network-policy.md) 
 
 * C9. LLM 성능 평가 및 보안
-   * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
+   * [promptfoo 로 모델 성능 평가하기](https://aws.amazon.com/ko/blogs/tech/bedrock-promptfoo-eval/)
    * llm 보안 취약점 스캔
     
 ### _Advanced_ ###
