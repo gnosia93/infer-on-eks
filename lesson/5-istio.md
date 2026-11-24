@@ -165,3 +165,59 @@ kubectl rollout status deployment/litellm -n llm-serving
 ```
 
 클러스터를 처음부터 다시 만들 때 빠지지 않도록, LiteLLM 배포 장의 Deployment 매니페스트에도 같은 레이블을 넣어 둔다.
+
+```yaml
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: litellm
+        app.kubernetes.io/component: llm-gateway
+        sidecar.istio.io/inject: "true"     # 추가. 이 파드에만 사이드카를 주입
+```
+
+#### 3.3 확인 ####
+
+```
+kubectl get pods -n llm-serving -l app.kubernetes.io/name=litellm
+
+kubectl get pods -n llm-serving -l app.kubernetes.io/name=litellm \
+  -o jsonpath='{range .items[*]}{.metadata.name}{"  init="}{.spec.initContainers[*].name}{"  main="}{.spec.containers[*].name}{"\n"}{end}'
+
+istioctl proxy-status
+```
+
+[예상 결과]
+```
+NAME                    READY   STATUS    RESTARTS   AGE
+litellm-<해시>-<해시>    2/2     Running   0          1m
+litellm-<해시>-<해시>    2/2     Running   0          2m
+```
+```
+litellm-<해시>-<해시>  init=istio-init istio-proxy  main=litellm
+litellm-<해시>-<해시>  init=istio-init istio-proxy  main=litellm
+```
+
+- **READY:** 파드마다 `2/2`(litellm, istio-proxy)이면 된다.
+- **컨테이너 위치:** `istio-proxy`가 init 쪽에 보이면 네이티브 사이드카로 들어간 것이다.
+- **설정 수신:** `istioctl proxy-status`에 LiteLLM 파드 두 개가 보이고 CDS, LDS, EDS, RDS 열이 `SYNCED`면, istiod에게서 설정을 받은 것이다.
+- **기존 설정:** LiteLLM 파드의 `runAsNonRoot`, `readOnlyRootFilesystem`, `automountServiceAccountToken: false`는 그대로 둔다. istio-init과 istio-proxy는 자체 securityContext와 토큰 볼륨을 쓴다. HTTP 프로브는 Istio가 istio-agent를 거치도록 바꿔 주므로 고칠 필요가 없다.
+
+사이드카를 붙인 뒤에도 LiteLLM을 거쳐 vLLM까지 요청이 가는지 확인한다.
+
+```
+MASTER_KEY=$(kubectl get secret litellm-secrets -n llm-serving -o jsonpath='{.data.LITELLM_MASTER_KEY}' | base64 -d)
+
+kubectl -n llm-serving port-forward svc/litellm 4000:4000 >/dev/null 2>&1 &
+PF_PID=$!; sleep 3
+
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Authorization: Bearer ${MASTER_KEY}" \
+  -H "Content-Type: application/json" \
+  -H "session_id: chat-check-0001" \
+  -d '{"model": "gemma-4-12b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 16}' \
+  | jq '.choices[0].message'
+
+kill ${PF_PID}
+```
+
+응답 메시지가 나오면 된다.
