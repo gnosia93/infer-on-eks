@@ -49,6 +49,7 @@ _Work In Progress..._
 
 * [C11. GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11.gpu-monitoring.md)
 
+* [C12. tensorrt](https://github.com/gnosia93/lgraph-agentic-ai/blob/main/lesson/10-tensorrt-inference.md)
 
 ## Appendix ##
 
