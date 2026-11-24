@@ -24,12 +24,23 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 
 ## 최적화 하기 ##
 
-### 1. S3 Express One Zone 버킷 생성 ###
+### 1. vLLM 최적화 ###
+
+#### 1.1 CUDA 그래프 캡처 대상 줄이기 (21s -> 3~5s 단축) ####
+
+기본적으로 vLLM은 다양한 동시 요청 수(배치 크기: 1, 2, 4, 8 ... 최대 512개)에 대해 그래프를 모두 미리 캡처합니다. 실제 서비스 트래픽에 맞춰 최대 캡처 크기를 낮추면 캡처 시간이 대폭 줄어듭니다.
+```
+vllm serve <모델명> --compilation-config '{"cudagraph_capture_sizes": [1, 2, 4, 8, 16, 32]}'
+```
+
+#### 1.2 ####
+
+### 2. S3 Express One Zone 버킷 생성 ###
 Express 존에 버킷을 생성하고, 모델을 다운로드 받는다. 
 
-### 2. 카펜터 노드풀 생성 ### 
+### 3. 카펜터 노드풀 생성 ### 
 Bottlerocket AMI 와 SOCI Parallel Pull 이 가능한 GPU 노드풀을 생성한다.
 
-### 3. 서비스 어카운트 생성 ###
+### 4. 서비스 어카운트 생성 ###
 
-### 4. vLLM 파드 스케줄링 ###
+### 5. vLLM 파드 스케줄링 ###
