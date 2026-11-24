@@ -33,7 +33,18 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 vllm serve <모델명> --compilation-config '{"cudagraph_capture_sizes": [1, 2, 4, 8, 16, 32]}'
 ```
 
-#### 1.2 ####
+#### 1.2 torch.compile 시간 단축 하기 (55초) ####
+
+torch.compile은 현재 연결된 GPU 아키텍처(예: A100, L40S, H100 등)와 입력 형태에 맞춰 여러 개의 자잘한 GPU 연산(커널)을 하나로 합치고(Kernel Fusion) 최적화된 Triton/CUDA 코드를 즉석에서 빌드하는 작업으로, 작업결과는 수십 MB ~ 수백 MB (모델 크기와 무관하게 매우 작음) 이다.
+GPU에서 연산을 빠르게 돌리기 위한 컴파일된 커널 코드 (.so, .cubin 등) 이다.
+
+최초 1회 빌드된 결과물을 디스크에 저장해 두면, 이후 서버를 껐다 켜거나 새 컨테이너를 띄울 때는 컴파일을 건너뛰고 바로 로드한다.
+VLLM_CACHE_ROOT와 TORCHINDUCTOR_CACHE_DIR 경로를 호스트 디스크나 EBS/EFS/S3 같은 영구 볼륨에 연결해 두면 된다.
+첫 실행만 55초 걸리고, 두 번째 실행부터는 컴파일 시간이 수 초 수준으로 사라진다. 
+S3 Express One Zone 같은 곳에 미리 캐시 폴더를 올려두고 컨테이너 시작 시 땡겨오는 방식도 많이 씁니다.
+
+
+
 
 ### 2. S3 Express One Zone 버킷 생성 ###
 Express 존에 버킷을 생성하고, 모델을 다운로드 받는다. 
