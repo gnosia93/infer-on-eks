@@ -264,3 +264,29 @@ istioctl analyze -n llm-serving
 `istioctl analyze`에 Error나 Warning이 없으면 된다. 네임스페이스에 주입 레이블이 없다는 Info 메시지가 나올 수 있다. 이 구성은 파드 단위로 주입하므로 그 메시지는 무시한다.
 
 ### 5. 접근 로그 켜기 (확인용) ###
+
+2.2절에서 정의한 `session-access-log` 형식을 LiteLLM 사이드카의 아웃바운드 요청에만 켠다.
+
+```
+kubectl apply -f - <<'EOF'
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+metadata:
+  name: litellm-session-log
+  namespace: llm-serving
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+  accessLogging:
+    - providers:
+        - name: session-access-log
+      match:
+        mode: CLIENT                      # LiteLLM에서 나가는 요청(vLLM 쪽)만 기록
+EOF
+```
+
+- **mode: CLIENT:** 이 파드가 보내는 쪽일 때만 기록한다. ALB에서 들어오는 요청은 기록하지 않는다.
+- **로그 내용:** 로그에는 `session=<x-session-id 값> upstream=<vLLM 파드 IP:8000>`이 남는다.
+- **정리 시점:** 세션 ID는 사용자를 구분하는 값이다. 그래서 확인이 끝나면 6.4절에서 이 설정을 지운다.
+
