@@ -1,9 +1,8 @@
 # infer-on-eks
 
-This workshop is under construction, Not fully implemented yet ...
+[WIP]
 
-![](https://github.com/gnosia93/infer-on-eks/blob/main/images/infer-arch-2.jpg)
-
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
 
 
 ### _Basic_ ###
