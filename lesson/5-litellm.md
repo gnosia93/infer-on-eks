@@ -94,3 +94,5 @@ data:
     session_id_forwarder = SessionIdForwarder()
 EOF
 ```
+* 훅이 쓰는 값: proxy_server_request.headers(LiteLLM이 받은 헤더)를 읽고 extra_headers(백엔드로 보낼 헤더)를 채운다. LiteLLM v1.108.16 소스에서 두 경로를 확인했다.
+* 설정 반영: ConfigMap을 고친 뒤에는 kubectl rollout restart deployment/litellm -n llm-serving을 실행해야 반영된다.
