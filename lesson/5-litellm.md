@@ -96,3 +96,130 @@ EOF
 ```
 * 훅이 쓰는 값: proxy_server_request.headers(LiteLLM이 받은 헤더)를 읽고 extra_headers(백엔드로 보낼 헤더)를 채운다. LiteLLM v1.108.16 소스에서 두 경로를 확인했다.
 * 설정 반영: ConfigMap을 고친 뒤에는 kubectl rollout restart deployment/litellm -n llm-serving을 실행해야 반영된다.
+
+### 3. Deployment ###
+```
+kubectl apply -f - <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/component: llm-gateway
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0                         # 새 파드가 Ready가 된 뒤 기존 파드를 내림
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: litellm
+        app.kubernetes.io/component: llm-gateway
+    spec:
+      automountServiceAccountToken: false       # 쿠버네티스 API를 쓰지 않음
+      terminationGracePeriodSeconds: 180
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone    # 가능하면 두 파드를 서로 다른 AZ에
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: litellm
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname         # 가능하면 서로 다른 노드에
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: litellm
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm:v1.108.16    # 1.108.x LTS 최신 패치. 운영에서는 @sha256 다이제스트로 고정
+          args: ["--config", "/etc/litellm/config.yaml", "--port", "4000", "--num_workers", "1"]
+          env:
+            - name: LITELLM_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-secrets
+                  key: LITELLM_MASTER_KEY
+            - name: LITELLM_MODE                # .env 파일 자동 로드 끔
+              value: PRODUCTION
+            - name: LITELLM_NON_ROOT            # 읽기 전용 루트 파일시스템으로 실행
+              value: "true"
+            - name: LITELLM_MIGRATION_DIR       # 쓰기 가능한 경로 (나중에 DB를 붙이면 사용)
+              value: /app/migrations
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          resources:                            # LiteLLM 권장 시작값: 워커 1개당 1 vCPU, 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          startupProbe:                         # 기동 최대 2분
+            httpGet:
+              path: /health/readiness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 24
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 4
+          lifecycle:
+            preStop:                            # ALB가 타깃을 빼는 동안 계속 요청을 받음
+              sleep:
+                seconds: 30
+          volumeMounts:
+            - name: config
+              mountPath: /etc/litellm
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: migrations
+              mountPath: /app/migrations
+      volumes:
+        - name: config
+          configMap:
+            name: litellm-config
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: migrations
+          emptyDir:
+            sizeLimit: 64Mi
+EOF
+```
+
