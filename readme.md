@@ -60,5 +60,5 @@ _Work In Progress..._
 ## Appendix ##
 
 * [A1. Capcity Block](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-capacity-block.md)
-
+* [A2. EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-efa-observability.md)
 
