@@ -221,3 +221,46 @@ kill ${PF_PID}
 ```
 
 응답 메시지가 나오면 된다.
+
+### 4. DestinationRule 만들기 ###
+
+DestinationRule은 특정 Service로 가는 트래픽에 적용할 부하 분산 방식을 정한다. 여기서는 vLLM Service로 가는 요청을 `x-session-id` 해시로 나누게 한다.
+
+```
+kubectl apply -f - <<'EOF'
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: gemma4-12b-vllm
+  namespace: llm-serving
+spec:
+  host: gemma4-12b-vllm.llm-serving.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-session-id      # LiteLLM 훅이 vLLM 쪽 요청에 붙이는 헤더
+        ringHash:
+          minimumRingSize: 1024
+      localityLbSetting:
+        enabled: false                    # AZ와 상관없이 모든 사이드카가 같은 결과를 내도록
+EOF
+```
+
+| 항목 | 설명 |
+|---|---|
+| `host` | LiteLLM `api_base`가 가리키는 vLLM Service의 FQDN이다. 다르면 규칙이 적용되지 않는다. |
+| `httpHeaderName` | 이 헤더 값을 해시한다. 헤더가 없는 요청은 무작위로 분산된다. |
+| `ringHash` | 링 해시를 쓴다고 명시한다. Envoy 문서에 따르면 Maglev는 호스트가 빠질 때 링 해시보다 약 두 배 많은 키가 옮겨 간다. KEDA로 파드 수가 자주 바뀌므로 링 해시를 고른다. `minimumRingSize`는 가상 노드 수이고, 기본값과 같은 1024다. |
+| `localityLbSetting.enabled: false` | LiteLLM 파드는 AZ마다 하나씩 있다. locality 부하 분산이 켜지면 사이드카마다 자기 AZ의 vLLM 파드를 먼저 골라서, 같은 세션이 다른 파드로 갈 수 있다. Istio 문서도 consistent hash와 locality 부하 분산을 함께 쓰지 말라고 경고한다. |
+
+- **VirtualService:** 만들지 않는다. DestinationRule만으로 이 Service로 가는 모든 요청에 적용된다.
+- **outlierDetection:** 넣지 않는다. 잠깐 제외되는 파드가 생길 때마다 해시 링이 다시 만들어져 세션이 옮겨 간다.
+
+```
+kubectl get destinationrule -n llm-serving
+istioctl analyze -n llm-serving
+```
+
+`istioctl analyze`에 Error나 Warning이 없으면 된다. 네임스페이스에 주입 레이블이 없다는 Info 메시지가 나올 수 있다. 이 구성은 파드 단위로 주입하므로 그 메시지는 무시한다.
+
+### 5. 접근 로그 켜기 (확인용) ###
