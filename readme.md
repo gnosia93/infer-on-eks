@@ -26,7 +26,7 @@ _Work In Progress..._
 * [C6. 콜드 스타트 최적화 (파드 기동 시간 단축)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
   * [S3 Express One Zone 에 모델 저장] 
   * [GPU 노드풀 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-s3-express.md)
-  * [vLLM 기동 시간 단축](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-vllm-start-optimize.md)
+  * [vLLM 기동 시간 단축](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-vllm-launch-optimize.md)
     
 * C7. Headroom-based Proactive Scaling with KEDA (한계치에 도달하기 전에 미리 확보)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
