@@ -50,7 +50,7 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 ### _Advanced_ ###
       
 * [C10. LeaderWorkerSet (LWS) & Ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/10-lws.md)
-   * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/2-ray.md)
+   * [ray 인프라](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/10-ray.md)
 
 * [C11. GPU 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11.gpu-monitoring.md)
 
