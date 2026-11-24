@@ -41,7 +41,7 @@ This workshop is under construction, Not fully implemented yet ...
   * [배포시간 최적화 - SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
 * C7. KEDA (Kubernetes Event-Driven Autoscaling)
-  * [GPU Pod Autoscaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7.keda-autoscaling.md) 
+  * [GPU 파드 오토스케일링 설정하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7.keda-autoscaling.md) 
   * [GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 
