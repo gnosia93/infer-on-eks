@@ -34,3 +34,63 @@ LiteLLM은 기본으로 클라이언트 헤더를 백엔드에 넘기지 않는�
 kubectl create secret generic litellm-secrets -n llm-serving \
   --from-literal=LITELLM_MASTER_KEY="sk-$(openssl rand -hex 24)"
 ```
+클라이언트는 Authorization: Bearer <키> 헤더로 이 키를 보낸다. 마스터 키는 관리자 키다. 앱마다 다른 키(virtual key)를 나눠 주려면 Postgres를 붙여야 한다.
+
+
+### 2. 설정 파일 (ConfigMap) ###
+
+```
+kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  namespace: llm-serving
+data:
+  config.yaml: |
+    model_list:
+      - model_name: gemma-4-12b                     # 클라이언트가 요청의 model에 쓰는 이름
+        litellm_params:
+          model: hosted_vllm/gemma-4-12b            # hosted_vllm/ 뒤는 vLLM의 --served-model-name
+          api_base: http://gemma4-12b-vllm.llm-serving.svc.cluster.local:8000/v1
+          timeout: 600                              # 요청 하나의 최대 시간(초)
+
+    litellm_settings:
+      callbacks: session_hook.session_id_forwarder  # 같은 디렉터리 session_hook.py의 session_id_forwarder
+
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+
+  session_hook.py: |
+    import re
+
+    from fastapi import HTTPException
+    from litellm.integrations.custom_logger import CustomLogger
+
+    # 클라이언트가 보내는 헤더. 둘 다 오면 앞의 것을 쓴다
+    INCOMING_HEADERS = ("session_id", "x-session-id")
+    # vLLM(나중에는 Envoy/Istio 라우터)으로 넘길 헤더 이름
+    OUTGOING_HEADER = "x-session-id"
+    # 영문, 숫자, . _ : - 로 된 1~128자
+    VALID_SESSION_ID = re.compile(r"[A-Za-z0-9._:-]{1,128}")
+
+    class SessionIdForwarder(CustomLogger):
+        async def async_pre_call_hook(self, user_api_key_dict, cache, data, call_type):
+            # LiteLLM이 받은 요청 헤더 (이름은 소문자)
+            headers = (data.get("proxy_server_request") or {}).get("headers") or {}
+            session_id = next((headers[h] for h in INCOMING_HEADERS if headers.get(h)), None)
+            if session_id is None:
+                return data
+
+            if not VALID_SESSION_ID.fullmatch(session_id):
+                raise HTTPException(status_code=400, detail="invalid session_id header")
+
+            # vLLM으로 보내는 HTTP 요청에 붙는 헤더
+            extra_headers = dict(data.get("extra_headers") or {})
+            extra_headers[OUTGOING_HEADER] = session_id
+            data["extra_headers"] = extra_headers
+            return data
+
+    session_id_forwarder = SessionIdForwarder()
+EOF
+```
