@@ -6,9 +6,12 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/gpu-scaling.svg)
 
+
+## 파드 스케일링 속도 최적화 ##
+
 * 카펜터 노드 프로비저닝 - 약 1분 -> 별다른 최적화 방법이 없다.
 * 컨테이너 이미지 - SOCI parallel pull 로 변경 (시간 비교 측정 필요)
 * vLLM 시작
     * 모델 이미지 download -> S3 One-Zone + run.ai streamer
     * CUDA graph early compile & reuse -> PVC ?
-*  
+  
