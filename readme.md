@@ -27,7 +27,7 @@ _Work In Progress..._
   * [Bottlerocket AMI]
   * [SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
-* C7. Headroom-based Proactive Pod Scaling with KEDA - 실제 한계치에 도달하기 전에 미리 확보
+* C7. Headroom-based Proactive Scaling with KEDA (한계치에 도달하기 전에 미리 확보)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
   * [KEDA 설치 및 ScaledObject 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
   * [vLLM 파드 스케일링 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-autoscaling-test.md)
