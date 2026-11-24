@@ -9,7 +9,7 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/gpu-scaling.svg)
 
 
-### 파드 스케일링 속도 최적화 ###
+### 스케줄링 속도 최적화 ###
 
 * 카펜터 노드 프로비저닝 - Amazon Linux 2023 의 경우 약 1분 소요
     * Bottlerocker 이미지 적용 ?  
