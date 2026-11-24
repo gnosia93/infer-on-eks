@@ -9,7 +9,8 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 
 ## 파드 스케일링 속도 최적화 ##
 
-* 카펜터 노드 프로비저닝 - 약 1분 -> 별다른 최적화 방법이 없다.
+* 카펜터 노드 프로비저닝 - Amazon Linux 2023 의 경우 약 1분 소요
+    * Bottlerocker 이미지 적용 ?  
 * 컨테이너 이미지 - SOCI parallel pull 로 변경 (시간 비교 측정 필요)
 * vLLM 시작
     * 모델 Download
