@@ -1,6 +1,6 @@
 # infer-on-eks
 
-[WIP]
+_Work In Progress..._
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
 
