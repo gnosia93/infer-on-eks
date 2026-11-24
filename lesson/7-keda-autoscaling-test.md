@@ -58,6 +58,8 @@ kubectl get pods -n llm-serving -l app.kubernetes.io/name=gemma4-12b-vllm -w
 kubectl get nodeclaims -w
 ```
 
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/keda-autoscaling-timeline.jpg)
+
 
 ## 레퍼런스 ##
 
