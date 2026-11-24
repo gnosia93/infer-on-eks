@@ -12,6 +12,8 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 * 카펜터 노드 프로비저닝 - 약 1분 -> 별다른 최적화 방법이 없다.
 * 컨테이너 이미지 - SOCI parallel pull 로 변경 (시간 비교 측정 필요)
 * vLLM 시작
-    * 모델 이미지 download -> S3 One-Zone + run.ai streamer
+    * 모델 Download
+       * S3 One-Zone : ??
+       * S3 run.ai streamer 적용 : 3분 -> 30초  
     * CUDA graph early compile & reuse -> PVC ?
   
