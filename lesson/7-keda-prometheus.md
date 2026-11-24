@@ -57,3 +57,6 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
 
 kubectl get pods -n monitoring
 ```
+* ServiceMonitor 선택: serviceMonitorSelectorNilUsesHelmValues의 기본값은 true 이다. 이 상태에서는 release: kube-prometheus-stack 레이블이 붙은 ServiceMonitor만 수집하므로, false로 바꾼다.
+* 데이터 보관: 데이터는 Prometheus 파드의 emptyDir에 저장되므로 오래 보관하려면 prometheusSpec.storageSpec으로 EBS 볼륨을 붙인다.
+* GPU 노드 사용: GPU 노드에는 테인트가 있어서 node-exporter 같은 데몬셋 말고는 올라가지 않는다.
