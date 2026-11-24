@@ -20,7 +20,7 @@ _Work In Progress..._
     
 * C5. 세션 / 트래픽 라우팅
   * [LiteLLM 배포하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
-  * [Istio/Envoy 사이드카 설정 - `x-sesssion-id` 기반 Consistent Hashing 라우팅]
+  * [Istio/Envoy 사이드카 설정 - `x-sesssion-id` 기반 Consistent Hashing 라우팅](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-istio.md)
   * [서비스 엔드 포인트 만들기 - ALB Ingress]
 
 * C6. 콜드 스타트 해결
