@@ -127,3 +127,58 @@ kubectl run np-allow -n llm-serving --rm -it --restart=Never --image=curlimages/
 ```
 kubectl delete networkpolicy gemma4-12b-vllm-ingress -n llm-serving
 ```
+
+## EKS 버전과 애드온 버전의 의존성(호환성) ##
+
+EKS 애드온은 버전마다 지원하는 Kubernetes 버전이 정해져 있다.
+
+### 1. 기본 규칙 ###
+
+- **버전별 호환 범위:** 애드온 버전(예: `v1.21.0-eksbuild.1`)마다 호환되는 클러스터 버전이 정해져 있다. 클러스터 버전을 넣고 조회하면 그 버전에서 쓸 수 있는 애드온 버전과 기본 버전이 나온다.
+- **기본 버전:** 버전을 지정하지 않고 애드온을 설치하면, 그 클러스터 버전의 기본 버전이 설치된다.
+- **자동 업그레이드 없음:** 클러스터를 업그레이드해도 애드온은 따라 올라가지 않는다. 컨트롤 플레인을 올린 뒤 애드온을 새 버전에 맞게 따로 업데이트해야 한다.
+
+### 2. 애드온별 차이 ###
+
+| 애드온 | 클러스터 버전과의 관계 |
+|---|---|
+| kube-proxy | 클러스터와 같은 마이너 버전을 쓴다. 컨트롤 플레인보다 새 버전이면 안 된다. |
+| CoreDNS | 클러스터 버전마다 권장 버전이 정해져 있다. |
+| VPC CNI | 여러 클러스터 버전을 지원해서 최신 버전을 권장한다. 다만 한 번에 한 마이너 버전씩 올린다. 네트워크 정책은 1.21 이상이 필요한 것처럼 기능별 최소 버전도 있다. |
+| EBS CSI, Pod Identity Agent, metrics-server | 아래 조회 결과에 나온 호환 버전 중에서 고른다. |
+
+### 3. 확인 명령 ###
+
+```
+# 클러스터에 설치된 애드온과 버전
+for a in $(aws eks list-addons --cluster-name "${CLUSTER_NAME}" --query 'addons[]' --output text); do
+  aws eks describe-addon --cluster-name "${CLUSTER_NAME}" --addon-name "$a" \
+    --query 'addon.[addonName, addonVersion]' --output text
+done
+
+# 이 클러스터 버전에서 쓸 수 있는 vpc-cni 버전 (두 번째 열이 True면 기본 버전)
+aws eks describe-addon-versions --addon-name vpc-cni --kubernetes-version "${K8S_VERSION}" \
+  --query 'addons[0].addonVersions[].[addonVersion, compatibilities[0].defaultVersion]' --output table
+
+# 업그레이드 전 점검 (EKS upgrade insights: 호환되지 않는 애드온과 API를 알려 줌)
+aws eks list-insights --cluster-name "${CLUSTER_NAME}" \
+  --query 'insights[].[name, insightStatus.status]' --output table
+```
+
+### 4. 클러스터를 업그레이드할 때 순서 ###
+
+1. upgrade insights와 위의 호환 목록으로, 지금 쓰는 애드온 버전이 새 클러스터 버전에서도 지원되는지 확인한다. 지원되지 않으면 그 애드온을 먼저 올린다.
+2. 컨트롤 플레인을 업그레이드한다.
+3. VPC CNI, CoreDNS, kube-proxy 같은 애드온을 새 버전에 맞게 업데이트한다.
+4. 노드를 업그레이드한다.
+   - 관리형 노드 그룹은 AMI를 업데이트한다.
+   - Karpenter 노드는 `al2023@latest`가 새 버전의 AMI를 가리키게 되면서 drift로 교체된다. GPU 노드가 바뀌면 vLLM 파드가 다시 뜨는 데 약 7분이 걸리므로 사용량이 적은 시간에 한다.
+
+### 5. Helm으로 설치한 구성 요소 ###
+
+Karpenter, KEDA, Istio, NVIDIA device plugin, kube-prometheus-stack은 EKS 애드온이 아니다. 그래서 위 조회 명령에는 나오지 않고, 각 프로젝트의 호환 표를 따로 봐야 한다.
+
+- **KEDA:** KEDA 2.21은 Kubernetes 1.34~1.36에서 테스트되었다.
+- **Karpenter:** 새 Kubernetes 버전을 지원하는 Karpenter 버전으로 먼저 올린 다음 클러스터를 업그레이드해야 한다.
+
+
