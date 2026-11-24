@@ -1,6 +1,6 @@
 # infer-on-eks
 
-_Work In Progress..._
+$\textcolor{#326CE5}{\textsf{WIP}}$
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
 
