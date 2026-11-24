@@ -61,6 +61,32 @@ kubectl get nodeclaims -w
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/keda-autoscaling-timeline.jpg)
 
 
+### Grafana로 보기 ###
+
+```
+kubectl get secret grafana-admin -n monitoring -o jsonpath='{.data.admin-password}' | base64 -d; echo
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+```
+브라우저에서 3000 포트로 접속해 admin 계정으로 로그인합니다. 원격 VS Code 서버에서 실행했다면 VS Code의 포트 포워딩으로 엽니다. Explore에서 아래 쿼리로 패널을 만듭니다.
+
+
+| 패널 | PromQL |
+| :--- | :--- |
+| 파드별 처리 중 요청 | `sum by (pod) (vllm:num_requests_running{namespace="llm-serving"})` |
+| 대기 요청 | `sum(vllm:num_requests_waiting{namespace="llm-serving"})` |
+| 파드별 KV 캐시 사용률 | `vllm:kv_cache_usage_perc{namespace="llm-serving"}` |
+| HPA 목표 레플리카 | `kube_horizontalpodautoscaler_status_desired_replicas{namespace="llm-serving"}` |
+| HPA 현재 레플리카 | `kube_horizontalpodautoscaler_status_current_replicas{namespace="llm-serving"}` |
+| TTFT p99 | `histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket{namespace="llm-serving"}[1m])))` |
+
+
+
+
+
+
+
+
+
 ## 레퍼런스 ##
 
 * [KEDA 이벤트 기반 오토스케일링 도입](https://gnobaaaaar.tistory.com/150) 
