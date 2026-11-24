@@ -24,3 +24,13 @@
 | istiod | `istio-system` 네임스페이스 | 사이드카에 라우팅·부하 분산 설정과 엔드포인트 목록을 보낸다. mTLS 인증서를 발급하고, 사이드카 주입 웹훅을 처리한다. |
 | istio-init | 사이드카가 들어간 파드 (init 컨테이너) | iptables 규칙을 만들어 파드로 들어오고 나가는 트래픽을 istio-proxy로 돌린다. |
 | istio-proxy | 사이드카가 들어간 파드 (네이티브 사이드카) | Envoy와 istio-agent로 구성된다. 실제로 요청을 받아 해시로 vLLM 파드를 고른다. |
+
+### 사전 준비 ###
+
+| 항목 | 조건 |
+|---|---|
+| EKS | 1.34. Istio 1.32가 지원하는 Kubernetes는 1.33~1.37이다. |
+| LiteLLM | LiteLLM 배포 장의 Deployment. `session_hook.py`가 `session_id`를 `x-session-id`로 바꿔 vLLM 쪽 요청에 붙인다. |
+| vLLM Service | `gemma4-12b-vllm`, ClusterIP(헤드리스 아님), 포트 이름 `http` |
+| NetworkPolicy | vLLM NetworkPolicy를 적용했다면 LiteLLM 파드가 이미 허용돼 있으므로 그대로 둔다. |
+| 도구 | helm, kubectl, jq. istioctl은 1절에서 설치한다. |
