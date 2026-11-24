@@ -26,7 +26,8 @@ _Work In Progress..._
 * [C6. 콜드 스타트 최적화 (파드 스케일링 속도 최적화)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
   * [Bottlerocket AMI]
   * [SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
-
+  * [S3 One Zone]()
+    
 * C7. Headroom-based Proactive Scaling with KEDA (한계치에 도달하기 전에 미리 확보)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
   * [KEDA 설치 및 ScaledObject 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
