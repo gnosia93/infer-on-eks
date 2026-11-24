@@ -43,8 +43,7 @@ This workshop is under construction, Not fully implemented yet ...
 
 * C7. KEDA (Kubernetes Event-Driven Autoscaling)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
-  * [KEDA 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
-  * [GPU 파드 오토스케일링 설정하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7.keda-autoscaling.md) 
+  * [KEDA 설치 및 ScaledObject 설정](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
   * [GPU 노드 Pre Scaling](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-auto-scaling.md)
 
 
