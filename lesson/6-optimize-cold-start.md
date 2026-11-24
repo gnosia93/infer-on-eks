@@ -1,4 +1,6 @@
-## GPU 노드 오토스케일링 ##
+## 콜드 스타트 최적화 하기 ##
+
+### GPU 파드 스케줄링 소요 시간 ###
 
 GPU 노드의 오토스케일링은 CPU 노드와 다릅니다. 우선 kubelet은 CPU와 메모리 사용량은 보고하지만 GPU 지표나 추론 지표는 보고하지 않습니다. 그래서 vLLM 지표나 DCGM 지표를 따로 수집해서 HPA에 넘겨 주어야 오토스케일링을 구현할 수 있습니다. 자원 할당 방식도 다릅니다. CPU와 메모리는 cgroup으로 잘게 나눠 쓸 수 있지만, GPU는 NVIDIA device plugin이 한 장 단위로 할당합니다. 따라서 replica를 늘릴 때도 GPU를 장 단위로 늘려야 합니다. 또 GPU 사용률(DCGM_FI_DEV_GPU_UTIL)은 GPU가 일하고 있는지만 보여 줄 뿐, 처리 여유가 얼마나 남았는지는 보여 주지 않습니다. 실제로 vLLM은 요청량이 크게 달라져도 GPU 사용률이 항상 100% 근처에 머물기 때문에, 이 값은 확장 기준으로 쓸 수 없습니다.
 
@@ -7,7 +9,7 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/images/gpu-scaling.svg)
 
 
-## 파드 스케일링 속도 최적화 ##
+### 파드 스케일링 속도 최적화 ###
 
 * 카펜터 노드 프로비저닝 - Amazon Linux 2023 의 경우 약 1분 소요
     * Bottlerocker 이미지 적용 ?  
