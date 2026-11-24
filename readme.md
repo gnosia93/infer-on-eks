@@ -50,7 +50,6 @@ This workshop is under construction, Not fully implemented yet ...
 * C8. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
-   * [LLM 부하/서빙 성능 (Serving Performance)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-llm-serving-performance.md)
     
 ### _Advanced_ ###
 
