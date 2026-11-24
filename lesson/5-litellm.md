@@ -1,4 +1,4 @@
-## LiteLLM 배포 (Deployment, Service) ##
+## LiteLLM ##
 
 LiteLLM 파드 2개를 vLLM과 같은 llm-serving 네임스페이스에 띄우고 ClusterIP Service로 묶는다. ALB IP 모드에서는 ALB가 Service 뒤의 파드 IP를 타깃으로 직접 등록하므로 Service는 ClusterIP면 된다.
 
@@ -24,7 +24,7 @@ LiteLLM은 기본으로 클라이언트 헤더를 백엔드에 넘기지 않는�
 * LiteLLM도 8자 이상의 x-session-id는 자체 로그의 세션 ID로 인식한다.
 
 
-## 설정하기 ##
+## LiteLLM 배포 (Deployment, Service) ##
 
 ### 1. 마스터 키 ###
  
