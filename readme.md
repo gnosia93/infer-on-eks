@@ -31,7 +31,8 @@ This workshop is under construction, Not fully implemented yet ...
 * C5. 세션 / 트래픽 라우팅
   * [LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
   * [Istio L7 Router - Session Aware]
-  * [AWS ALB - Ingress] 
+  * [AWS ALB - Ingress]
+  * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/litellm-istio-vllm-prefix-cache.md
 
 * C6. 콜드 스타트 해결
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/s3_datasync_fast_model_loading.md 
