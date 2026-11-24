@@ -72,7 +72,7 @@ helm repo update
 helm search repo istio/istiod --versions | head -5     # 1.32.0이 있는지 확인
 ```
 
-#### 1. istiod 설정 파일 ####
+#### 2.2 istiod 설정 파일 ####
 
 `meshConfig`는 메시 전체에 적용되는 설정이다. 여기서는 확인용 접근 로그 형식(extensionProvider) 하나만 추가한다. 형식을 정의하기만 하므로 이 단계에서는 로그가 찍히지 않는다. 실제로 켜는 것은 5절의 Telemetry이고, LiteLLM 파드에만 켠다.
 
@@ -95,3 +95,73 @@ EOF
 | `%UPSTREAM_HOST%` | 사이드카가 고른 vLLM 파드의 IP:포트 |
 | `%RESPONSE_FLAGS%` | Envoy가 남기는 실패 원인 코드. 정상이면 `-`, 정상 엔드포인트가 없으면 `UH` |
 | `%DURATION%` | 요청 하나에 걸린 시간(ms) |
+
+#### 2.3 istio-base 설치 ####
+
+```
+helm install istio-base istio/base -n istio-system --create-namespace \
+  --version ${ISTIO_VERSION} --set defaultRevision=default
+
+helm ls -n istio-system
+kubectl get crd -o name | grep 'istio.io'
+```
+
+`defaultRevision=default`는 istio-base가 만드는 설정 검증 웹훅을 기본 리비전의 istiod에 연결한다. 리비전을 따로 나누지 않는 이 구성에서는 그대로 둔다.
+
+[예상 결과]
+```
+NAME         NAMESPACE      REVISION  ...  STATUS    CHART         APP VERSION
+istio-base   istio-system   1         ...  deployed  base-1.32.0   1.32.0
+```
+
+CRD 목록에 `destinationrules.networking.istio.io`, `telemetries.telemetry.istio.io`, `peerauthentications.security.istio.io` 등이 보이면 된다.
+
+#### 2.4 istiod 설치 ####
+
+```
+helm install istiod istio/istiod -n istio-system \
+  --version ${ISTIO_VERSION} -f istiod-values.yaml --wait
+
+kubectl get pods -n istio-system
+kubectl get mutatingwebhookconfiguration | grep istio
+istioctl version
+```
+
+[예상 결과]
+```
+NAME                      READY   STATUS    RESTARTS   AGE
+istiod-<해시>-<해시>       1/1     Running   0          1m
+```
+```
+istio-sidecar-injector   ...
+```
+```
+client version: 1.32.0
+control plane version: 1.32.0
+data plane version: none
+```
+
+- **주입 웹훅:** `istio-sidecar-injector`가 사이드카 주입 웹훅이다. 파드가 만들어질 때 3절의 레이블을 보고 사이드카를 넣는다.
+- **data plane version:** 아직 사이드카가 들어간 파드가 없어서 `none`이다.
+- **mTLS 모드:** 기본값인 PERMISSIVE로 둔다. 메시 밖에 있는 ALB가 보내는 평문 요청을 LiteLLM 사이드카가 받아야 하기 때문이다. 그래서 PeerAuthentication은 만들지 않는다.
+- **네임스페이스 레이블:** `llm-serving` 네임스페이스에 `istio-injection` 레이블을 붙이지 않는다. 붙이면 vLLM 파드와 벤치마크 파드에도 사이드카가 들어간다.
+
+### 3. LiteLLM 파드에 사이드카 주입 ###
+
+#### 3.1 주입 방식 ####
+
+- **주입 웹훅:** 파드가 만들어질 때 istiod의 주입 웹훅이 `sidecar.istio.io/inject: "true"` 레이블을 확인한다. 레이블이 있으면 파드 spec에 istio-init과 istio-proxy를 추가한다.
+- **istio-init:** 파드가 시작될 때 iptables 규칙을 만든다. 들어오는 트래픽은 15006 포트로, 나가는 트래픽은 15001 포트로 돌려 istio-proxy가 받게 한다. 그래서 LiteLLM 설정은 바꿀 필요가 없다.
+- **istio-proxy:** Istio 1.27부터 네이티브 사이드카(`restartPolicy: Always`인 init 컨테이너)로 들어간다. litellm 컨테이너보다 먼저 뜨고, litellm 컨테이너가 끝난 뒤에 내려간다. 그래서 LiteLLM의 preStop 30초와 스트리밍 응답 대기가 끊기지 않는다.
+- **적용 시점:** 레이블은 파드가 새로 만들어질 때만 반영된다. 이미 떠 있는 파드에는 사이드카가 붙지 않으므로 롤링 업데이트로 파드를 바꾼다.
+
+#### 3.2 레이블 추가 ####
+
+```
+kubectl patch deployment litellm -n llm-serving --type merge \
+  -p '{"spec":{"template":{"metadata":{"labels":{"sidecar.istio.io/inject":"true"}}}}}'
+
+kubectl rollout status deployment/litellm -n llm-serving
+```
+
+클러스터를 처음부터 다시 만들 때 빠지지 않도록, LiteLLM 배포 장의 Deployment 매니페스트에도 같은 레이블을 넣어 둔다.
