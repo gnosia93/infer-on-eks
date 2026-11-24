@@ -15,6 +15,8 @@ vLLM은 torch.compile 결과를 /home/vllm/.cache/vllm/torch_compile_cache에, T
 
 ### vLLM 시작 최적화 ###
 
+.cache 디렉토리의 내용을 S3 에 저장한 후, 신규 파드가 기동될때 init container 에서 emptyDir 로 내려 받도록 하여 vLLM 기동 시간은 193초 에서 2분 정도로 줄였다. 
+
 #### 1. 파드가 바뀌어도 캐시 디렉터리 유지하기 ####
 
 vLLM은 `torch.compile 결과`를 /home/vllm/.cache/vllm/torch_compile_cache에, `Triton 커널`을 /home/vllm/.cache/triton에 저장해요. 다음 기동 때 캐시가 맞으면 컴파일하지 않고 불러오기 때문에 55초가 몇 초로 줄어둔다. 캐시를 쓰면 Directly load ... 로그가 찍히고, 마지막 줄의 compilation: 값이 작아진다.
@@ -45,6 +47,6 @@ CUDA graph는 배치 크기마다 따로 캡처한다. 최대 크기의 기본�
               mountPath: /home/vllm/.cache
 
 ```
-1번과 2번을 적용하면 두 번째 기동부터 컴파일 약 50초와 첫 번째 캡처 14초가 감소한다. 그래서 `1분 정도 빨라져서 130초 기동시간이 소요된다. (기존 193초)` 
+1번과 2번을 적용하면 두 번째 기동부터 컴파일 약 50초와 첫 번째 캡처 14초가 감소한다. 그래서 `73초 정도 빨라져서 120초 기동시간이 소요된다. (기존 193초)` 
 
 
