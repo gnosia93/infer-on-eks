@@ -30,7 +30,7 @@ This workshop is under construction, Not fully implemented yet ...
     
 * C5. 세션 / 트래픽 라우팅
   * [LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
-  * [Istio L7 Router - Session Aware]
+  * [Istio의 사이드카 프록시 - Consistent Hashing]
   * [AWS ALB - Ingress]
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/litellm-istio-vllm-prefix-cache.md
 
