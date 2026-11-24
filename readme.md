@@ -22,7 +22,6 @@ _Work In Progress..._
   * [LiteLLM 배포하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
   * [Istio/Envoy 사이드카 프록시 설정 - `x-sesssion-id` 기반 Consistent Hashing 라우팅]
   * [외부 서비스 노출 - ALB]
-  * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/litellm-istio-vllm-prefix-cache.md
 
 * C6. 콜드 스타트 해결
   * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/s3_datasync_fast_model_loading.md 
