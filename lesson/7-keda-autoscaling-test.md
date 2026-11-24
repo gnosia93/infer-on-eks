@@ -80,11 +80,23 @@ kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
 | TTFT p99 | `histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket{namespace="llm-serving"}[1m])))` |
 
 
+### 운영할 때 알아 둘 점 ###
 
+* threshold 조정: 실제 트래픽의 입력과 출력 길이로 4장 측정을 다시 합니다. 그다음 SLO를 지키는 파드당 동시성의 75% 정도로 잡습니다. 콜드 스타트를 줄이면(C6) 목표를 한계에 더 가깝게 올릴 수 있습니다.
 
+* 예측 가능한 피크: 반응형 스케일링은 새 파드가 준비될 때까지 7분 정도 늦습니다. 출근 시간처럼 미리 아는 피크에는 같은 ScaledObject에 cron 트리거를 추가해 미리 늘립니다. HPA는 트리거 중 가장 큰 값을 쓰므로 그 시간대에는 최소 2개가 유지됩니다.
 
-
-
+```
+    - type: cron
+      metadata:
+        timezone: Asia/Seoul
+        start: "0 9 * * 1-5"         # 평일 09:00부터
+        end: "0 19 * * 1-5"          # 19:00까지
+        desiredReplicas: "2"
+```
+* 0까지 줄이기: minReplicaCount: 0이면 파드가 없을 때 vLLM 지표도 없어서 다시 늘릴 신호가 없습니다. 첫 요청도 약 7분을 기다리게 됩니다. 쓰려면 앞단(LiteLLM, 큐 등)이 들어온 요청을 세는 지표를 트리거로 써야 합니다. 대화형 서비스보다는 배치 작업에 맞습니다.
+* 수동 조작: HPA가 켜진 뒤에는 매니페스트에 replicas를 다시 넣지 않습니다. 자동 조절을 잠시 멈추려면 ScaledObject에 autoscaling.keda.sh/paused: "true" 애노테이션을 붙입니다.
+* Prometheus와 Grafana는 ClusterIP로만 두고 port-forward(127.0.0.1)로 접속합니다. Prometheus API에는 인증이 없으므로 LoadBalancer나 Ingress로 열지 않습니다.
 
 
 ## 레퍼런스 ##
