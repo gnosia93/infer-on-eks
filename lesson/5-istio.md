@@ -64,3 +64,34 @@ client version: 1.32.0
 ### 2. Istio 설치 ###
 
 istio-base와 istiod만 설치한다. 외부 트래픽은 ALB가 LiteLLM 파드로 바로 보내므로 인그레스 게이트웨이는 설치하지 않는다.
+
+```
+helm repo add istio https://blob.istio.io/istio-release/charts
+helm repo update
+
+helm search repo istio/istiod --versions | head -5     # 1.32.0이 있는지 확인
+```
+
+#### 1. istiod 설정 파일 ####
+
+`meshConfig`는 메시 전체에 적용되는 설정이다. 여기서는 확인용 접근 로그 형식(extensionProvider) 하나만 추가한다. 형식을 정의하기만 하므로 이 단계에서는 로그가 찍히지 않는다. 실제로 켜는 것은 5절의 Telemetry이고, LiteLLM 파드에만 켠다.
+
+```
+cat > istiod-values.yaml <<'EOF'
+meshConfig:
+  extensionProviders:
+    # 확인용 접근 로그 형식: 세션 ID와 사이드카가 고른 vLLM 파드 IP를 남긴다
+    - name: session-access-log
+      envoyFileAccessLog:
+        path: /dev/stdout
+        logFormat:
+          text: "[%START_TIME%] %REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %RESPONSE_CODE% %RESPONSE_FLAGS% session=%REQ(X-SESSION-ID)% upstream=%UPSTREAM_HOST% duration=%DURATION%ms"
+EOF
+```
+
+| 로그 항목 | 뜻 |
+|---|---|
+| `%REQ(X-SESSION-ID)%` | 요청 헤더 `x-session-id`의 값. 헤더가 없으면 `-` |
+| `%UPSTREAM_HOST%` | 사이드카가 고른 vLLM 파드의 IP:포트 |
+| `%RESPONSE_FLAGS%` | Envoy가 남기는 실패 원인 코드. 정상이면 `-`, 정상 엔드포인트가 없으면 `UH` |
+| `%DURATION%` | 요청 하나에 걸린 시간(ms) |
