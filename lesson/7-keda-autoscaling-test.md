@@ -98,6 +98,23 @@ kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
 * 수동 조작: HPA가 켜진 뒤에는 매니페스트에 replicas를 다시 넣지 않습니다. 자동 조절을 잠시 멈추려면 ScaledObject에 autoscaling.keda.sh/paused: "true" 애노테이션을 붙입니다.
 * Prometheus와 Grafana는 ClusterIP로만 두고 port-forward(127.0.0.1)로 접속합니다. Prometheus API에는 인증이 없으므로 LoadBalancer나 Ingress로 열지 않습니다.
 
+### 리소스 삭제 ###
+```
+kubectl delete pod vllm-load -n llm-serving --ignore-not-found
+
+# ScaledObject를 먼저 지운다 (KEDA를 먼저 지우면 finalizer 때문에 삭제가 멈출 수 있음)
+# HPA도 함께 지워지고 레플리카는 그때 개수로 남는다
+kubectl delete scaledobject gemma4-12b-vllm -n llm-serving
+kubectl scale deployment gemma4-12b-vllm -n llm-serving --replicas=1
+kubectl delete servicemonitor gemma4-12b-vllm -n llm-serving
+
+helm uninstall keda -n keda
+helm uninstall kube-prometheus-stack -n monitoring
+kubectl delete namespace keda monitoring
+
+# 남은 CRD 삭제 (클러스터의 다른 곳에서 쓰지 않을 때만)
+kubectl get crd -o name | grep -E 'monitoring.coreos.com|keda.sh' | xargs -r kubectl delete
+```
 
 ## 레퍼런스 ##
 
