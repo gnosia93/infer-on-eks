@@ -1,4 +1,4 @@
-### 부하를 걸어 확인하기 ###
+### 부하 생성하기 ###
 
 vllm bench serve는 연결을 재사용하므로, 레플리카가 늘어도 이미 연결된 기존 파드로만 요청을 보냅니다. 그래서 여기서는 요청마다 새 연결을 여는 curl로 부하를 겁니다.
 
@@ -43,9 +43,20 @@ spec:
           memory: 128Mi
 EOF
 ```
+이 파드는 요청 12개를 계속 동시에 보냅니다. 그래서 전체 동시 요청 수가 12 근처에 머물고 목표 레플리카는 ceil(12 ÷ 6) = 2가 됩니다. CONCURRENCY를 24로 바꾸면 4까지 늘어납니다.
 
+### 오브젝트 확인하기 ###
 
+```
+# 터미널 1: HPA 지표와 레플리카
+kubectl get hpa keda-hpa-gemma4-12b-vllm -n llm-serving -w
 
+# 터미널 2: vLLM 파드
+kubectl get pods -n llm-serving -l app.kubernetes.io/name=gemma4-12b-vllm -w
+
+# 터미널 3: GPU 노드
+kubectl get nodeclaims -w
+```
 
 
 ## 레퍼런스 ##
