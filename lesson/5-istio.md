@@ -382,3 +382,89 @@ kubectl logs -n llm-serving -l app.kubernetes.io/name=litellm -c istio-proxy --t
 - **파드 맞추기:** upstream IP가 어느 vLLM 파드인지는 위 `kubectl get pods -o wide`의 IP 열과 맞춰 본다.
 - **같은 파드에 몰린 세션:** 세션이 3개뿐이라 두 세션이 같은 파드로 갈 수도 있다. 확인할 것은 한 세션이 파드 하나로만 간다는 점이다.
 - **줄이 두 개 이상일 때:** 한 세션에 줄이 두 개 이상 나오면 8절 문제 해결을 본다.
+
+
+#### 6.3 헤더 없는 요청 확인 ####
+
+세션 헤더 없이 6번 보내면 요청이 무작위로 나뉜다.
+
+```
+kubectl -n llm-serving port-forward svc/litellm 4000:4000 >/dev/null 2>&1 &
+PF_PID=$!; sleep 3
+
+for i in $(seq 6); do
+  curl -s -o /dev/null http://localhost:4000/v1/chat/completions \
+    -H "Authorization: Bearer ${MASTER_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{"model": "gemma-4-12b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 8}'
+done
+kill ${PF_PID}
+
+kubectl logs -n llm-serving -l app.kubernetes.io/name=litellm -c istio-proxy --tail=-1 \
+  | grep -o 'session=- upstream=[^ ]*:8000' | sort | uniq -c
+```
+
+`session=-` 줄이 vLLM 파드 두 개에 나뉘어 나오면 된다. 무작위라서 한쪽에 더 많이 갈 수 있다. `:8000`으로 거른 것은 LiteLLM이 기동할 때 외부로 나가는 요청(443)을 빼기 위해서다.
+
+#### 6.4 확인 후 되돌리기 ####
+
+```
+kubectl annotate scaledobject gemma4-12b-vllm -n llm-serving autoscaling.keda.sh/paused-replicas-
+kubectl delete telemetry litellm-session-log -n llm-serving
+```
+
+### 7. 운영할 때 알아 둘 점 ###
+
+- **파드 수가 바뀔 때:** KEDA가 vLLM 파드를 늘리거나 줄이면 해시 링이 다시 만들어진다. 파드가 N개일 때 하나가 늘거나 줄면 세션의 약 1/N이 다른 파드로 옮겨 간다. 옮겨 간 세션은 첫 요청에서 prefix 캐시를 다시 채운다. 롤링 업데이트도 마찬가지다.
+- **부하 쏠림:** 해시는 부하를 보지 않는다. 긴 세션이 한 파드에 몰리면 그 파드만 바빠진다. KEDA 트리거는 전체 합계라서 이런 쏠림에는 반응하지 않는다. 그래서 `max by (pod) (vllm:num_requests_running{namespace="llm-serving"})`를 함께 본다.
+- **재시도:** Istio 기본 재시도는 연결 실패처럼 요청이 vLLM에서 처리되기 전에 실패한 경우를 다시 보낸다. 그래서 같은 응답이 두 번 생성되지는 않는다. 다만 재시도는 다른 파드로 가므로 그 요청은 캐시를 쓰지 못한다.
+- **타임아웃:** Istio 라우트에는 기본 타임아웃이 없다. 요청 시간의 상한은 LiteLLM `timeout`(600초)과 ALB idle timeout(600초)이다.
+- **Istio 업그레이드:** 컨트롤 플레인(istiod)을 먼저 올리고, LiteLLM 파드를 재시작해 사이드카를 새 버전으로 바꾼다. 데이터 플레인(사이드카)은 컨트롤 플레인보다 새 버전이면 안 된다.
+- **vLLM 파드에 사이드카를 넣지 않는 이유:**
+  - 해시는 LiteLLM 쪽 사이드카만으로 충분하다.
+  - vLLM 사이드카가 없으면 S3 가중치 스트리밍이 Envoy를 거치지 않는다.
+  - Prometheus가 평문으로 지표를 수집하는 데도 문제가 없다.
+  - 사이드카 간 mTLS가 필요해지면 그때 넣고, 443 포트는 사이드카에서 제외한다.
+
+### 8. 문제 해결 ###
+
+| 증상 | 확인할 것 |
+|---|---|
+| 같은 세션이 여러 vLLM 파드로 간다 | 6.1에서 lbPolicy가 `RING_HASH`인지, hashPolicy의 헤더가 `x-session-id`인지 본다. DestinationRule의 `host` 오타도 확인한다. |
+| 세션 헤더를 보냈는데 로그에 `session=-`로 찍힌다 | LiteLLM 훅이 헤더를 붙이지 않았다. 클라이언트가 `session_id` 또는 `x-session-id`를 보냈는지, ConfigMap의 `callbacks` 설정이 맞는지 본다. |
+| LiteLLM 파드마다 다른 vLLM 파드로 간다 | `localityLbSetting.enabled: false`가 적용됐는지 본다. 두 LiteLLM 파드에서 6.1의 3)을 실행해 엔드포인트 목록이 같은지도 비교한다. |
+| 사이드카가 주입되지 않는다 | 파드 템플릿에 레이블이 있는지, 레이블을 추가한 뒤 파드가 다시 만들어졌는지 본다. 파드 이벤트에 `failed calling webhook`이 있으면 컨트롤 플레인이 istiod의 15017 포트에 닿지 못하는 것이다. 노드 보안 그룹을 확인한다. |
+| ALB가 502를 낸다 | mTLS가 STRICT로 바뀌지 않았는지 본다(`kubectl get peerauthentication -A`). ALB는 평문으로 보낸다. |
+| 응답이 503이고 로그의 RESPONSE_FLAGS가 `UH` | 정상 엔드포인트가 없다. vLLM 파드가 Ready인지 본다. |
+| vLLM 호출이 시간 초과된다 | vLLM NetworkPolicy가 LiteLLM 파드(`app.kubernetes.io/name=litellm`)를 허용하는지 본다. |
+| 설정이 반영됐는지 모르겠다 | `istioctl analyze -n llm-serving`과 `istioctl proxy-status`로 설정 오류와 동기화 상태를 본다. |
+
+### 9. 정리 ###
+
+```
+kubectl delete telemetry litellm-session-log -n llm-serving --ignore-not-found
+kubectl delete destinationrule gemma4-12b-vllm -n llm-serving
+
+# 사이드카 제거: 레이블을 지우면 롤링 업데이트로 사이드카 없는 파드로 바뀐다
+kubectl patch deployment litellm -n llm-serving --type json \
+  -p '[{"op": "remove", "path": "/spec/template/metadata/labels/sidecar.istio.io~1inject"}]'
+kubectl rollout status deployment/litellm -n llm-serving
+
+helm uninstall istiod -n istio-system
+helm uninstall istio-base -n istio-system
+kubectl delete namespace istio-system
+```
+
+- **JSON 패치 경로:** 레이블 이름의 `/`는 `~1`로 바꿔 적는다.
+- **CRD 삭제:** Istio CRD는 남는다. 다시 설치하지 않을 때만 `kubectl get crd -o name | grep 'istio.io' | xargs kubectl delete`로 지운다. CRD를 지우면 그 종류의 리소스가 모두 함께 지워진다.
+
+## 참고자료 ##
+
+* [Istio, Destination Rule](https://istio.io/latest/docs/reference/config/networking/destination-rule/)
+* [Istio, Telemetry API](https://istio.io/latest/docs/reference/config/telemetry/)
+* [Istio, Global Mesh Options (extensionProviders)](https://istio.io/latest/docs/reference/config/istio.mesh.v1alpha1/)
+* [Istio, Install with Helm](https://istio.io/latest/docs/setup/install/helm/)
+* [Istio, Supported Releases](https://istio.io/latest/docs/releases/supported-releases/)
+* [Istio 1.27 Upgrade Notes (네이티브 사이드카 기본값)](https://istio.io/latest/news/releases/1.27.x/announcing-1.27/upgrade-notes/)
+* [Envoy, Supported load balancers (Ring hash, Maglev)](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers)
+
