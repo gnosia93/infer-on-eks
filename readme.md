@@ -27,7 +27,7 @@ _Work In Progress..._
   * [Bottlerocket AMI]
   * [SOCI Parallel Pull](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/4-vllm-optimized.md)
 
-* C7. KEDA (Kubernetes Event-Driven Autoscaling)
+* C7. Proactive Pod Scaling with KEDA (Kubernetes Event-Driven Autoscaling)
   * [Prometheus 설치하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-prometheus.md)
   * [KEDA 설치 및 ScaledObject 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
   * [vLLM 파드 스케일링 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-autoscaling-test.md)
