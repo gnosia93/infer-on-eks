@@ -104,11 +104,13 @@ kill $PF_PID
 
 ServiceMonitor를 만들고 1분 정도 지나면 수집 대상이 보인다.
 
-지표	뜻	쓰는 곳
-vllm:num_requests_running	배치에 들어가 처리 중인 요청 수	주 트리거
-vllm:num_requests_waiting	큐에서 기다리는 요청 수	주 트리거에 더함 (처리 용량을 넘는 수요)
-vllm:kv_cache_usage_perc	KV 캐시 사용률 (1이 100%)	보조 트리거
-모든 지표에 model_name 레이블이 붙습니다. 값은 --served-model-name으로 지정한 gemma-4-12b입니다.
-Prometheus는 여기에 namespace, pod 레이블을 더합니다.
-예전 버전의 vllm:gpu_cache_usage_perc는 vllm:kv_cache_usage_perc로 이름이 바뀌었습니다.
+### 수집 지표 ###
 
+* vllm:num_requests_running	: 배치에 들어가 처리 중인 요청 수 (주 트리거)
+* vllm:num_requests_waiting	: 큐에서 기다리는 요청 수	- 주 트리거에 더함 (처리 용량을 넘는 수요)
+* vllm:kv_cache_usage_perc : KV 캐시 사용률 (1이 100%) - 보조 트리거
+
+```
+모든 지표에 model_name 레이블이 붙고, 그 값은 --served-model-name으로 지정한 gemma-4-12b 이다.
+Prometheus는 여기에 namespace, pod 레이블을 더한다.
+```
