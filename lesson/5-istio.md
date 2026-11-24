@@ -34,3 +34,12 @@
 | vLLM Service | `gemma4-12b-vllm`, ClusterIP(헤드리스 아님), 포트 이름 `http` |
 | NetworkPolicy | vLLM NetworkPolicy를 적용했다면 LiteLLM 파드가 이미 허용돼 있으므로 그대로 둔다. |
 | 도구 | helm, kubectl, jq. istioctl은 1절에서 설치한다. |
+
+### 환경 설정 ###
+
+```
+export ISTIO_VERSION="1.32.0"
+
+kubectl config current-context        # infer-on-eks 클러스터인지 확인
+echo "Istio Version: ${ISTIO_VERSION}"
+```
