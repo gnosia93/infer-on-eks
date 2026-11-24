@@ -18,7 +18,7 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
     * 모델 Download
        * S3 Express One-Zone : ??
        * S3 run.ai streamer 적용 : 3분 -> 30초  
-    * CUDA graph compile & vLLM init
+    * CUDA graph 캡처 & vLLM 엔진 init
        * PVC 로 구워서 마운트  ? 
 * Headroom-based Proactive Scaling with KEDA   
 
