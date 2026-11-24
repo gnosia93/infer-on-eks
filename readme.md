@@ -24,7 +24,7 @@ _Work In Progress..._
   * [서비스 엔드 포인트 만들기 - ALB Ingress](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-alb-ingress.md)
 
 * [C6. 콜드 스타트 최적화 (파드 기동 시간 단축)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md)
-  * [S3 Express One Zone 에 모델 저장](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-s3.md) [..] 
+  * [S3 Express One Zone 기반 초고속 모델 로딩](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-s3.md) [..] 
   * [GPU 노드풀 최적화](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-nodepool.md) [.. ]
   * [vLLM 기동 시간 단축](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-vllm-launch.md) [-1분]
     
