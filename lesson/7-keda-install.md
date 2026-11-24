@@ -128,3 +128,15 @@ spec:
         threshold: "0.7"                    # 파드당 KV 캐시 70%
 EOF
 ```
+
+* minReplicaCount 1: 요청이 없어도 파드 1개를 유지합니다. 0까지 줄이지 않는 이유는 9절에 있습니다.
+* pollingInterval: minReplicaCount가 1 이상이면 지표 조회는 HPA 주기(15초)에 맞춰 일어납니다. 이 값은 상태 갱신에만 쓰입니다.
+* cooldownPeriod: 0으로 줄일 때만 쓰이는 값이라 넣지 않았습니다.
+* scaleDown: 다시 늘리는 데 7분이 걸리므로, 부하가 잠깐 줄었다고 파드를 내리지 않도록 천천히 줄입니다.
+* Prometheus 장애: Prometheus를 읽지 못하면 HPA는 레플리카 수를 바꾸지 않습니다. 장애 때 정해 둔 개수로 맞추려면 spec.fallback을 추가합니다.
+
+#### Karpenter와는 다음처럼 맞물립니다. ####
+
+* HPA가 레플리카를 늘리면 새 파드는 Pending이 되고 Karpenter가 g6e.4xlarge를 띄웁니다.
+* 레플리카가 줄면 파드가 지워진 노드가 비고, NodePool의 consolidateAfter: 20m가 지나면 Karpenter가 노드를 회수합니다.
+* 그 20분 안에 다시 늘어나면 새 파드가 빈 노드에 바로 올라갑니다. 이미지도 노드에 남아 있어서 노드 준비와 이미지 받기(약 4분)를 건너뜁니다.
