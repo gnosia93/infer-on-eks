@@ -20,4 +20,4 @@ HPA가 Deployment의 replica 수를 조절하고 Karpenter가 GPU 노드를 추�
        * S3 run.ai streamer 적용 : 3분 -> 30초  
     * CUDA graph compile & vLLM init
        * PVC 로 구워서 마운트  ? 
-* Proactive Pod Scaling /w KEDA   
+* Headroom-based Proactive Scaling with KEDA   
