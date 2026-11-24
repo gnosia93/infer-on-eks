@@ -13,8 +13,10 @@
 2026-11-23T15:43:22.393764308Z INFO:     Application startup complete.
 ```
 로그에 보이는 구간만 약 2분 5초이고, 가장 오래 걸리는 건 torch.compile(55초)과 첫 번째 CUDA graph 캡처(14초) 이다. 둘 다 두 번째 기동부터 건너뛸 수 있다.
-
+vLLM은 torch.compile 결과를 /home/vllm/.cache/vllm/torch_compile_cache에, Triton 커널을 /home/vllm/.cache/triton에 저장해요. 다음 기동 때 캐시가 있으면 컴파일하지 않고 불러오기 때문에 `55`초가 `몇 초`로 줄어든다.
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-launch-time-table.png)
+
+
 
 ### vLLM 최적화 ###
 
