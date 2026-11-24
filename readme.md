@@ -37,7 +37,9 @@ _Work In Progress..._
   * [KEDA 설치 및 ScaledObject 생성](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-install.md)
   * [vLLM 파드 스케일링 테스트](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/7-keda-autoscaling-test.md)
 
-* C8. LLM 성능 평가 및 보안
+* [C8. Network Policy]() 
+
+* C9. LLM 성능 평가 및 보안
    * [LLM 성능 평가(LLM 품질 평가 - Model/Prompt Evaluation)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/3-promptfoo-perf.md) 
    * llm 보안 취약점 스캔
     
