@@ -12,11 +12,9 @@ vLLM은 torch.compile 결과를 /home/vllm/.cache/vllm/torch_compile_cache에, T
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-launch-time-table.png)
 
 
-이 부분은 <ins>밑줄</ins>이 그어집니다.
-
 ### vLLM 기동 최적화 ###
 
-**.cache 디렉토리의 내용을 S3 에 저장한 후, 신규 파드가 기동될때 init container 에서 emptyDir 로 내려 받도록 하여 vLLM 기동 시간은 193초 에서 2분 정도로 줄였다.** 
+<ins>**.cache 디렉토리의 내용을 S3 에 저장한 후, 신규 파드가 기동될때 init container 에서 emptyDir 로 내려 받도록 하여 vLLM 기동 시간은 193초 에서 2분 정도로 줄였다.**</ins>
 
 #### 1. 파드가 바뀌어도 캐시 디렉터리 유지하기 ####
 
