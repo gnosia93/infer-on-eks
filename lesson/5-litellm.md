@@ -223,3 +223,31 @@ spec:
 EOF
 ```
 
+* 워커와 리소스: LiteLLM 문서는 쿠버네티스에서 파드당 Uvicorn 워커 1개를 두고 파드 수로 늘리라고 권한다. 리소스는 문서의 시작값(워커당 1 vCPU, 4Gi)이다. CPU limit은 vLLM 매니페스트처럼 걸지 않았다.
+* 읽기 전용 루트 파일시스템: 문서의 API 전용(관리 UI 없음) 구성을 따랐다. 쓰기가 필요한 /tmp와 마이그레이션 경로만 emptyDir로 붙인다. 관리 UI가 없다는 경고가 로그에 남지만 API는 정상 동작한다.
+* 프로브: /health/readiness와 /health/liveliness는 인증 없이 응답하는 가벼운 엔드포인트다. /health는 모델을 실제로 호출하므로 프로브에 쓰지 않는다.
+* 종료: preStop 30초가 지나면 SIGTERM이 간다. 그러면 Uvicorn은 새 연결을 받지 않고 진행 중인 스트리밍 응답이 끝나기를 기다린다. terminationGracePeriodSeconds(180초)가 지나면 강제로 끝난다.
+* Redis: LiteLLM 은 인스턴스가 둘 이상이면 Redis를 권장한다. 이 구성에는 파드끼리 나눌 상태(키별 요청 제한, 캐시, 사용량 집계)가 없어서 Redis 없이 동작한다. 그런 기능을 켤 때 붙인다.
+
+### 4. Service ###
+```
+kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+spec:
+  type: ClusterIP                               # ALB IP 모드는 파드 IP를 직접 타깃으로 등록
+  selector:
+    app.kubernetes.io/name: litellm
+  ports:
+    - name: http
+      port: 4000
+      targetPort: http
+      protocol: TCP
+EOF
+```
+ 
