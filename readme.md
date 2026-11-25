@@ -4,6 +4,21 @@ $\textcolor{#326CE5}{\text{W.I.P}}$
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
 
+### 아키텍처 고려 사항 ###
+
+쿠버네티스 기반 LLM 추론은 vLLM 같은 고성능 엔진, 모델 크기에 맞춘 GPU 분할·병렬화, 도커 이미지와 분리한 가중치 로딩, 대기 요청·KV 캐시 기반 오토스케일링, 스트리밍과 프리픽스 인지 라우팅, LLM 전용 관측과 Multi-LoRA 서빙을 조합이다. 이를 통해 GPU 비용을 줄이면서 빠른 첫 토큰 응답(TTFT)을 확보하는 것이 핵심이다.
+
+* 추론 엔진: transformers 기본 generate() 대신 Continuous Batching을 지원하는 vLLM을 기본으로 사용하고, 최대 성능이 필요하면 TensorRT-LLM을, 구조화 출력과 프롬프트 캐싱이 많은 RAG에는 SGLang을 검토한다.
+* GPU 할당: GPU 1장에 들어가지 않는 모델은 TP로 여러 GPU를 묶고, 경량·임베딩·리랭커 모델은 MIG나 Time-Slicing으로 GPU를 나눠 쓴다. 노드 하나를 넘는 초대형 모델은 노드 안에서는 TP, 노드 사이에서는 PP를 적용합니다. 여기에 InfiniBand/RoCE 네트워크와 LWS·KubeRay 같은 분산 오퍼레이터가 필요하다.
+* 가중치 로딩: 도커 이미지에는 추론 엔진만 넣고, 모델은 공유 스토리지에서 마운트한다. Run:ai Model Streamer나 노드 로컬 캐시로 콜드 스타트를 줄인다.
+* 오토스케일링: CPU/메모리 기반 HPA 대신 KEDA와 Prometheus로 대기 요청 수와 KV 캐시 사용률을 기준 삼아 파드를 늘린다. (GPU 노드는 Karpenter 로 확장)
+* 게이트웨이·라우팅: SSE 스트리밍을 위해 인그레스 타임아웃을 늘리고 버퍼링을 끈다. 해당 프롬프트의 KV 캐시를 이미 가진 파드로 요청을 보내는 프리픽스 인지 라우팅으로 TTFT를 줄인다.
+* 관측·Multi-LoRA: TTFT, TPOT/ITL, DCGM GPU 지표를 수집하고 베이스 모델 하나에 고객용·직원용 LoRA 어댑터를 올려두고 요청 모델명에 따라 전환해 GPU 비용을 줄인다.
+
+
+
+
+
 ### llm-d 확장 (Prefill 과 Decode 의 분리) ###
 현재 아키텍처(ALB + LiteLLM + Envoy + vLLM)는 별도의 무거운 분산 추론 플랫폼 없이 기존 Kubernetes와 AWS 표준 컴포넌트만으로 멀티턴 성능과 고가용성을 모두 확보할 수 있는 최적 및 최소의 아키텍처다. 향후 대규모 트래픽 대응을 위해 llm-d를 도입하게 될 경우, 다음과 같은 추가 구성과 이점이 따른다.
 • 추가 필요 요소: Kubernetes Gateway API(추론 확장), LeaderWorkerSet 등 전용 컨트롤 플레인 설치와 노드 간 고속 KV Cache 전송을 위한 네트워크/캐시 스토리지 구성.
