@@ -61,6 +61,6 @@ curl -i -X POST http://127.0.0.1:8000/v1/generations -F prompt="a cat in space"
 # → 202 {"job_id": "...", "status": "QUEUED", ...}
 ```
 
-## Open Weight Model Selection ##
+## Model Selection ##
 
 * https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a6.diffusion-model-selection.md
