@@ -4,7 +4,7 @@ $\textcolor{#326CE5}{\text{W.I.P}}$
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
 
-### 아키텍처 고려 사항 ###
+### 설계 고려사항 ###
 
 쿠버네티스 기반 LLM 추론은 vLLM 같은 고성능 엔진, 모델 크기에 맞춘 GPU 분할·병렬화, 도커 이미지와 분리한 가중치 로딩, 대기 요청·KV 캐시 기반 오토스케일링, 스트리밍과 프리픽스 인지 라우팅, LLM 전용 관측과 Multi-LoRA 서빙을 조합이다. 이를 통해 GPU 비용을 줄이면서 빠른 첫 토큰 응답(TTFT)을 확보하는 것이 핵심이다.
 
