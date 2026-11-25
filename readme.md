@@ -40,7 +40,7 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
     
 * C5. 세션 / 트래픽 라우팅
   * [LiteLLM 배포하기](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-litellm.md)
-  * [세션 ID 기반 vLLM 요청 라우팅 (Istio/Envoy Consistent Hashing)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-istio.md)
+  * [세션 ID 기반 Cache-Aware 라우팅 (Istio/Envoy Consistent Hashing)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-istio.md)
   * [서비스 엔드 포인트 만들기 - ALB Ingress](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/5-alb-ingress.md)
 
 * [C6. 콜드 스타트 최적화 (파드 기동 시간 단축)](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/6-optimize-cold-start.md) [기존 7분 -> 4분]
