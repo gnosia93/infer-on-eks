@@ -22,10 +22,6 @@ GET  /v1/generations/abc/events   (별도 연결, 열린 채 유지)
 GET  https://.../outputs/abc/0.webp                             이미지 다운로드
 ```
 
-## Open Weight Model Selection ##
-
-* https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a6.diffusion-model-selection.md
-
 ## MVP (Minimum Viable Product, 최소 기능 제품) ##
 ### 1. API 서버 ###
 ```
@@ -64,3 +60,7 @@ AUTH_TEST_BYPASS=1 uvicorn app:app --host 127.0.0.1 --port 8000
 curl -i -X POST http://127.0.0.1:8000/v1/generations -F prompt="a cat in space"
 # → 202 {"job_id": "...", "status": "QUEUED", ...}
 ```
+
+## Open Weight Model Selection ##
+
+* https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a6.diffusion-model-selection.md
