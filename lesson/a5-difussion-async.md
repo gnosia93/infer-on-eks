@@ -22,93 +22,41 @@ GET  /v1/generations/abc/events   (별도 연결, 열린 채 유지)
 GET  https://.../outputs/abc/0.webp                             이미지 다운로드
 ```
 
-### API 서버 ###
+## MVP ##
+### 1. API 서버 ###
 ```
-project/
+DiT/
 ├── app.py
 └── static/
     ├── index.html
     └── app.js
 ```
 
-* app.py
+* https://github.com/gnosia93/infer-on-eks/blob/main/src/DiT/app.py
+* https://github.com/gnosia93/infer-on-eks/blob/main/src/DiT/static/index.html
+* https://github.com/gnosia93/infer-on-eks/blob/main/src/DiT/static/app.js
+
+### 2. DB ###
+```
+CREATE TABLE jobs (
+    id          UUID PRIMARY KEY,
+    user_id     TEXT NOT NULL,
+    status      TEXT NOT NULL,   -- QUEUED, RUNNING, SUCCEEDED, FAILED, CANCELED
+    mode        TEXT NOT NULL,   -- txt2img, img2img
+    params      JSONB NOT NULL,
+    input_key   TEXT,
+    result_key  TEXT,
+    error       TEXT,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 ```
 
-```  
-
-* static/index.html
+### 3. 실행 ###
 ```
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <title>Image Generator</title>
-</head>
-<body>
-  <form id="form">
-    <input id="prompt" placeholder="프롬프트" required>
-    <input id="image" type="file" accept="image/png,image/jpeg,image/webp">
-    <button>생성</button>
-  </form>
-  <progress id="bar" max="1" value="0"></progress>
-  <p id="status"></p>
-  <img id="result" alt="">
-  <script src="/app.js"></script>
-</body>
-</html>
-```
-* static/app.js
-```
-const form = document.getElementById("form");
-const bar = document.getElementById("bar");
-const statusEl = document.getElementById("status");
-const result = document.getElementById("result");
+pip install fastapi uvicorn python-multipart pillow "redis>=5.0.1" asyncpg aioboto3
+# DATABASE_URL, REDIS_URL, IMAGE_BUCKET 환경변수 설정 후
+AUTH_TEST_BYPASS=1 uvicorn app:app --host 127.0.0.1 --port 8000
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // 1. 생성 요청: 텍스트와 선택적 입력 이미지를 multipart로 전송
-  const body = new FormData();
-  body.append("prompt", document.getElementById("prompt").value);
-  const file = document.getElementById("image").files[0];
-  if (file) body.append("image", file);
-
-  const res = await fetch("/v1/generations", { method: "POST", body });
-  if (res.status !== 202) {
-    statusEl.textContent = `요청 실패: ${res.status}`;
-    return;
-  }
-  const { job_id } = await res.json();
-
-  // 2. 받은 job_id로 진행률 구독
-  watch(job_id);
-});
-
-function watch(jobId) {
-  const es = new EventSource(`/v1/generations/${jobId}/events`);
-
-  es.addEventListener("progress", (e) => {
-    const { step, total } = JSON.parse(e.data);
-    bar.value = step / total;
-    statusEl.textContent = `생성 중 ${step}/${total}`;
-  });
-
-  es.addEventListener("completed", (e) => {
-    result.src = JSON.parse(e.data).result_url;
-    statusEl.textContent = "완료";
-    es.close();
-  });
-
-  es.addEventListener("failed", (e) => {
-    const { status, error } = JSON.parse(e.data);
-    statusEl.textContent = `실패 (${status}): ${error ?? ""}`;
-    es.close();
-  });
-
-  es.onerror = () => {
-    if (es.readyState === EventSource.CLOSED) {
-      statusEl.textContent = "연결이 끊겼습니다. 새로고침 후 다시 시도하세요.";
-    }
-  };
-}
+curl -i -X POST http://127.0.0.1:8000/v1/generations -F prompt="a cat in space"
+# → 202 {"job_id": "...", "status": "QUEUED", ...}
 ```
