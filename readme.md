@@ -69,7 +69,7 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 * [C12. TensorRT-LLM](https://github.com/gnosia93/lgraph-agentic-ai/blob/main/lesson/10-tensorrt-inference.md)
 
 ## Appendix ##
-* [A1. LiteLLM Phased Migration](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-litellm-phased-mig.md)
+* [A1. Phased Model Migration via LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-litellm-phased-mig.md)
 * [A2. EFA 모니터링](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a2-efa-observability.md)
 * [A3. GPU 장애 가이드](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a3-gpu-trouble.md)
 * [A4. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a4-dra.md)
