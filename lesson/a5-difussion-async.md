@@ -22,6 +22,10 @@ GET  /v1/generations/abc/events   (별도 연결, 열린 채 유지)
 GET  https://.../outputs/abc/0.webp                             이미지 다운로드
 ```
 
+## Open Weight Model Selection ##
+
+
+
 ## MVP (Minimum Viable Product, 최소 기능 제품) ##
 ### 1. API 서버 ###
 ```
