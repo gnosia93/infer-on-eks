@@ -12,6 +12,16 @@
 | **Webhook** | 요청할 때 `callback_url`을 받아 두고, 완료되면 서버가 그 URL을 호출 | 서버 간 연동 |
 
 
+### SSE 흐름 ###
+```
+POST /v1/generations              → 202 {"job_id": "abc"}       여기서 요청 종료
+GET  /v1/generations/abc/events   (별도 연결, 열린 채 유지)
+     ← event: progress {"step": 10, "total": 30}
+     ← event: progress {"step": 20, "total": 30}
+     ← event: completed {"result_url": "https://..."}           서버가 스트림 종료
+GET  https://.../outputs/abc/0.webp                             이미지 다운로드
+```
+
 ### API 서버 ###
 ```
 import asyncio
