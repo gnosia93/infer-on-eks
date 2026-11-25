@@ -24,7 +24,7 @@ GET  https://.../outputs/abc/0.webp                             이미지 다운
 
 ## Open Weight Model Selection ##
 
-
+* https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a6.diffusion-model-selection.md
 
 ## MVP (Minimum Viable Product, 최소 기능 제품) ##
 ### 1. API 서버 ###
