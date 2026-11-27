@@ -111,7 +111,11 @@ proxy_handler_instance = NLIGuardrail()
 
 작성한 파이썬 핸들러를 callbacks에 등록하면 모든 응답 완료 후 자동으로 검증이 실행된다.
 ```
+...
 litellm_settings:
+  drop_params: true
+  set_verbose: false
+  # 2차 가드레일: RAG + NLI 환각 정밀 검증 (출력 완료 후 실행)
   callbacks: ["nli_guardrail.proxy_handler_instance"]
 ```
 
