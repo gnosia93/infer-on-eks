@@ -4,11 +4,6 @@
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-guardrail.jpg)
 
-
-### RAG + NLI 할루시네이션 체크 가드레일 ###
-![](https://github.com/gnosia93/infer-on-eks/blob/main/images/litellm-rag-guardrail.jpg)
-
-
 ### 가드레일 전용 경량 모델 서빙 (vLLM 활용) ###
 
 메인 모델 외에 보안/안전성 판별 전용 소형 모델(0.5B~8B)을 별도의 vLLM 인스턴스(또는 동일 GPU 내 소규모 메모리 할당)로 띄워 판단.
@@ -32,9 +27,6 @@ LiteLLM 프록시 설정(config.yaml)만으로도 외부/내부 가드레일 엔
 `2. 2단계 (고도화)`: GPU 자원에 여유가 있다면 Llama Guard 3-8B (또는 1B)를 vLLM으로 하나 더 띄운 뒤, LiteLLM의 pre_call / post_call 훅으로 연결해 문맥상 위험한 질의응답을 차단.
 
 `3. 비동기 처리 팁`: 출력(Output) 가드레일은 스트리밍(Streaming) 응답 시 청크(Chunk) 단위로 모아서 검사하거나, 지연 시간을 줄이기 위해 입력(Input) 가드레일만 동기(Sync)로 먼저 걸고 출력은 비동기 로깅 후 사후 차단하는 방식도 많이 쓴다.
-
-
-
 
 ## LiteLLM 설정 ##
 ```
@@ -67,6 +59,9 @@ litellm_settings:
   drop_params: true
   set_verbose: false
 ```
+
+## RAG + NLI 할루시네이션 체크 가드레일 ##
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/litellm-rag-guardrail.jpg)
 
 > [!NOTE]
 >  **Bi-Encoder vs Cross-Encoder: 검색과 검증의 핵심 차이**
