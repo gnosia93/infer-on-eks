@@ -59,7 +59,7 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
    * [promptfoo 로 모델 성능 평가하기](https://aws.amazon.com/ko/blogs/tech/bedrock-promptfoo-eval/)
    * [promptfoo LLM 보안 취약점 스캔](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/9-promptfoo-security.md)
 
-* [C10. LLM Guardrail]()
+* [C10. LLM Guardrail](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/10-vllm-guardrail.md)
     
 ### _Advanced_ ###
       
