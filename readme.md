@@ -3,7 +3,7 @@
 $\textcolor{#326CE5}{\text{W.I.P}}$
 
 
-This practical workshop demonstrates how organizations can transition from costly commercial LLM APIs to self-hosted open-weight models on Amazon EKS without sacrificing latency or reliability. Participants will learn how to maximize GPU utilization, enforce enterprise-grade security guardrails, and make data-driven infrastructure decisions through accurate GPU capacity sizing and TCO modeling.
+This practical workshop demonstrates how organizations can transition from costly commercial LLM APIs to self-hosted open-weight models on Amazon EKS without sacrificing latency or reliability. You will learn how to maximize GPU utilization, enforce enterprise-grade security guardrails, and make data-driven infrastructure decisions through accurate GPU capacity sizing and TCO modeling.
 
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
