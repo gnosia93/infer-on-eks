@@ -60,8 +60,60 @@ litellm_settings:
   set_verbose: false
 ```
 
+
 ## RAG + NLI 할루시네이션 체크 가드레일 ##
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/litellm-rag-guardrail.jpg)
+
+
+### LiteLLM post_call 훅 + Cross-Encoder 검증 샘플 코드 ###
+
+#### 1. 커스텀 가드레일 핸들러 (nli_guardrail.py) ####
+
+CustomLogger를 상속받아 메인 LLM이 응답을 생성한 직후(async_post_call_success_hook), 검색된 문서와 생성된 답변을 Cross-Encoder로 교차 검증한다.
+
+```
+from litellm.integrations.custom_logger import CustomLogger
+from sentence_transformers import CrossEncoder
+from fastapi import HTTPException
+
+class NLIGuardrail(CustomLogger):
+    def __init__(self):
+        # NLI(자연어 추론) 특화 Cross-Encoder 모델 로드
+        self.nli_model = CrossEncoder("cross-encoder/nli-deberta-v3-small")
+
+    async def async_post_call_success_hook(self, data: dict, user_api_key_dict, response):
+        # 1. 요청 메타데이터에서 RAG로 검색된 근거 문서(Context) 추출
+        retrieved_context = data.get("metadata", {}).get("retrieved_context", "")
+        generated_answer = response.choices[0].message.content
+
+        if not retrieved_context:
+            return response
+
+        # 2. Cross-Encoder에 [근거 문서, 생성 답변] 쌍을 동시에 입력하여 추론
+        # 출력 라벨 순서 예시: [0: Contradiction(모순), 1: Entailment(함의), 2: Neutral(중립)]
+        scores = self.nli_model.predict([(retrieved_context, generated_answer)])
+        contradiction_score = scores[0][0]
+
+        # 3. 논리적 모순(환각) 확률이 임계치(예: 0.8)를 넘으면 차단
+        if contradiction_score > 0.8:
+            raise HTTPException(
+                status_code=400,
+                detail="근거 문서와 일치하지 않는 내용(환각)이 감지되어 응답이 차단되었습니다."
+            )
+
+        return response
+
+proxy_handler_instance = NLIGuardrail()
+```
+
+
+#### 2. LiteLLM 프록시 연동 설정 (config.yaml) ####
+
+작성한 파이썬 핸들러를 callbacks에 등록하면 모든 응답 완료 후 자동으로 검증이 실행된다.
+```
+litellm_settings:
+  callbacks: ["nli_guardrail.proxy_handler_instance"]
+```
 
 > [!NOTE]
 >  **Bi-Encoder vs Cross-Encoder: 검색과 검증의 핵심 차이**
