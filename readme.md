@@ -2,7 +2,7 @@
 
 $\textcolor{#326CE5}{\text{W.I.P}}$
 
-This practical engineering guide demonstrates how organizations can transition from costly commercial LLM APIs to self-hosted open-weight models on Amazon EKS without sacrificing latency or reliability. It provides a production-ready reference architecture powered by vLLM and TensorRT-LLM—covering KV cache-aware routing via LiteLLM and Envoy, cold-start optimization with S3 Express One Zone, and proactive autoscaling with KEDA and Karpenter. Ultimately, you will learn how to maximize GPU utilization, enforce enterprise-grade security guardrails, and make data-driven infrastructure decisions through accurate GPU capacity sizing and TCO modeling.
+This practical engineering guide demonstrates how organizations can transition from costly commercial LLM APIs to self-hosted open-weight models on Amazon EKS without sacrificing latency or reliability. It provides a production-ready reference architecture powered by vLLM and TensorRT-LLM—covering KV cache-aware routing via LiteLLM and Envoy, cold-start optimization with SOCI parallel and vLLM Optimization, and proactive autoscaling with KEDA and Karpenter. Ultimately, you will learn how to maximize GPU utilization, enforce enterprise-grade security guardrails, and make data-driven infrastructure decisions through accurate GPU capacity sizing and TCO modeling.
 
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/llm-infer-arch-1.png)
