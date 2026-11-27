@@ -28,7 +28,7 @@ LiteLLM 프록시 설정(config.yaml)만으로도 외부/내부 가드레일 엔
 
 `3. 비동기 처리 팁`: 출력(Output) 가드레일은 스트리밍(Streaming) 응답 시 청크(Chunk) 단위로 모아서 검사하거나, 지연 시간을 줄이기 위해 입력(Input) 가드레일만 동기(Sync)로 먼저 걸고 출력은 비동기 로깅 후 사후 차단하는 방식도 많이 쓴다.
 
-## LiteLLM 설정 ##
+### LiteLLM 설정 ###
 ```
 model_list:
   # 1. 메인 추론 모델 (vLLM 서빙)
