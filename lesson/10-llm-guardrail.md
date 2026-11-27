@@ -68,7 +68,7 @@ litellm_settings:
   set_verbose: false
 ```
 
-> [!INFO]
+> [!NOTE]
 >  **Bi-Encoder vs Cross-Encoder: 검색과 검증의 핵심 차이**
 > 
 > * **Bi-Encoder (따로 인코딩 ➔ 속도 중심 · RAG 검색용)**
