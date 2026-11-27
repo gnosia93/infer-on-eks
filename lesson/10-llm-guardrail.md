@@ -68,7 +68,8 @@ litellm_settings:
   set_verbose: false
 ```
 
-> [!INFO] **Bi-Encoder vs Cross-Encoder: 검색과 검증의 핵심 차이**
+> [!INFO]
+>  **Bi-Encoder vs Cross-Encoder: 검색과 검증의 핵심 차이**
 > 
 > * **Bi-Encoder (따로 인코딩 ➔ 속도 중심 · RAG 검색용)**
 >   * 문서와 질문을 **각각 독립적으로 인코딩**해 문장 전체의 평균 벡터(Mean Pooling)를 생성한 뒤 벡터 간 거리를 계산합니다.
