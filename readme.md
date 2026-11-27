@@ -70,8 +70,9 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 * [C12. TensorRT-LLM](https://github.com/gnosia93/lgraph-agentic-ai/blob/main/lesson/10-tensorrt-inference.md)
 
-* [모델별 GPU 사이징 및 비용 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/model-gpu-sizing.md)
-    * [LLM 서빙을 위한 GPU 메모리·대역폭 기반 토큰 처리량 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/gpu-llm-throughput-calculation-guide.md)
+* LLM 셀프 호스팅을 위한 GPU 용량 산정(Sizing) 및 TCO 분석
+  * [모델별 GPU 사이징 및 비용 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/model-gpu-sizing.md)
+  * [GPU 메모리·대역폭 기반 토큰 처리량 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/gpu-llm-throughput-calculation-guide.md)
       
 ## Appendix ##
 * [A1. Phased Model Migration via LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-litellm-phased-mig.md)
