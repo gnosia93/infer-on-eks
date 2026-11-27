@@ -5,6 +5,10 @@
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-guardrail.jpg)
 
 
+### RAG 가드레일 ###
+![](https://github.com/gnosia93/infer-on-eks/blob/main/images/litellm-rag-guardrail.jpg)
+
+
 ### 가드레일 전용 경량 모델 서빙 (vLLM 활용) ###
 
 메인 모델 외에 보안/안전성 판별 전용 소형 모델(0.5B~8B)을 별도의 vLLM 인스턴스(또는 동일 GPU 내 소규모 메모리 할당)로 띄워 판단.
