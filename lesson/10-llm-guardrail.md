@@ -5,7 +5,7 @@
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-guardrail.jpg)
 
 
-### RAG 가드레일 ###
+### RAG + NLI 할루시네이션 체크 가드레일 ###
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/litellm-rag-guardrail.jpg)
 
 
