@@ -1,6 +1,6 @@
 ## LiteLLM 가드 레일 아키텍처 ##
 
-가드레일은 크게 ① 경량 분류 모델(Guardrail LLM) 방식과 ② 규칙/프레임워크 연동 방식으로 나뉩니다. 현재 스택에서는 두 가지를 조합하는 것이 좋다.
+가드레일은 크게 ① 경량 분류 모델(Lightweight classification model - Guardrail LLM) 방식과 ② 규칙/프레임워크 연동 방식으로 나뉩니다. 현재 스택에서는 두 가지를 조합하는 것이 좋다.
 
 ![](https://github.com/gnosia93/infer-on-eks/blob/main/images/vllm-guardrail.jpg)
 
