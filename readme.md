@@ -79,8 +79,6 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 * C15. LLM 셀프 호스팅을 위한 GPU 용량 산정(Sizing) 및 TCO 분석
   * [모델별 GPU 사이징 및 비용 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/model-gpu-sizing.md)
   * [GPU 메모리·대역폭 기반 토큰 처리량 계산](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/gpu-llm-throughput-calculation-guide.md)
-
-
       
 ## Appendix ##
 * [A1. Phased Model Migration via LiteLLM](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a1-litellm-phased-mig.md)
@@ -89,3 +87,8 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 * [A4. MIG & DRA](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a4-dra.md)
 * [A5. 디퓨전 서비스 아키텍처](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a5-difussion-async.md)
 * [A7. RAG](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/a7.rag-pipeline.md)
+
+## 레퍼런스 ##
+
+* AWS 공식 워크샵 - https://events.eksworkshop.com/workshops/genai/
+* 대규모 서빙 예제 - https://github.com/aws-samples/sample-llm-inference-on-eks
