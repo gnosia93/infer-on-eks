@@ -65,7 +65,7 @@ Prefill(입력 처리)은 GPU 연산력을, Decode(토큰 생성)는 메모리 �
 
 * [C10. LLM Guardrail](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/10-llm-guardrail.md)
 
-* [C11. LLM Observability & LLMOps]
+* [C11. LLM Observability & LLMOps](https://github.com/gnosia93/infer-on-eks/blob/main/lesson/11.llm-observability-llmops.md)
 
 ### _Advanced_ ###
       
